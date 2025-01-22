@@ -10,7 +10,7 @@ void add_token(int start, int len, t_type type)
     {
         ft_putendl_fd("error allocating token", 2);
         free_atributes();
-        exit(1); // which xit code is best?
+        exit(1);
     }
     // printf("new token: %p \n", token);
     token->type = type;
@@ -91,7 +91,6 @@ void free_atributes(void)
 		shell->cmd[k]->red_out = NULL;
 		free(shell->cmd[k]);
 		shell->cmd[k++] = NULL;
-
 	}
 	if (shell && shell->cmd)
 		free (shell->cmd);

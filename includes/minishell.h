@@ -70,7 +70,7 @@ typedef struct s_shell
     char **export_list;
 
     //int pipe_count;
-    //int exit_status; // ? isto é para cada comando
+    //int exit_status; // ? para eu poder expandir $?
 
     //int fd_in;
     //int fd_out;

@@ -34,7 +34,7 @@ void skip_till_dollar(int *i, char *s) {
     }
 }
 
-size_t safe_str_len(char *s)
+size_t safe_strlen(char *s)
 {
 	int i;
 
@@ -48,38 +48,34 @@ size_t safe_str_len(char *s)
 
 void change_str(t_token **tmp, int *i, int j, char *value)
 {
-    char *new_str;
-    int k, l;
+	char *new_str;
+	int k, l;
 
-    if (!tmp || !*tmp)
-        return;
-
-    new_str = ft_calloc(1, sizeof(char) * (ft_strlen((*tmp)->str) - (j - *i) + ft_strlen(value) + 1));
-    if (!new_str)
+	if (!tmp || !*tmp)
+		return;
+	new_str = ft_calloc(1, sizeof(char) * (ft_strlen((*tmp)->str) - (j - *i) + safe_strlen(value) + 1));
+	if (!new_str)
 	{
-        free_tokens();
-        return;
-    }
-    k = 0;
-    while (k < *i)
+		free_atributes();
+		printf("memory allocation error\n");
+		exit (1);
+	}
+	k = 0;
+	while (k < *i)
 	{
-        new_str[k] = (*tmp)->str[k];
-        k++;
-    }
-    l = 0;
-    while (value[l]) {
-        new_str[k + l] = value[l];
-        l++;
-    }
-
-    k += l;
-    l = j;
-    while ((*tmp)->str[l]) {
-        new_str[k++] = (*tmp)->str[l++];
-    }
-    free((*tmp)->str);
-    (*tmp)->str = new_str;
-    *i += ft_strlen(value) - 1;
+		new_str[k] = (*tmp)->str[k];
+		k++;
+	}
+	l = 0;
+	while (value && value[l])
+		new_str[k + l] = value[l];
+	k += l;
+	l = j;
+	while ((*tmp)->str[l])
+		new_str[k++] = (*tmp)->str[l++];
+	free((*tmp)->str);
+	(*tmp)->str = NULL;
+	(*tmp)->str = new_str;
 }
 
 int check_first_char(int *i, t_token **tmp, int j)
@@ -99,26 +95,25 @@ int check_first_char(int *i, t_token **tmp, int j)
 
 void handle_one_dollar(int *i, t_token **tmp)
 {
-    int j;
-    char *value;
-    char *name;
+	int j;
+	char *value;
+	char *name;
 
-    if (!i || !tmp || !*tmp || !(*tmp)->str) {
-        return;
-    }
-    skip_till_dollar(i, (*tmp)->str);
-    j = *i + 1;
-    if (check_first_char(i, tmp, j)) {
-        return;
-    }
-    while (ft_isalnum((*tmp)->str[j]) || (*tmp)->str[j] == '_')
-        j++;
-    name = ft_substr((*tmp)->str, *i + 1, j - *i - 1);
-    value = get_value(name);
-    free(name);
-    if (value) {
-        change_str(tmp, i, j, value);
-    } else {
-        *i = j;
-    }
+	if (!tmp || !*tmp || !(*tmp)->str)
+		return;
+	skip_till_dollar(i, (*tmp)->str);
+	j = *i + 1;
+	if (check_first_char(i, tmp, j))
+		return;
+	while (ft_isalnum((*tmp)->str[j]) || (*tmp)->str[j] == '_')
+		j++;
+	name = ft_substr((*tmp)->str, *i + 1, j - *i - 1);
+	value = get_value(name);
+	free(name);
+	name = NULL;
+	change_str(tmp, i, j, value);
+	if (value)
+		*i += ft_strlen(value) - 1;
+	else
+		*i = j;
 }

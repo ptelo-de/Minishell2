@@ -40,56 +40,60 @@ void remove_single_quote(t_token **tmp)
 	free((*tmp)->str);
 	(*tmp)->str = new_str;
 }
-void remove_double_quotes(t_token **tmp) {
-    
+void remove_double_quotes(t_token **tmp) 
+{
+
 	char *new_str;
 	int i;
 	int j;
 
-    if (!(*tmp)->str || !(*tmp)->str[0])
-        return;
-    new_str = ft_calloc(1, sizeof(char) * (strlen((*tmp)->str) + 1));
-    if (!new_str)
-    {
-        return;
-    }
+	if (!(*tmp)->str || !(*tmp)->str[0])
+		return;
+	new_str = ft_calloc(1, sizeof(char) * (strlen((*tmp)->str) + 1));
+	if (!new_str)
+		return;
 	i = 0;
 	j = 0;
-    while ((*tmp)->str[i]) {
-        if ((*tmp)->str[i] != '"') {
-            new_str[j] = (*tmp)->str[i];
+	while ((*tmp)->str[i])
+	{
+		if ((*tmp)->str[i] != '"')
+		{
+			new_str[j] = (*tmp)->str[i];
 			j++;
-        }
-        i++;
-    }
-    free((*tmp)->str);
-    (*tmp)->str = new_str;
+		}
+		i++;
+	}
+	free((*tmp)->str);
+	(*tmp)->str = new_str;
 }
-void expander(void)
-{
-    t_token *tmp;
-    t_shell *shell;
-    int i;
 
-    shell = get_shell();
-    if (!shell || !shell->tokens) {
-        return;
-    }
-    tmp = shell->tokens;
-    while (tmp) {
-        if (tmp->type == WORD) {
-            i = 0;
-            if (tmp->str[0] != '\'') {
-                while (tmp->str[i] && has_dollar(tmp->str + i)) {
-                    handle_one_dollar(&i, &tmp);
-                }
+void expander(void) // falta fazer funçao para limpar nodes com strings vazias, que foram expandidas para null
+{
+	t_token *tmp;
+	t_shell *shell;
+	int i;
+
+	shell = get_shell();
+	if (!shell || !shell->tokens) {
+	return;
+	}
+	tmp = shell->tokens;
+	while (tmp)
+	{
+		if (tmp->type == WORD)
+		{
+			i = 0;
+			if (tmp->str[0] != '\'') // aaa'bb'aa neste caso não funciona
+			{
+				while (tmp->str[i] && has_dollar(tmp->str + i))
+					handle_one_dollar(&i, &tmp);
 				remove_double_quotes(&tmp);
-            }
+			}
 			else
 				remove_single_quote(&tmp);
-        }
-        tmp = tmp->next;
-    }
+		}
+		tmp = tmp->next;
+	}
 }
 
 /*
