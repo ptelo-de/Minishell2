@@ -1,39 +1,9 @@
 
 #include "parsing.h"
 
-char *get_value(char *name)
-{
-    t_shell *shell;
-    char **env;
-    size_t name_len;
 
-    if (!name || !(shell = get_shell()))
-    {
-        return NULL;
-    }
-    env = shell->env;
-    name_len = ft_strlen(name);
 
-    while (env && *env)
-	{
-        if (ft_strncmp(*env, name, name_len) == 0 && (*env)[name_len] == '=')
-		{
-            return (*env + name_len + 1);
-        }
-        env++;
-    }
-    return NULL;
-}
-
-void skip_till_dollar(int *i, char *s) {
-    if (!s || !i) {
-        return;
-    }
-    while (s[*i] && s[*i] != '$') {
-        (*i)++;
-    }
-}
-
+/*
 size_t safe_strlen(char *s)
 {
 	int i;
@@ -117,3 +87,69 @@ void handle_one_dollar(int *i, t_token **tmp)
 	else
 		*i = j;
 }
+// dor expander antigo
+void remove_single_quote(t_token **tmp)
+{
+	char *new_str;
+	int i;
+	int end;
+	int j;
+
+	if (!((*tmp)->str))
+		return;
+	end = ft_strlen((*tmp)->str) - 2;
+	new_str = ft_calloc(1, sizeof(char)* (end + 1));
+	if (!new_str)
+	{
+	    free_tokens();
+		return;
+	}
+	i = 1;
+	j = 0;
+	while (i <= end)
+	{
+		new_str[j++] = (*tmp)->str[i++];
+	}
+	free((*tmp)->str);
+	(*tmp)->str = new_str;
+}
+void remove_double_quotes(t_token **tmp) 
+{
+
+	char *new_str;
+	int i;
+	int j;
+
+	if (!(*tmp)->str || !(*tmp)->str[0])
+		return;
+	new_str = ft_calloc(1, sizeof(char) * (strlen((*tmp)->str)));
+	if (!new_str)
+		return;
+	i = 0;
+	j = 0;
+	while ((*tmp)->str[i])
+	{
+		if ((*tmp)->str[i] != '"')
+		{
+			new_str[j] = (*tmp)->str[i];
+			j++;
+		}
+		i++;
+	}
+	free((*tmp)->str);
+	(*tmp)->str = new_str;
+}
+
+int has_dollar(const char *str) {
+    if (!str) {
+        return 0;
+    }
+    while (*str) {
+        if (*str == '$') {
+            return 1;
+        }
+        str++;
+    }
+    return 0;
+}
+*/

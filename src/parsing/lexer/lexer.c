@@ -51,7 +51,7 @@ int quotes_check(void)
 	}
 	return (0);
 }
-void word_skip(int *i)
+void word_skip(int *i) // not tested fully
 {
 	t_shell *shell;
 	int j;
@@ -65,8 +65,17 @@ void word_skip(int *i)
 	&& shell->readline[*i] != '\n' \
 	&& shell->readline[*i] != '<' \
 	&& shell->readline[*i] != '>')
-		(*i)++;
+	{
+		if (shell->readline[*i] == '\'' || shell->readline[*i] == '\"')
+			quote_skip(i);
+		else
+		{
+			(*i)++;
+
+		}
+	}
 	add_token(j, *i - j, WORD);
+			//printf("in word_skip: %cfim\n", shell->readline[*i]);
 }
 void redir_skip(int *i)
 {
@@ -83,7 +92,7 @@ void redir_skip(int *i)
 	add_token(j, 1, REDIR);
 	(*i)++;
 }
-int lexer(void)
+int lexer(void) //a a"aa"
 {
     t_shell *shell;
     int i;
@@ -95,8 +104,9 @@ int lexer(void)
 		return (1);
     while(shell->readline[i])
     {
+		white_space_skip(&i);
 		if (shell->readline[i] == '|')
-			add_token(i++, 1, PIPE);     
+			add_token(i++, 1, PIPE);
 		else if (shell->readline[i] == '<' || shell->readline[i] == '>' )
 			redir_skip(&i);
 		else

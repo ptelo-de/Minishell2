@@ -1,133 +1,233 @@
 
 #include "parsing.h"
 
-
-int has_dollar(const char *str) {
-    if (!str) {
-        return 0;
-    }
-    while (*str) {
-        if (*str == '$') {
-            return 1;
-        }
-        str++;
-    }
-    return 0;
-}
-
-void remove_single_quote(t_token **tmp)
+char *get_value(char *name)
 {
-	char *new_str;
-	int i;
-	int end;
-	int j;
+    t_shell *shell;
+    t_list *tmp;
+    size_t name_len;
 
-	if (!((*tmp)->str))
-		return;
-	end = ft_strlen((*tmp)->str) - 2;
-	new_str = ft_calloc(1, sizeof(char)* (end + 1));
-	if (!new_str)
-	{
-	    free_tokens();
-		return;
-	}
-	i = 1;
-	j = 0;
-	while (i <= end)
-	{
-		new_str[j++] = (*tmp)->str[i++];
-	}
-	free((*tmp)->str);
-	(*tmp)->str = new_str;
-}
-void remove_double_quotes(t_token **tmp) 
-{
+	shell = get_shell();
+    if (!name || !(shell))
+    {
+        return NULL;
+    }
+    tmp = shell->env;
+    name_len = ft_strlen(name);
 
-	char *new_str;
-	int i;
-	int j;
-
-	if (!(*tmp)->str || !(*tmp)->str[0])
-		return;
-	new_str = ft_calloc(1, sizeof(char) * (strlen((*tmp)->str) + 1));
-	if (!new_str)
-		return;
-	i = 0;
-	j = 0;
-	while ((*tmp)->str[i])
+    while (tmp)
 	{
-		if ((*tmp)->str[i] != '"')
+        if (ft_strncmp(tmp->content, name, name_len) == 0 && ((char *)tmp->content)[name_len] == '=')
 		{
-			new_str[j] = (*tmp)->str[i];
-			j++;
-		}
-		i++;
-	}
-	free((*tmp)->str);
-	(*tmp)->str = new_str;
+            return ((char*)tmp->content + name_len + 1);
+        }
+        tmp = tmp->next;
+    }
+    return NULL;
 }
+
+void	process_dollar(int *len, char *src, char **update)
+{
+	int i;
+	char *aux;
+	char *auxx;
+
+	if (!ft_isalpha(src[1]) && src[1] != '_')
+	{
+		aux = *update;
+		*update= ft_strjoin(aux, "$");
+		if (aux)
+			free(aux);
+		(*len)++;
+		return;
+	}
+	else
+	{
+		i = 1;
+		while (ft_isalnum(src[i]) || src[i] == '_')
+			i++;
+		auxx = ft_substr(src, 1, i);
+		aux = *update;
+		*update = ft_strjoin(aux, get_value(auxx));
+		if (aux)
+			free(aux);
+		if (auxx)
+			free(auxx);
+		*len = *len + i + 1;
+	}
+}
+void expand_quote(int *i, char **update, char *src)
+{
+	char quote;
+	int len;
+	char *aux;
+	char *auxx;
+
+	quote = *src;
+	len = 0;
+	while (src[len])
+	{
+		if (quote == '\'' && len > 0 && src[len] == '\'')
+		{
+			auxx = ft_substr(src, *i + 1, len - 1);
+			aux = *update;
+			*update = ft_strjoin(aux, auxx);
+			if (aux)
+				free(aux);
+			if (auxx)
+				free(auxx);
+			break;
+		}
+		if (quote == '\"' &&  len > 0 && (src[len] == '\"' || src[len] == '$'))
+		{
+			if (quote == '\"' && src[len] == '$')
+				process_dollar( &len ,src + len, update);
+			else
+			{
+				auxx = ft_substr(src, *i + 1, len);
+				aux = *update;
+				*update = ft_strjoin(aux, auxx);
+				if (aux)
+					free(aux);
+				if (auxx)
+					free(auxx);
+				break;
+			}
+		}
+		len++;
+	}
+	*i += len;
+}
+
 
 void expander(void) // falta fazer funçao para limpar nodes com strings vazias, que foram expandidas para null
 {
 	t_token *tmp;
 	t_shell *shell;
 	int i;
+	char *update;
+	char *aux;
 
 	shell = get_shell();
-	if (!shell || !shell->tokens) {
-	return;
-	}
+	if (!shell || !shell->tokens)
+		return;
 	tmp = shell->tokens;
 	while (tmp)
 	{
 		if (tmp->type == WORD)
 		{
 			i = 0;
-			if (tmp->str[0] != '\'') // aaa'bb'aa neste caso não funciona
+			while (tmp->str[i])
 			{
-				while (tmp->str[i] && has_dollar(tmp->str + i))
-					handle_one_dollar(&i, &tmp);
-				remove_double_quotes(&tmp);
+				if (tmp->str[i] == '\'' || tmp->str[i] == '\"')
+				{
+					expand_quote(&i, &update, tmp->str + i);
+				}
+				else if (tmp->str[i] == '$')
+					process_dollar(&i, tmp->str + i, &update);
+				else
+				{
+					i++;
+					aux = update;
+					update = ft_strjoin(aux, &tmp->str[i]);
+					if (aux)
+						free(aux);
+				}
 			}
+			if (update)
+				tmp->str = update;
 			else
-				remove_single_quote(&tmp);
+				tmp->str = NULL;
 		}
 		tmp = tmp->next;
 	}
 }
 
-/*
-Regras nomes de variaveis: 
-[] primeiro char do nome a seguir ao dollar so pode ser um _ ou uma letra alphabetica
-[] o resto do nome pode ser _ letras alphabeticas ou digitos
 
-c1r8s12% bash
-ptelo-de@c1r8s12:~/Documents/minishell$ echo $.ola
-$.ola
-ptelo-de@c1r8s12:~/Documents/minishell$ echo $ola
 
-ptelo-de@c1r8s12:~/Documents/minishell$ echo $%ola
-$%ola
-ptelo-de@c1r8s12:~/Documents/minishell$ echo $5ola
-ola
-ptelo-de@c1r8s12:~/Documents/minishell$ 
+//			/*
+//			[] i = 0;
+//			[] [] while (s[i])
+//				[]	if (s[i] == '\'' || s[i] == '\"')
+//					[] Encontro a primeira single quote e, se não tiver dentro de uma double quote, tiro a '
+//					[] Salto até à segunda single quote e, se não tiver dentro de uma double quote, tiro a '
+//					[] Encontrei a primeira double quote e, se não tiver dentro de uma single quote quote, tiro a "
+//						[] se encontrar um $, guarda o name a seguir até char fora das regras e expande
+//					[] Salto até à segunda double quote e, se não tiver dentro de uma single quote, tiro a "
+//			[] else
+//				[] if (s[i] == '=')
+//					[] pegar o que estava antes ate idenaçao ou aspa
+//					[] guardar num buffer, tudo desde o inicio passando pelo = e ate um espço ou aspa
+//					[] ft_list_add_back
+//					[) andar essas casas todas na string original
+//				[] else if (s[i] == '$')
+//					[] char *name_var
+//					[] name_var = guarda o name a seguir até char fora das regra
+//					[] if (!name)
+//						não tira dollar sign
+//					[] else
+//						[] expand name, includes removing name and dollar attatched
+//			 */
 
-nem $$ nem o ~ nem o $5, mas por exemplo $0 tem de expandir 
----------------------------------------------------------------------------------------------------------------------------
 
-pilar@pilar-ThinkPad:~/Documents/minishell$ echo "$USER"
-pilar
-pilar@pilar-ThinkPad:~/Documents/minishell$ echo '"$USER"'
-"$USER"
-pilar@pilar-ThinkPad:~/Documents/minishell$ echo "'$USER'"
-'pilar'
-pilar@pilar-ThinkPad:~/Documents/minishell$ echo '$USER'
-$USER
-pilar@pilar-ThinkPad:~/Documents/minishell$ 
---------------------------------------------------------------------------------------------------------------------------------
-ptelo-de@c1r1s12:~/Documents/minishell$ $suppor
-ptelo-de@c1r1s12:~/Documents/minishell$ $support
-HELLO: command not found
-ptelo-de@c1r1s12:~/Documents/minishell$ echo "$support"
-HELLO          WORLD
- */
+
+//			/*
+//			[] i = 0;
+//			[] [] while (s[i])
+//				[]	if (s[i] == '\'' || s[i] == '\"')
+//					[] Encontro a primeira single quote e, se não tiver dentro de uma double quote, tiro a '
+//					[] Salto até à segunda single quote e, se não tiver dentro de uma double quote, tiro a '
+//					[] Encontrei a primeira double quote e, se não tiver dentro de uma single quote quote, tiro a "
+//						[] se encontrar um $, guarda o name a seguir até char fora das regras e expande
+//					[] Salto até à segunda double quote e, se não tiver dentro de uma single quote, tiro a "
+//			[] else
+//				[] if (s[i] == '=')
+//					[] pegar o que estava antes ate idenaçao ou aspa
+//					[] guardar num buffer, tudo desde o inicio passando pelo = e ate um espço ou aspa
+//					[] ft_list_add_back
+//					[) andar essas casas todas na string original
+//				[] else if (s[i] == '$')
+//					[] char *name_var
+//					[] name_var = guarda o name a seguir até char fora das regra
+//					[] if (!name)
+//						não tira dollar sign
+//					[] else
+//						[] expand name, includes removing name and dollar attatched
+//			 */
+
+
+///*
+//Regras nomes de variaveis: 
+//[] primeiro char do nome a seguir ao dollar so pode ser um _ ou uma letra alphabetica
+//[] o resto do nome pode ser _ letras alphabeticas ou digitos
+
+//c1r8s12% bash
+//ptelo-de@c1r8s12:~/Documents/minishell$ echo $.ola
+//$.ola
+//ptelo-de@c1r8s12:~/Documents/minishell$ echo $ola
+
+//ptelo-de@c1r8s12:~/Documents/minishell$ echo $%ola
+//$%ola
+//ptelo-de@c1r8s12:~/Documents/minishell$ echo $5ola
+//ola
+//ptelo-de@c1r8s12:~/Documents/minishell$ 
+
+//nem $$ nem o ~ nem o $5, mas por exemplo $0 tem de expandir 
+//---------------------------------------------------------------------------------------------------------------------------
+
+//pilar@pilar-ThinkPad:~/Documents/minishell$ echo "$USER"
+//pilar
+//pilar@pilar-ThinkPad:~/Documents/minishell$ echo '"$USER"'
+//"$USER"
+//pilar@pilar-ThinkPad:~/Documents/minishell$ echo "'$USER'"
+//'pilar'
+//pilar@pilar-ThinkPad:~/Documents/minishell$ echo '$USER'
+//$USER
+//pilar@pilar-ThinkPad:~/Documents/minishell$ 
+//--------------------------------------------------------------------------------------------------------------------------------
+//ptelo-de@c1r1s12:~/Documents/minishell$ $suppor
+//ptelo-de@c1r1s12:~/Documents/minishell$ $support
+//HELLO: command not found
+//ptelo-de@c1r1s12:~/Documents/minishell$ echo "$support"
+//HELLO          WORLD
+// */
