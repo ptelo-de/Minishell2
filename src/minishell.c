@@ -21,8 +21,8 @@ int main(int argc, char *argv[], char *envp[])
     while(1)
     {
         shell->readline = readline("minishell>"); //aprender a defender leaks so readline
-        if(!shell->readline)//ctrl D
-            m_exit(shell, NULL); // need exit status
+//      []  if(!shell->readline)//ctrl D
+//      []    	m_exit(shell, NULL); // need exit status //must free env and export
         add_history(shell->readline); //not put white spaces or repetitions
         if (lexer() == 1 || syntax_check() == 1)// need t differ memory error from user input error
         {

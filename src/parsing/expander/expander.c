@@ -1,6 +1,43 @@
 
 #include "parsing.h"
 
+size_t safe_strlen(const char *s)
+{
+	int i;
+
+	if (!s) 
+		return (0);
+	i = 0;
+	while (s[i])
+		i++;
+	return (i);	
+}
+
+char	*ms_strjoin(char const *s1, char const *s2)
+{
+	char	*join;
+	size_t	i;
+	size_t	j;
+
+	join = malloc((safe_strlen(s1) + safe_strlen(s2) + 1) * (sizeof(char)));
+	if (join == 0)
+		return (0);
+	i = 0;
+	while (s1 && s1[i])
+	{
+		join[i] = s1[i];
+		i++;
+	}
+	j = 0;
+	while (s2 && s2[j])
+	{
+		join[i + j] = s2[j];
+		j++;
+	}
+	join[i + j] = 0;
+	return (join);
+}
+
 char *get_value(char *name)
 {
     t_shell *shell;
@@ -8,7 +45,7 @@ char *get_value(char *name)
     size_t name_len;
 
 	shell = get_shell();
-    if (!name || !(shell))
+    if (!name || !(shell) || !(shell->env))
     {
         return NULL;
     }
@@ -35,7 +72,7 @@ void	process_dollar(int *len, char *src, char **update)
 	if (!ft_isalpha(src[1]) && src[1] != '_')
 	{
 		aux = *update;
-		*update= ft_strjoin(aux, "$");
+		*update= ms_strjoin(aux, "$");
 		if (aux)
 			free(aux);
 		(*len)++;
@@ -48,7 +85,7 @@ void	process_dollar(int *len, char *src, char **update)
 			i++;
 		auxx = ft_substr(src, 1, i);
 		aux = *update;
-		*update = ft_strjoin(aux, get_value(auxx));
+		*update = ms_strjoin(aux, get_value(auxx));
 		if (aux)
 			free(aux);
 		if (auxx)
@@ -71,7 +108,7 @@ void expand_quote(int *i, char **update, char *src)
 		{
 			auxx = ft_substr(src, *i + 1, len - 1);
 			aux = *update;
-			*update = ft_strjoin(aux, auxx);
+			*update = ms_strjoin(aux, auxx);
 			if (aux)
 				free(aux);
 			if (auxx)
@@ -86,7 +123,7 @@ void expand_quote(int *i, char **update, char *src)
 			{
 				auxx = ft_substr(src, *i + 1, len);
 				aux = *update;
-				*update = ft_strjoin(aux, auxx);
+				*update = ms_strjoin(aux, auxx);
 				if (aux)
 					free(aux);
 				if (auxx)
@@ -112,6 +149,7 @@ void expander(void) // falta fazer funçao para limpar nodes com strings vazias,
 	if (!shell || !shell->tokens)
 		return;
 	tmp = shell->tokens;
+	update = NULL;
 	while (tmp)
 	{
 		if (tmp->type == WORD)
@@ -129,7 +167,7 @@ void expander(void) // falta fazer funçao para limpar nodes com strings vazias,
 				{
 					i++;
 					aux = update;
-					update = ft_strjoin(aux, &tmp->str[i]);
+					update = ms_strjoin(aux, &tmp->str[i]);
 					if (aux)
 						free(aux);
 				}
@@ -142,92 +180,3 @@ void expander(void) // falta fazer funçao para limpar nodes com strings vazias,
 		tmp = tmp->next;
 	}
 }
-
-
-
-//			/*
-//			[] i = 0;
-//			[] [] while (s[i])
-//				[]	if (s[i] == '\'' || s[i] == '\"')
-//					[] Encontro a primeira single quote e, se não tiver dentro de uma double quote, tiro a '
-//					[] Salto até à segunda single quote e, se não tiver dentro de uma double quote, tiro a '
-//					[] Encontrei a primeira double quote e, se não tiver dentro de uma single quote quote, tiro a "
-//						[] se encontrar um $, guarda o name a seguir até char fora das regras e expande
-//					[] Salto até à segunda double quote e, se não tiver dentro de uma single quote, tiro a "
-//			[] else
-//				[] if (s[i] == '=')
-//					[] pegar o que estava antes ate idenaçao ou aspa
-//					[] guardar num buffer, tudo desde o inicio passando pelo = e ate um espço ou aspa
-//					[] ft_list_add_back
-//					[) andar essas casas todas na string original
-//				[] else if (s[i] == '$')
-//					[] char *name_var
-//					[] name_var = guarda o name a seguir até char fora das regra
-//					[] if (!name)
-//						não tira dollar sign
-//					[] else
-//						[] expand name, includes removing name and dollar attatched
-//			 */
-
-
-
-//			/*
-//			[] i = 0;
-//			[] [] while (s[i])
-//				[]	if (s[i] == '\'' || s[i] == '\"')
-//					[] Encontro a primeira single quote e, se não tiver dentro de uma double quote, tiro a '
-//					[] Salto até à segunda single quote e, se não tiver dentro de uma double quote, tiro a '
-//					[] Encontrei a primeira double quote e, se não tiver dentro de uma single quote quote, tiro a "
-//						[] se encontrar um $, guarda o name a seguir até char fora das regras e expande
-//					[] Salto até à segunda double quote e, se não tiver dentro de uma single quote, tiro a "
-//			[] else
-//				[] if (s[i] == '=')
-//					[] pegar o que estava antes ate idenaçao ou aspa
-//					[] guardar num buffer, tudo desde o inicio passando pelo = e ate um espço ou aspa
-//					[] ft_list_add_back
-//					[) andar essas casas todas na string original
-//				[] else if (s[i] == '$')
-//					[] char *name_var
-//					[] name_var = guarda o name a seguir até char fora das regra
-//					[] if (!name)
-//						não tira dollar sign
-//					[] else
-//						[] expand name, includes removing name and dollar attatched
-//			 */
-
-
-///*
-//Regras nomes de variaveis: 
-//[] primeiro char do nome a seguir ao dollar so pode ser um _ ou uma letra alphabetica
-//[] o resto do nome pode ser _ letras alphabeticas ou digitos
-
-//c1r8s12% bash
-//ptelo-de@c1r8s12:~/Documents/minishell$ echo $.ola
-//$.ola
-//ptelo-de@c1r8s12:~/Documents/minishell$ echo $ola
-
-//ptelo-de@c1r8s12:~/Documents/minishell$ echo $%ola
-//$%ola
-//ptelo-de@c1r8s12:~/Documents/minishell$ echo $5ola
-//ola
-//ptelo-de@c1r8s12:~/Documents/minishell$ 
-
-//nem $$ nem o ~ nem o $5, mas por exemplo $0 tem de expandir 
-//---------------------------------------------------------------------------------------------------------------------------
-
-//pilar@pilar-ThinkPad:~/Documents/minishell$ echo "$USER"
-//pilar
-//pilar@pilar-ThinkPad:~/Documents/minishell$ echo '"$USER"'
-//"$USER"
-//pilar@pilar-ThinkPad:~/Documents/minishell$ echo "'$USER'"
-//'pilar'
-//pilar@pilar-ThinkPad:~/Documents/minishell$ echo '$USER'
-//$USER
-//pilar@pilar-ThinkPad:~/Documents/minishell$ 
-//--------------------------------------------------------------------------------------------------------------------------------
-//ptelo-de@c1r1s12:~/Documents/minishell$ $suppor
-//ptelo-de@c1r1s12:~/Documents/minishell$ $support
-//HELLO: command not found
-//ptelo-de@c1r1s12:~/Documents/minishell$ echo "$support"
-//HELLO          WORLD
-// */
