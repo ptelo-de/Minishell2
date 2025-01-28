@@ -32,12 +32,13 @@ int main(int argc, char *argv[], char *envp[])
         {
 
 			printf("\nLEXER\n\n");
-			print_tokens();			expander();
+			print_tokens();			
+            expander();
 			printf("\nEXPANSION\n\n");
 			print_tokens();
-			//(void)init_cmd();
-			//printf("\nCOMANDS ARRAY\n\n");
-			//print_cmd_array();
+			(void)init_cmd();
+			printf("\nCOMANDS ARRAY\n\n");
+			print_cmd_array();
         }
         free_atributes();
         free(shell->readline);

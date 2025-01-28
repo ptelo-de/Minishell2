@@ -74,7 +74,8 @@ void word_skip(int *i) // not tested fully
 
 		}
 	}
-	add_token(j, *i - j, WORD);
+	if (*i -j)
+		add_token(j, *i - j, WORD);
 			//printf("in word_skip: %cfim\n", shell->readline[*i]);
 }
 void redir_skip(int *i)
