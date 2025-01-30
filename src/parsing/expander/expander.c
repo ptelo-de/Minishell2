@@ -53,7 +53,7 @@ void expand_quote(int *i, char **update, char *src)
 			{
 				process_dollar(&len, src + len, update);
 			}
-			else if (src[len] != '\"')
+			if (src[len] != '\"')
 			{
 
 				update_str(update, src, len, 1);

@@ -67,8 +67,7 @@ typedef struct s_shell
 	t_cmd   **cmd;
 
 	t_list *env;
-	t_list  *export;
-	t_list	*local;
+	t_list  *exp;
 
 	//int pipe_count;
 	//int exit_status; // ? para eu poder expandir $?
