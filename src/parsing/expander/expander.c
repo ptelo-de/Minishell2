@@ -2,11 +2,6 @@
 #include "parsing.h"
 //$a $b "aaaaaaaaaaaaaaa $c" 'aaaaaaaaa""'
 
-void clear_empty_token(void);
-char	*ms_strjoin(char const *s1, char const *s2);
-void update_str( char **update, char *src, int start, int len);
-void	process_dollar(int *len, char *src, char **update);
-
 char *get_value(char *name)
 {
     t_shell *shell;
@@ -32,42 +27,6 @@ char *get_value(char *name)
     return NULL;
 }
 
-void expand_quote(int *i, char **update, char *src)
-{
-	char quote;
-	int len;
-
-	quote = *src;
-	len = 1;
-	while (src && src[len])
-	{
-		if (quote == '\'')
-		{
-			if (src[len] == '\'')
-				break;
-			update_str(update, src, len, 1);
-		}
-		if (quote == '\"')
-		{
-			if (src[len] == '$')
-			{
-				process_dollar(&len, src + len, update);
-			}
-			if (src[len] != '\"')
-			{
-
-				update_str(update, src, len, 1);
-			}
-			else if (src[len] == '\"')
-			{
-
-				break;
-			}
-		}
-		len++;
-	}
-	*i += len;
-}
 
 void	process_dollar(int *len, char *src, char **update)
 {
@@ -101,12 +60,67 @@ void	process_dollar(int *len, char *src, char **update)
 		*len = *len + i + 1;
 	}
 }
+void expand_quote(int *i, char **update, char *src)
+{
+	char quote;
+	int len;
+
+	quote = *src;
+	len = 1;
+	while (src && src[len])
+	{
+		if (quote == '\'')
+		{
+			if (src[len] == '\'')
+				break;
+			update_str(update, src, len, 1);
+		}
+		if (quote == '\"')
+		{
+			if (src[len] == '$')
+				process_dollar(&len, src + len, update);
+			if (src[len] != '\"')
+				update_str(update, src, len, 1);
+			else if (src[len] == '\"')
+				break;
+		}
+		len++;
+	}
+	*i += len;
+}
+void	expand_node(t_token **tmp)
+{
+
+	int i;
+	char *update;
+
+	update = NULL;
+	i = 0;
+	while ((*tmp)->str && (*tmp)->str[i])
+	{
+		if ((*tmp)->str[i] == '\'' || (*tmp)->str[i] == '\"')
+		{
+			expand_quote(&i, &update, (*tmp)->str + i++);
+		}
+		else if ((*tmp)->str[i] == '$')
+			process_dollar(&i, (*tmp)->str + i, &update);
+		else{
+
+			update_str(&update, (*tmp)->str, i++, 1);
+		}
+	}
+	if ((*tmp)->str)
+		free((*tmp)->str);
+	if (update)
+		(*tmp)->str = update;
+	else
+		(*tmp)->str = NULL;
+
+}
 void expander(void)
 {
 	t_token *tmp;
 	t_shell *shell;
-	int i;
-	char *update;
 
 	shell = get_shell();
 	if (!shell || !shell->tokens)
@@ -114,30 +128,9 @@ void expander(void)
 	tmp = shell->tokens;
 	while (tmp)
 	{
-		update = NULL;
 		if (tmp->type == WORD)
 		{
-			i = 0;
-			while (tmp->str && tmp->str[i])
-			{
-				if (tmp->str[i] == '\'' || tmp->str[i] == '\"')
-					expand_quote(&i, &update, tmp->str + i);
-				else if (tmp->str[i] == '$')
-				{
-					process_dollar(&i, tmp->str + i, &update);
-				}
-				else
-				{
-					update_str(&update, tmp->str, i, 1);
-					i++;
-				}
-			}
-			if (tmp->str)
-				free(tmp->str);
-			if (update)
-				tmp->str = update;
-			else
-				tmp->str = NULL;
+			expand_node(&tmp);
 		}
 		tmp = tmp->next;
 	}
