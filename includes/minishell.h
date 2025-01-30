@@ -70,7 +70,7 @@ typedef struct s_shell
 	t_list  *exp;
 
 	//int pipe_count;
-	//int exit_status; // ? para eu poder expandir $?
+	int exit_status; // ? para eu poder expandir $?
 
 	//int fd_in;
 	//int fd_out;

@@ -27,6 +27,7 @@ int syntax_check(void);
 void clear_empty_token(void);
 char	*ms_strjoin(char const *s1, char const *s2);
 void update_str( char **update, char *src, int start, int len);
+size_t safe_strlen(const char *s);
 //expantion.c
 
 void    expander(void);

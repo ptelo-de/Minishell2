@@ -26,7 +26,17 @@ char *get_value(char *name)
     }
     return NULL;
 }
+void exit_status_expander( char **update)
+{
+	t_shell	*shell;
+	char *aux;
 
+	shell = get_shell();
+	aux = ft_itoa(shell->exit_status);
+	update_str(update, aux, 0, safe_strlen(aux));
+	if (aux)
+		free(aux);
+}
 
 void	process_dollar(int *len, char *src, char **update)
 {
@@ -34,13 +44,18 @@ void	process_dollar(int *len, char *src, char **update)
 	char *aux;
 	char *auxx;
 
-	if (!ft_isalpha(src[1]) && src[1] != '_')
+	if (!ft_isalpha(src[1]) && src[1] != '_' && src[1] != '?')
 	{
 		update_str(update, src, 0, 2);
 		if (src[1] == '\0')
 			(*len)++;
 		else
 			*len += 2;
+	}
+	else if (src[1] == '?')
+	{
+		exit_status_expander(update);
+		*len +=2;
 	}
 	else
 	{
