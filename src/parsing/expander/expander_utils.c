@@ -7,7 +7,7 @@ void update_str( char **update, char *src, int start, int len)
 	char *auxx;
 	
 	auxx = ft_substr(src, start, len);
-	printf("src: %s\nauxx; %s\n, start: %d\nlen %d\n src[%d]=%c\n", src, auxx, start, len, start - 1, src[start]);
+	//printf("src: %s\nauxx; %s\n, start: %d\nlen %d\n src[%d]=%c\n", src, auxx, start, len, start, src[start]);
 	aux = ft_strdup(*update);
 	if (*update)
 		free(*update);
