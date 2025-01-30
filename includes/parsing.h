@@ -22,7 +22,13 @@ void free_atributes(void);
 //syntax_error.c
 int syntax_check(void);
 
+
+//expansion_utils.c
+void clear_empty_token(void);
+char	*ms_strjoin(char const *s1, char const *s2);
+void update_str( char **update, char *src, int start, int len);
 //expantion.c
+
 void    expander(void);
 int has_dollar(const char *str);
 void remove_double_quotes(t_token **tmp);

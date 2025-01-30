@@ -4,6 +4,8 @@
 
 void clear_empty_token(void);
 char	*ms_strjoin(char const *s1, char const *s2);
+void update_str( char **update, char *src, int start, int len);
+
 char *get_value(char *name)
 {
     t_shell *shell;
@@ -32,20 +34,10 @@ char *get_value(char *name)
 void	process_dollar(int *len, char *src, char **update)
 {
 	int i;
-	char *aux;
-	char *auxx;
 
 	if (!ft_isalpha(src[1]) && src[1] != '_')
 	{
-		auxx = ft_substr(src, 0, 2);
-		aux = ft_strdup(*update);
-		if (*update)
-			free(*update);
-		*update= ms_strjoin(aux, auxx);
-		if (aux)
-			free(aux);
-		if (auxx)
-			free(auxx);
+		update_str(update, src, 0, 1);
 		*len += 2;
 		return;
 	}
@@ -55,15 +47,7 @@ void	process_dollar(int *len, char *src, char **update)
 		while (ft_isalnum(src[i]) || src[i] == '_')
 			i++;
 		i--;
-		auxx = ft_substr(src, 1, i);
-		aux = ft_strdup(*update);
-		if (*update)
-			free(*update);
-		*update = ms_strjoin(aux, get_value(auxx));
-		if (aux)
-			free(aux);
-		if (auxx)
-			free(auxx);
+		update_str(update, src, 1, i);
 		*len = *len + i;
 	}
 }
@@ -71,8 +55,6 @@ void expand_quote(int *i, char **update, char *src)
 {
 	char quote;
 	int len;
-	char *aux;
-	char *auxx;
 
 	quote = *src;
 	len = 0;
@@ -80,15 +62,8 @@ void expand_quote(int *i, char **update, char *src)
 	{
 		if (quote == '\'' && len > 0 && src[len] == '\'')
 		{
-			auxx = ft_substr(src, *i + 1, len - 1);
-			aux = ft_strdup(*update);
-			if (*update)
-				free(*update);
-			*update = ms_strjoin(aux, auxx);
-			if (aux)
-				free(aux);
-			if (auxx)
-				free(auxx);
+			update_str(update, src, 1, len - 1);
+			len++;
 			break;
 		}
 		if (quote == '\"' &&  len > 0 && (src[len] == '\"' || src[len] == '$'))
@@ -97,15 +72,8 @@ void expand_quote(int *i, char **update, char *src)
 				process_dollar( &len ,src + len, update);
 			else
 			{
-				auxx = ft_substr(src, *i + 1, len - 1);
-				aux = ft_strdup(*update);
-				if (*update)
-					free(*update);
-				*update = ms_strjoin(aux, auxx);
-				if (aux)
-					free(aux);
-				if (auxx)
-					free(auxx);
+				update_str(update, src, 1, len - 1);
+				len++;
 				break;
 			}
 		}
@@ -120,8 +88,6 @@ void expander(void)
 	t_shell *shell;
 	int i;
 	char *update;
-	char *aux;
-	char *auxx;
 
 	shell = get_shell();
 	if (!shell || !shell->tokens)
@@ -141,17 +107,18 @@ void expander(void)
 					process_dollar(&i, tmp->str + i, &update);
 				else
 				{
-					aux = ft_strdup(update);
-					if (update)
-						free(update);
-					auxx = ft_substr(tmp->str, i, 1);
-					update = ms_strjoin(aux, auxx);
-					if (aux)
-						free(aux);
-					if (auxx)
-						free(auxx);
-					aux= NULL;
-					auxx = NULL;
+					//update_str(&update, tmp->str, i, 1);
+					//aux = ft_strdup(update);
+					//if (update)
+					//	free(update);
+					//auxx = ft_substr(tmp->str, i, 1);
+					//update = ms_strjoin(aux, auxx);
+					//if (aux)
+					//	free(aux);
+					//if (auxx)
+					//	free(auxx);
+					//aux= NULL;
+					//auxx = NULL;
 					i++;
 				}
 			}

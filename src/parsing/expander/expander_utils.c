@@ -1,5 +1,24 @@
 
 #include "parsing.h"
+
+void update_str( char **update, char *src, int start, int len)
+{
+	char *aux;
+	char *auxx;
+	
+	auxx = ft_substr(src, start, len);
+	printf("src: %s\nauxx; %s\n, start: %d\nlen %d\n src[%d]=%c\n", src, auxx, start, len, start - 1, src[start]);
+	aux = ft_strdup(*update);
+	if (*update)
+		free(*update);
+	*update = ms_strjoin(aux, auxx);
+	//printf("*update; %s\n", *update);
+	if (aux)
+		free(aux);
+	if (auxx)
+		free(auxx);
+}
+
 size_t safe_strlen(const char *s)
 {
 	int i;
@@ -12,7 +31,7 @@ size_t safe_strlen(const char *s)
 	return (i);	
 }
 
-char	*ms_strjoin(char *s1, char *s2)
+char	*ms_strjoin(const char *s1, const char *s2)
 {
 	char	*join;
 	size_t	i;
@@ -47,7 +66,7 @@ void clear_empty_token(void)
 	while (tmp)
 	{
 		next = tmp->next;
-		printf("tmp str:%s\n", tmp->str);
+		//printf("tmp str:%s\n", tmp->str);
 		if (!tmp->str || !tmp->str[0])
 		{
 			if (tmp->prev)

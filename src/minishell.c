@@ -45,7 +45,7 @@ int main(int argc, char *argv[], char *envp[])
         shell->readline = NULL;
     }
 }
-// cat explain << a << b < c > 1 >> 2 | ls < Doc1 << Desktop |  echo 123
+// cat explain << a << b < c > 1 >> 2 | ls < Doc1 << Desktop |  "ech"'o' 123
 
 
 
