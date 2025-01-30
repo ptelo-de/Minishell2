@@ -1,5 +1,5 @@
 
-#include "builtins.h"
+/*#include "builtins.h"
 
 char **array_dup(char *env[])
 {
@@ -75,7 +75,7 @@ int m_env(t_shell *shell, char **args) //env está dentro do minishell e aceder 
 
 // CRIAR O NOSSO PROPRIO FREE
     //FREE recebe *s
-/*     if pointer
+     if pointer
             free(pointer);
             pointer = '\0'
         return ;

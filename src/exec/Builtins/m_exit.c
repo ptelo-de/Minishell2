@@ -2,7 +2,7 @@
 #include "builtins.h"
 #include <limits.h>
 
-int m_exit(t_shell *shell, char **args)
+/*int m_exit(t_shell *shell, char **args)
 {
     int i = 0;
     int exit_code = 0;
@@ -45,4 +45,4 @@ int m_exit(t_shell *shell, char **args)
     free_array(args);
     exit((unsigned char)exit_code);
     return (0);
-}
+}*/

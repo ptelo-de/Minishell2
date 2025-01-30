@@ -1,5 +1,5 @@
 
-#include "builtins.h"
+/*#include "builtins.h"
 int	ft_strcmp(const char *str1, const char *str2)
 {
 	size_t	i;
@@ -35,3 +35,4 @@ int (*btin_arr(char *command))(t_shell *shell, char **args)
     }
     return (NULL);
 }
+*/

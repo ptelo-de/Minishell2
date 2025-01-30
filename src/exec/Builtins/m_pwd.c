@@ -1,5 +1,5 @@
 
-#include "builtins.h"
+/*#include "builtins.h"
 
 int m_pwd(t_shell *shell, char **args)
 {
@@ -13,4 +13,4 @@ int m_pwd(t_shell *shell, char **args)
     ft_putendl_fd(tmp, 1); // Print the current working directory
     free(tmp);
     return (EXIT_SUCCESS);
-}
+}*/

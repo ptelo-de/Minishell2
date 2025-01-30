@@ -1,5 +1,5 @@
 
-#include "builtins.h"
+/*#include "builtins.h"
 
 void print_export_list(char **export_list)
 {
@@ -118,4 +118,4 @@ int m_export(t_shell *shell, char **args)
         i++;
     }
     return (EXIT_SUCCESS);
-}
+}*/

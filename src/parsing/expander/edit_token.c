@@ -4,7 +4,7 @@
 char *get_value(char *name)
 {
     t_shell *shell;
-    char **env;
+    t_list *env;
     size_t name_len;
 
     if (!name || !(shell = get_shell()))

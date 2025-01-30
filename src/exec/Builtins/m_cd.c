@@ -1,5 +1,5 @@
 
-#include "builtins.h"
+/*#include "builtins.h"
 
 int update_env_var(t_shell *shell, const char *key, const char *value)
 {
@@ -65,4 +65,4 @@ int m_cd(t_shell *shell, char **args)
     update_env_var(shell, "OLDPWD", oldpwd);
     free(oldpwd);
     return (0);
-}
+}*/

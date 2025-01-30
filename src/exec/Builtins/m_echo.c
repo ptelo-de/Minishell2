@@ -1,5 +1,5 @@
 
-#include "builtins.h"
+/*#include "builtins.h"
 
 int m_echo (t_shell *shell, char **args)
 {
@@ -32,3 +32,4 @@ int m_echo (t_shell *shell, char **args)
         ft_putstr_fd("\n", 1);
     return(EXIT_SUCCESS);
 }
+*/

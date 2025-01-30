@@ -61,13 +61,13 @@ typedef struct s_cmd
 
 typedef struct s_shell
 {
-    char *readline;
+    char        *readline;
 
-    t_token *tokens;
-    t_cmd   **cmd;
+    t_token     *tokens;
+    t_cmd       **cmd;
 
-    char **env;
-    char **export_list;
+    t_list      *env;
+    char        **exp;
 
     //int pipe_count;
     //int exit_status; // ? isto é para cada comando

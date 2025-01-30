@@ -2,20 +2,21 @@
 #include "minishell.h"
 #include "parsing.h"
 #include "builtins.h"
+#include "executer.h"
 
 /* MAIN FOR TESTING AST_BUILDING*/
-int main(int argc, char *argv[], char *envp[])
+/*int main(int argc, char *argv[], char *envp[])
 {
     t_shell *shell;
 
     (void)argv;
     shell = get_shell();
     check_main_args(argc);
-    if (!envp || !envp[0])
-        shell->env = env_minus_i();
-    else
-        shell->env = array_dup(envp);
-    shell->export_list = array_dup(shell->env); //este export ta mal
+    //if (!envp || !envp[0])
+    //    shell->env = env_minus_i();
+    //else
+        shell->env = get_env(envp);
+    shell->exp = get_export(envp);
     while(1)
     {
         shell->readline = readline("minishell>"); //aprender a defender leaks so readline
@@ -28,20 +29,24 @@ int main(int argc, char *argv[], char *envp[])
         }
         else
         {
-			printf("\nLEXER\n\n");
-			print_tokens();
+			//printf("\nLEXER\n\n");
+			//print_tokens();
 			expander();
-			printf("\nEXPANSION\n\n");
-			print_tokens();
+			//printf("\nEXPANSION\n\n");
+			//print_tokens();
 			(void)init_cmd();
-			printf("\nCOMANDS ARRAY\n\n");
-			print_cmd_array();
+			//printf("\nCOMANDS ARRAY\n\n");
+			//print_cmd_array();
+            //printf("\n\n");
+            executer();
         }
         free_atributes();
         free(shell->readline);
         shell->readline = NULL;
     }
-}
+    //free_arr(shell->env);
+    free_arr(shell->exp);
+}*/
 // cat explain << a << b < c > 1 >> 2 | ls < Doc1 << Desktop |  echo 123
 // // *mind the difference between char *argv[] (convention) and char **argv
 // int main(int argc, char *argv[], char *envp[])

@@ -1,5 +1,5 @@
 
-#include "builtins.h"
+/*#include "builtins.h"
 
 char **remove_var(char **list, const char *var)
 {
@@ -57,4 +57,4 @@ int m_unset(t_shell *shell, char **args)
 //==33386==    by 0x109D03: remove_var (m_unset.c:11)
 //==33386==    by 0x109E9A: m_unset (m_unset.c:41)
 //==33386==    by 0x10B2C5: main (main_exec.c:44)
-//==33386==
+//==33386==*/
