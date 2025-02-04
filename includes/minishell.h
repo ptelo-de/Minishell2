@@ -15,7 +15,6 @@
 
 typedef enum s_type{
     
-	NO_REDIR = -1, //builtins
     PIPE,
     REDIR,
     WORD,
@@ -53,6 +52,7 @@ typedef struct s_cmd
 
 	char			*path;
 	char			**arg;
+    int             n_arg;
 
 	t_redir			**red_out;
 	t_redir			**red_in;
@@ -77,34 +77,6 @@ typedef struct s_shell
 
 
 }t_shell;
-
-//executer
-typedef enum s_symbol
-{
-	NO_SYMBOL = -1,
-	S_PIPE,
-}t_symbol;
-
-typedef struct s_s_cmd
-{
-	int		arg_nbr;
-	char	**arg_arr;
-}t_s_cmd;
-
-typedef struct s_cmd_final
-{
-    t_s_cmd	*simple_cmd; //cat, ls, etc
-    int	(*btin_arr)(t_shell *shell, char **args); //builtins
-    t_type in_type; // < <<
-    //char *infile; //cat > file name
-    int infile_fd; //fd[] open
-    //int here_doc_fd; //<< eof ??
-    t_type out_type; // > >>
-
-    char *outfile;
-	//int	outfile_fd;
-    struct s_cmd_final *next; //proximo comando depois do |
-}t_cmd_final;
 
 
 //void	ft_putendl_fd(char *s, int fd);

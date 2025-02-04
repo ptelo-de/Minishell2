@@ -17,7 +17,6 @@ t_redir **get_red(t_token	*token, int	in_flag)
 			redir_num++;
 		tmp = tmp->next;
 	}
-//	printf("redir _num: %d\n", redir_num);
 	red = ft_calloc(sizeof(t_redir *), redir_num + 1);
 	if (!red)
 		return ( NULL);
@@ -35,17 +34,11 @@ t_redir **get_red(t_token	*token, int	in_flag)
 	{
 		if (in_flag && tmp->type == REDIR && ft_strncmp(tmp->str, "<", 1) == 0)
 		{
-			//printf("(1get red: antes da segfault\n"); 
-			red[i]->str = tmp->next->str; //need seg fault protection
-			//printf("1red file: %s\n", red[i]->str);
+			red[i]->str = tmp->next->str; //need seg fault protection?
 			if (ft_strlen(tmp->str) == 2)
-			{
-				//printf("Estou no if ft_strlen\n");
 				red[i++]->type = HERE_DOC;
-			}
 			else
 				red[i++]->type = INFILE;
-			//printf("(2get red: antes da segfault\n"); 
 		}
 		if (!in_flag && tmp->type == REDIR && ft_strncmp(tmp->str, ">", 1) == 0)
 		{
@@ -58,23 +51,13 @@ t_redir **get_red(t_token	*token, int	in_flag)
 		tmp = tmp->next;
 	}
 	red[i] = NULL;
-	//printf("3get red: antes da segfault\n"); 
-/*	i = 0 ;   
-	while (red[i])
-	{
-		printf("redir %d: %s\n", i, red[i]->str);
-		i++;
-
-	}*/
-	//printf("(4get red: antes da segfault\n");
 	return (red);
 }
-char **get_args(t_token *token)
+void	get_args(t_token *token, t_cmd *cmd)
 {
 	t_token *tmp;
 	int arg_num;
 	int i;
-	char **args;
 
 	tmp = token;
 	arg_num = 0;
@@ -84,28 +67,19 @@ char **get_args(t_token *token)
 			arg_num++;
 		tmp = tmp->next;
 	}
-	args = ft_calloc(sizeof(char*) * (arg_num + 1), 1);
-	if (!args)
-		return (NULL);
+	cmd->arg = ft_calloc(sizeof(char*) * (arg_num + 1), 1);
+	if (!(cmd->arg))
+		return;
 	i = 0;
 	tmp = token;
 	while (tmp && tmp->type != PIPE)
 	{
 		if (tmp->type == WORD && (!tmp->prev || tmp->prev->type != REDIR))
-			(args)[i++] = tmp->str;
+			(cmd->arg)[i++] = tmp->str;
 		tmp = tmp->next; 
 	}
-	args[i] = NULL; 
-	i = 0 ; 
-/*	printf("1get args: antes da segfault\n");     
-	while (args[i])
-	{
-		printf("arg: %d: %s\n", i, args[i]);
-		i++;
-
-	}
-	printf("2get args: antes da segfault\n");    */	
-	return ( args);   
+	(cmd->arg)[i] = NULL;
+	cmd->n_arg = arg_num;
 }
 
 t_cmd *get_cmd(t_token *token)
@@ -117,37 +91,13 @@ t_cmd *get_cmd(t_token *token)
     {
         return(NULL);
     }
-    cmd->arg = get_args(token);
+    get_args(token, cmd);
     if (!cmd->arg)
     {
         return(NULL);
     }
     cmd->red_in = get_red(token, 1);
 	cmd->red_out = get_red(token, 0);
-//	printf("1ge_cmd: antes da segfault\n"); 
-/*	int i = 0 ;    
-	while (cmd->arg[i])
-	{
-		printf("arg: %d: %s\n", i, cmd->arg[i]);
-		i++;
-
-	}
-//	printf("2get cmd: antes da segfault\n");  
-	i = 0 ;   
-	while (cmd->red_in[i])
-	{
-		printf("redir_in %d: %s\n", i, cmd->red_in[i]->str);
-		i++;
-
-	}
-		i = 0 ;   
-	while (cmd->red_out[i])
-	{
-		printf("redir_out %d: %s\n", i, cmd->red_out[i]->str);
-		i++;
-	}
-	printf("3get cmd:: antes da segfault\n");
-	cat explain << a << b < c > 1 >> 2 | ls < Doc1 << Desktop |  echo 123*/
     return (cmd);
 }
 void get_next_cmd_token(t_token **token)
@@ -173,7 +123,6 @@ int init_cmd(void)
             cmd_num++;
 		tmp = tmp->next;
     }
- //   printf("cmd_num : %d\n", cmd_num); 
     shell->cmd = ft_calloc(sizeof(t_cmd *) * (cmd_num + 1), 1);
     if (shell->cmd == NULL)
         return(1);
