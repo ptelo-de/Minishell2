@@ -70,25 +70,25 @@ void free_atributes(void)
 			free (shell->cmd[k]->arg);
 		shell->cmd[k]->arg = NULL;
 		i = 0;
-		while (shell->cmd[k]->red_in && shell->cmd[k]->red_in[i])
+		while (shell->cmd[k]->red && shell->cmd[k]->red[i])
 		{
-			shell->cmd[k]->red_in[i]->str = NULL;
-			free (shell->cmd[k]->red_in[i]);
-			shell->cmd[k]->red_in[i++] = NULL;
+			shell->cmd[k]->red[i]->str = NULL;
+			free (shell->cmd[k]->red[i]);
+			shell->cmd[k]->red[i++] = NULL;
 		}
-		if (shell->cmd[k]->red_in)
-			free (shell->cmd[k]->red_in);
-		shell->cmd[k]->red_in = NULL;
+		if (shell->cmd[k]->red)
+			free (shell->cmd[k]->red);
+		shell->cmd[k]->red = NULL;
 		i = 0;
-		while (shell->cmd[k]->red_out && shell->cmd[k]->red_out[i])
+		while (shell->cmd[k]->here && shell->cmd[k]->here[i])
 		{
-			shell->cmd[k]->red_out[i]->str = NULL;
-			free (shell->cmd[k]->red_out[i]);
-			shell->cmd[k]->red_out[i++] = NULL;
+			shell->cmd[k]->here[i]->str = NULL;
+			free (shell->cmd[k]->here[i]);
+			shell->cmd[k]->here[i++] = NULL;
 		}
-		if (shell->cmd[k]->red_out)
-			free (shell->cmd[k]->red_out);
-		shell->cmd[k]->red_out = NULL;
+		if (shell->cmd[k]->here)
+			free (shell->cmd[k]->here);
+		shell->cmd[k]->here = NULL;
 		free(shell->cmd[k]);
 		shell->cmd[k++] = NULL;
 	}
