@@ -59,15 +59,15 @@ void print_cmd_array(void)
 		i++;
 	}
 	i = 0;
-	while (shell->cmd[k]->red_in && shell->cmd[k]->red_in[i])
+	while (shell->cmd[k]->here && shell->cmd[k]->here[i])
 	{
-		printf("red_in %d: %s\n", shell->cmd[k]->red_in[i]->type, shell->cmd[k]->red_in[i]->str);
+		printf("here %d: doc: %s\n", shell->cmd[k]->here[i]->type, shell->cmd[k]->here[i]->str);
 		i++;
 	}
 	i = 0;
-	while (shell->cmd[k]->red_out && shell->cmd[k]->red_out[i])
+	while (shell->cmd[k]->red && shell->cmd[k]->red[i])
 	{
-		printf("red_out %d: %s\n", shell->cmd[k]->red_out[i]->type, shell->cmd[k]->red_out[i]->str);
+		printf("red %d: %s\n", shell->cmd[k]->red[i]->type, shell->cmd[k]->red[i]->str);
 		i++;
 	}
 	k++;

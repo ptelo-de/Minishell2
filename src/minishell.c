@@ -20,9 +20,18 @@ int main(int argc, char *argv[], char *envp[])
 
     while(1)
     {
+//		interactive_mode();
         shell->readline = readline("minishell>"); //aprender a defender leaks so readline
-//      []  if(!shell->readline)//ctrl D
-//      []    	m_exit(shell, NULL); // need exit status //must free env and export
+//		ignorar sinais
+        if(!shell->readline)//ctrl D
+        {
+            free_atributes();
+            printf("exit\n");
+            exit(0);
+//          m_exit(shell, NULL); // need exit status //must free env and export
+        }
+//      
+		//fim do modo interativo: SIG_Ignore CRTL_C  E SIG_iGNORE CTRL_/
         add_history(shell->readline); //not put white spaces or repetitions
         if (lexer() == 1 || syntax_check() == 1)// need t differ memory error from user input error
         {

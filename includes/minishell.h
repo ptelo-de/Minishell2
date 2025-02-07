@@ -54,8 +54,10 @@ typedef struct s_cmd
 	char			**arg;
     int             n_arg;
 
-	t_redir			**red_out;
-	t_redir			**red_in;
+	t_redir			**red;
+	t_redir			**here;
+
+    int shlvl_1st;
    
 }	t_cmd;
 
@@ -79,8 +81,9 @@ typedef struct s_shell
 }t_shell;
 
 
-//void	ft_putendl_fd(char *s, int fd);
 t_shell *get_shell(void);
 void check_main_args(int ac);
+//signals/
+void interactive_mode(void);
 
 #endif
