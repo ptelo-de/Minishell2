@@ -12,6 +12,9 @@
 #include <string.h>
 #include <errno.h>  //for errno
 #include <limits.h> //for PATH_MAX
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <signal.h>
 
 typedef enum s_type{
     
@@ -85,5 +88,7 @@ t_shell *get_shell(void);
 void check_main_args(int ac);
 //signals/
 void interactive_mode(void);
+void	ignore_signal(int signal);
+void here_sigint(void);
 
 #endif

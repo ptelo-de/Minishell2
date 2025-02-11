@@ -45,4 +45,7 @@ void handle_one_dollar(int *i, t_token **tmp);
 //cmd_array.c
 int init_cmd(void);
 
+//here
+int hereDoc(char *del);
+
 #endif

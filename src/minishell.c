@@ -20,9 +20,9 @@ int main(int argc, char *argv[], char *envp[])
 
     while(1)
     {
-//		interactive_mode();
+		interactive_mode();
         shell->readline = readline("minishell>"); //aprender a defender leaks so readline
-//		ignorar sinais
+        ignore_signal(SIGINT);
         if(!shell->readline)//ctrl D
         {
             free_atributes();
@@ -48,6 +48,15 @@ int main(int argc, char *argv[], char *envp[])
 			(void)init_cmd();
 			printf("\nCOMANDS ARRAY\n\n");
 			print_cmd_array();
+			int fd =hereDoc("fim");
+
+			char buffer[11];
+
+			buffer[10] = 0;
+
+			while(read(fd,buffer,1) > 0)
+			write(1,buffer, 1);
+			close(fd);
         }
         free_atributes();
         free(shell->readline);

@@ -1,48 +1,50 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <signal.h>
-#include <readline/readline.h>
-#include <readline/history.h>
-#include <string.h>
+
 
 #include "minishell.h"
 
 // A system call is an entry point into the Linux kernel. 
-//void sigint_handler(int signum) {
-//    t_shell*shell;
+void sigint_handler(int signum) 
+{
+    t_shell *shell;
+    shell = get_shell();
+    shell->exit_status = 130;
+    write(1, "\n",2);
+    rl_on_new_line();
+	rl_replace_line("", 0);
+	rl_redisplay();
+    (void)signum;
+}
 
-//    shell = get_shell();
-//    shell->exit_status = 130;
-//    printf("Ctrl+C\n");
+void	ignore_signal(int signal)
+{
+    struct sigaction sa;
 
-//}
+	memset(&sa, 0, sizeof(sa)); 
+    sa.sa_handler = SIG_IGN;
+    sa.sa_flags = SA_RESTART;
+	if (sigemptyset(&sa.sa_mask) || sigaction(signal, &sa, NULL))
+    {
+        write(2, "sigaction failed at interactive mode in SIGQUIT\n", 49);
+       //free all minishell memory
+        exit(1);
+    }
+}
+void interactive_mode(void)
+{
+	struct sigaction sa;
 
-//void interactive_mode(void)
-//{
-//    struct sigaction sa_int;
+	sa.sa_handler = sigint_handler;
+	sa.sa_flags = SA_RESTART; //dar restart a system calls, fazer teste de zerar esta variavel
+	if (sigemptyset(&sa.sa_mask) || sigaction(SIGINT, &sa, NULL))
+	{
+		write(2, "sigaction failed at interactive mode in SIGINT\n", 48);
+		//free all minishell memory
+		exit(1);
+	}
+	ignore_signal(SIGQUIT);
+}
 
-//    sigemptyset(&sa_int.sa_mask);
-//    sa_int.sa_handler = sigint_handler;
-//    sa_int.sa_flags = SA_RESTART; //dar restart a system calls, fazer teste de zerar esta variavel
-//    if (sigaction(SIGINT, &sa_int, NULL) == -1) {
-//        write(2, "sigaction failed at interactive mode in SIGINT\n", 48);
-//        //free all minishell memory
-//        exit(1);
-//    }
-
-    // Ignora SIGQUIT (Ctrl+\)
-/*    if (signal(SIGQUIT, SIG_IGN) == SIG_ERR) {
-        perror("Erro ao ignorar SIGQUIT");
-        exit(EXIT_FAILURE);
-    }*/
-
-//}
-
-/* 
+/*
 sigaction mask:  
 The mask in struct sigaction are signals that 
 will be blocked (in the thread the signal handler executes in)

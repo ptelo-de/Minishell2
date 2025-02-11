@@ -1,55 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <signal.h>
-#include <readline/readline.h>
-#include <readline/history.h>
-#include <string.h>
-
 
 #include "minishell.h"
 
-
-//int main(int ac, char **av, char **envp)
-//{
-//	int pid;
-//	int fd[2];
-//	char *args[]= {"cat", NULL};
-//	int exit_status;
-
-//	fd[0] = open("a.txt", O_RDONLY);
-//	fd[1] = open("b.txt", O_TRUNC | O_WRONLY | O_CREAT, 0644);
-//	pid = fork();
-//	waitpid(pid, &exit_status, 0);
-//	if (!fd[0] < 0  || fd[1] < 0)
-//		printf("OPEN RAISED ERROR");
-//	printf("before waitpid call pid: %d\n", pid);
-//	printf("after waitpid call pid: %d\n", pid);
-//	if (pid == 0) 
-//	{
-//		sleep(10);
-//		printf("DO CHILD\n");
-//		dup2(fd[0], 0);
-//		dup2(fd[1], 1);
-//		close(fd[0]);
-//    	close(fd[1]);
-//		execve("/bin/cat", args, envp);
-//		write(2, "execve failed\n", 15);
-//		exit(-1);
-//	}
-//	else
-//	{
-//		printf("DO PARENT\n");
-//	}
-
-//    close(fd[0]);
-//    close(fd[1]);
-
-
-//}
 
 //__sighandler_t ctr(int)
 //{
@@ -70,7 +21,7 @@
 
 //good code
 
-/*int hereDoc(char *del)
+int hereDoc(char *del)
 {
 	int fd[2];
 	t_shell *shell;
@@ -81,10 +32,9 @@
 	if(pipe(fd) == -1)
 		return -2;
 	int pid = fork();
-	//off_signals();
 	if(pid == 0)
 	{
-		//on_signals();
+		here_sigint(); //needs to clear heredoc
 		close(fd[0]);
 		char *line =readline(">");
 		while(line && strcmp(line, del))
@@ -105,6 +55,7 @@
 
 	return (fd[0]);
 }
+/*
 
 int main(void)
 {
