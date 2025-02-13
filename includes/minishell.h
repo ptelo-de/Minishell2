@@ -44,29 +44,29 @@ typedef struct s_redir
     t_type type;
     char *str;
 }   t_redir;
+
 typedef struct s_cmd
 {
-    int             hdoc_pipe[2];
+	t_redir			**here;
 
     int             fd_in;
     int             fd_out; 
     int             pipe[2];
+	t_redir			**red;
+
     int             pid;
 
 	char			*path;
 	char			**arg;
     int             n_arg;
 
-	t_redir			**red;
-	t_redir			**here;
-
-    int shlvl_1st;
    
 }	t_cmd;
 
 typedef struct s_shell
 {
 	char *readline;
+    int shlvl_1st;
 
 	t_token *tokens;
 	t_cmd   **cmd;
@@ -74,11 +74,10 @@ typedef struct s_shell
 	t_list *env;
 	t_list  *exp;
 
-	//int pipe_count;
 	int exit_status; // ? para eu poder expandir $?
+    int sigint_flag;
 
-	//int fd_in;
-	//int fd_out;
+	int here_pipe[2];
 
 
 }t_shell;

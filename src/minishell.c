@@ -1,7 +1,6 @@
 
 #include "minishell.h"
 #include "parsing.h"
-#include "builtins.h"
 
 /* MAIN FOR TESTING AST_BUILDING*/
 int main(int argc, char *argv[], char *envp[])
@@ -39,7 +38,6 @@ int main(int argc, char *argv[], char *envp[])
         }
         else
         {
-
 			printf("\nLEXER\n\n");
 			print_tokens();			
             expander();
