@@ -58,12 +58,6 @@ void print_cmd_array(void)
 		i++;
 	}
 	i = 0;
-	while (shell->cmd[k]->here && shell->cmd[k]->here[i])
-	{
-		printf("here %d: doc: %s\n", shell->cmd[k]->here[i]->type, shell->cmd[k]->here[i]->str);
-		i++;
-	}
-	i = 0;
 	while (shell->cmd[k]->red && shell->cmd[k]->red[i])
 	{
 		printf("red %d: %s\n", shell->cmd[k]->red[i]->type, shell->cmd[k]->red[i]->str);

@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-t_redir **get_red(t_token	*token, int	here_flag)
+t_redir **get_red(t_token	*token)
 {
     int	redir_num;
     int	i;
@@ -11,9 +11,7 @@ t_redir **get_red(t_token	*token, int	here_flag)
 	tmp = token;
 	while (tmp && tmp->type != PIPE)
 	{
-		if (here_flag && tmp->type == REDIR && ft_strncmp(tmp->str, "<<", 2) == 0)
-			redir_num++;
-		if (!here_flag && tmp->type == REDIR && ft_strncmp(tmp->str, "<<", 2) != 0)
+		if (tmp->type == REDIR)
 			redir_num++;
 		tmp = tmp->next;
 	}
@@ -32,15 +30,12 @@ t_redir **get_red(t_token	*token, int	here_flag)
 	tmp = token;
 	while (tmp && tmp->type != PIPE)
 	{
-		if (here_flag && tmp->type == REDIR && ft_strncmp(tmp->str, "<<", 2) == 0)
+		if (tmp->type == REDIR )
 		{
 			red[i]->str = tmp->next->str;
-			red[i++]->type = HERE_DOC;
-		}
-		if (!here_flag && tmp->type == REDIR && ft_strncmp(tmp->str, "<<", 2))
-		{
-			red[i]->str = tmp->next->str;
-			if (!ft_strncmp(tmp->str, ">>", 2))
+			if (ft_strncmp(tmp->str, "<<", 2) == 0)
+				red[i++]->type = HERE_DOC;
+			else if (!ft_strncmp(tmp->str, ">>", 2))
 				red[i++]->type = APPEND;
 			else if (!ft_strncmp(tmp->str, ">", 2))
 				red[i++]->type = OUTFILE;
@@ -95,8 +90,7 @@ t_cmd *get_cmd(t_token *token)
     {
         return(NULL);
     }
-    cmd->red= get_red(token, 0);
-	cmd->here = get_red(token, 1);
+    cmd->red= get_red(token);
     return (cmd);
 }
 void get_next_cmd_token(t_token **token)
