@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 15:37:38 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/02/12 16:18:54 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/02/27 19:21:11 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -682,10 +682,19 @@ void	free_all()
     free_lst(shell->exp);
 }
 
-void	ms_exit(t_shell **shell, t_cmd *cmd)
+void	ms_exit(t_shell **shell, t_cmd *cmd, int here)
 {
-	printf("exit\n");
-	if (cmd->arg[1] && str_isdigit(cmd->arg[1]) && cmd->n_arg > 2)
+	if (here)
+	{
+		free_all();
+		exit((*shell)->exit_status);
+	}
+	if (cmd->n_arg == 0)
+	{
+		free_all();
+		exit((*shell)->exit_status);
+	}
+	else if (cmd->arg[1] && str_isdigit(cmd->arg[1]) && cmd->n_arg > 2)
 	{
 		printf("Error: exit: too many arguments\n");
 		(*shell)->exit_status = 1;
@@ -734,7 +743,10 @@ int	build_ins(t_cmd *cmd)
 	else if (ft_strncmp(cmd->arg[0], "env", 4) == 0)
 		ms_env(shell->env);
 	else if (ft_strncmp(cmd->arg[0], "exit", 5) == 0)
-		ms_exit(&shell, cmd);
+	{
+		printf("exit\n");
+		ms_exit(&shell, cmd, 0);
+	}
 	else
 		return (0);
 	return (1);

@@ -12,6 +12,10 @@
 #include <string.h>
 #include <errno.h>  //for errno
 #include <limits.h> //for PATH_MAX
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <signal.h>
+#include <fcntl.h>
 
 typedef enum s_type{
     
@@ -41,27 +45,29 @@ typedef struct s_redir
     t_type type;
     char *str;
 }   t_redir;
+
 typedef struct s_cmd
 {
-    int             hdoc_pipe[2];
+	t_redir			**here;
 
-    int             fd_in; //eventually here_doc ou stdin, verificar antes de exec
+    int             fd_in;
     int             fd_out; 
     int             pipe[2];
+	t_redir			**red;
+
     int             pid;
 
 	char			*path;
 	char			**arg;
     int             n_arg;
 
-	t_redir			**red;
-	t_redir			**here;
-   
+
 }	t_cmd;
 
 typedef struct s_shell
 {
 	char *readline;
+    int shlvl_1st;
 
 	t_token *tokens;
 	t_cmd   **cmd;
@@ -69,20 +75,20 @@ typedef struct s_shell
 	t_list *env;
 	t_list  *exp;
 
-	//int pipe_count;
 	int exit_status; // ? para eu poder expandir $?
+    int sigint_flag;
 
-	//int fd_in;
-	//int fd_out;
+	int here_pipe[2];
 
 
 }t_shell;
 
-//executer
 
-
-//void	ft_putendl_fd(char *s, int fd);
 t_shell *get_shell(void);
 void check_main_args(int ac);
+//signals/
+void interactive_mode(void);
+void	ignore_signal(int signal);
+void here_sigint(void);
 
 #endif

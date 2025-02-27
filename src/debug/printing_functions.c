@@ -1,6 +1,5 @@
 #include "minishell.h"
 #include "parsing.h"
-#include "builtins.h"
 
 void print_tokens(void)
 {
@@ -56,12 +55,6 @@ void print_cmd_array(void)
 	while (shell->cmd[k]->arg[i])
 	{
 		printf("arg %d: %s\n", i, shell->cmd[k]->arg[i]);
-		i++;
-	}
-	i = 0;
-	while (shell->cmd[k]->here && shell->cmd[k]->here[i])
-	{
-		printf("here %d: doc: %s\n", shell->cmd[k]->here[i]->type, shell->cmd[k]->here[i]->str);
 		i++;
 	}
 	i = 0;
