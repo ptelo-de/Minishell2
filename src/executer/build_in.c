@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 15:37:38 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/02/27 19:21:11 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/03/03 15:01:33 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -364,6 +364,8 @@ void	ms_pwd()
 		ft_putendl_fd("Error: Failed to get current directory\n", 2);
 		return;
 	}
+	//write(1, pwd, ft_strlen(pwd));
+	//write(1, "\n", 2);
 	printf("%s\n", pwd);
 	free(pwd);
 }

@@ -124,12 +124,35 @@ void	manage_redir(t_shell **shell)
 	}
 }
 
+int	is_build_in(t_cmd *cmd)
+{
+	if (!cmd || !cmd->arg || !cmd->arg[0])
+		return (0);
+	else if (ft_strncmp(cmd->arg[0], "cd", 3) == 0)
+		return (1);
+	else if (ft_strncmp(cmd->arg[0], "echo", 5) == 0)
+		return (1);
+	else if (ft_strncmp(cmd->arg[0], "pwd", 4) == 0)
+		return (1);
+	else if (ft_strncmp(cmd->arg[0], "export", 7) == 0)
+		return (1);
+	else if (ft_strncmp(cmd->arg[0], "unset", 6) == 0)
+		return (1);
+	else if (ft_strncmp(cmd->arg[0], "env", 4) == 0)
+		return (1);
+	else if (ft_strncmp(cmd->arg[0], "exit", 5) == 0)
+		return (1);
+	return (0);
+}
+
+
 void	executer()
 {
 	t_shell	*shell;
 	int		i = 0;
 	int		pid[4];
 	int		prev_pipe0;
+	int		orig_stdout;
 
 	shell = get_shell();
 	manage_hd(shell);
@@ -143,23 +166,44 @@ void	executer()
 		if (shell->cmd[i + 1])
 			pipe(shell->cmd[i]->pipe);
 
-		pid[i] = fork();
-		if (pid[i] == -1)
-			perror("Error fork");
-		if (pid[i] == 0)
+		if (!is_build_in(shell->cmd[i]))
 		{
-			if (shell->cmd[i]->fd_in != 0)
+			pid[i] = fork();
+			if (pid[i] == -1)
+				perror("Error fork");
+			if (pid[i] == 0)
 			{
-				if (prev_pipe0)
+				if (shell->cmd[i]->fd_in != 0)
+				{
+					if (prev_pipe0)
+						close(prev_pipe0);
+					dup2(shell->cmd[i]->fd_in, STDIN_FILENO);
+					close(shell->cmd[i]->fd_in);
+				}
+				else if (prev_pipe0)
+				{
+					dup2(prev_pipe0, STDIN_FILENO);
 					close(prev_pipe0);
-				dup2(shell->cmd[i]->fd_in, STDIN_FILENO);
-				close(shell->cmd[i]->fd_in);
+				}
+				if (shell->cmd[i]->fd_out != 1)
+				{
+					dup2(shell->cmd[i]->fd_out, STDOUT_FILENO);
+					close(shell->cmd[i]->fd_out);
+				}
+				else if (shell->cmd[i + 1])
+					dup2(shell->cmd[i]->pipe[1], STDOUT_FILENO);
+				if (shell->cmd[i + 1])
+				{
+					close(shell->cmd[i]->pipe[0]);
+					close(shell->cmd[i]->pipe[1]);
+				}
+				exec_command(shell->cmd[i]->arg, make_env_arr(shell->env));
 			}
-			else if (prev_pipe0)
-			{
-				dup2(prev_pipe0, STDIN_FILENO);
-				close(prev_pipe0);
-			}
+			waitpid(pid[i], NULL, 0);
+		}
+		else
+		{
+			orig_stdout = dup(STDOUT_FILENO);
 			if (shell->cmd[i]->fd_out != 1)
 			{
 				dup2(shell->cmd[i]->fd_out, STDOUT_FILENO);
@@ -167,26 +211,20 @@ void	executer()
 			}
 			else if (shell->cmd[i + 1])
 				dup2(shell->cmd[i]->pipe[1], STDOUT_FILENO);
-			if (shell->cmd[i + 1])
-			{
-				close(shell->cmd[i]->pipe[0]);
-				close(shell->cmd[i]->pipe[1]);
-			}
-			//if (!build_ins(shell->cmd[i]))
-				exec_command(shell->cmd[i]->arg, make_env_arr(shell->env)); //verificar se houve erro para executar ou nao a funcao
-			//free_all();
-			//exit(shell->exit_status);
+			build_ins(shell->cmd[i]);
+			dup2(orig_stdout, STDOUT_FILENO);
+			close(orig_stdout);
 		}
-		waitpid(pid[i], NULL, 0);
+
 		if (prev_pipe0)
+		{
 			close(prev_pipe0);
+			prev_pipe0 = 0;
+		}
 		if (shell->cmd[i + 1])
 		{
 			if (shell->cmd[i]->fd_out != 1)
-			{
-				prev_pipe0 = 0;
 				close(shell->cmd[i]->pipe[0]);
-			}
 			else
 				prev_pipe0 = shell->cmd[i]->pipe[0];
 			close(shell->cmd[i]->pipe[1]);
@@ -197,8 +235,7 @@ void	executer()
 		if (shell->cmd[i]->fd_out != 1)
 			close(shell->cmd[i]->fd_out);
 		i++;
-	}
-		
+	}	
 }
 
 //função que recebe o nome do último infile e o abre para poder retornar o fd correspondente
@@ -276,12 +313,19 @@ char	*create_path(char *function, char **envp)
 	return (NULL);
 }
 
-void	error_exec(char *path, char **arr_arg, char *function)
+void	error_exec(char *path, char **arr_arg, char **envp)
 {
-	write(2, function, ft_strlen(function));
-	write(2, ": command not found\n", 20);
-	free(path);
+	t_shell	*shell;
+	
+	shell = get_shell();
+	if (path)
+		free(path);
 	free_arr(arr_arg);
+	free_arr(envp);
+	free_atributes();
+	free(shell->readline);
+	free_lst(shell->env);
+    free_lst(shell->exp);
 	exit(1);
 }
 
@@ -290,8 +334,14 @@ void	exec_command(char **args, char **envp)
 	char	*path;
 
 	path = create_path(args[0], envp);
-	if (execve(path, args, envp) == -1)
-		error_exec(path, args, args[0]);
+	if (!path)
+	{
+		write(2, args[0], ft_strlen(args[0]));
+		write(2, ": command not found\n", 20);
+	}
+	else if (execve(path, args, envp) == -1)
+		perror("execve error");
+	error_exec(path, args, envp);
 }
 
 char	**make_env_arr(t_list *env)
@@ -326,3 +376,44 @@ char	**make_env_arr(t_list *env)
 	env_arr[i] = NULL;
 	return (env_arr);
 }
+
+
+
+
+
+
+
+/*pid[i] = fork();
+		if (pid[i] == -1)
+			perror("Error fork");
+		if (pid[i] == 0)
+		{
+			if (shell->cmd[i]->fd_in != 0)
+			{
+				if (prev_pipe0)
+					close(prev_pipe0);
+				dup2(shell->cmd[i]->fd_in, STDIN_FILENO);
+				close(shell->cmd[i]->fd_in);
+			}
+			else if (prev_pipe0)
+			{
+				dup2(prev_pipe0, STDIN_FILENO);
+				close(prev_pipe0);
+			
+			if (shell->cmd[i]->fd_out != 1)
+			{
+				dup2(shell->cmd[i]->fd_out, STDOUT_FILENO);
+				close(shell->cmd[i]->fd_out);
+			}
+			else if (shell->cmd[i + 1])
+				dup2(shell->cmd[i]->pipe[1], STDOUT_FILENO);
+			if (shell->cmd[i + 1])
+			{
+				close(shell->cmd[i]->pipe[0]);
+				close(shell->cmd[i]->pipe[1]);
+			}
+			//if (!build_ins(shell->cmd[i]))
+				exec_command(shell->cmd[i]->arg, make_env_arr(shell->env)); //verificar se houve erro para executar ou nao a funcao
+			//free_all();
+			//exit(shell->exit_status);
+		}*/
