@@ -44,8 +44,8 @@ int main(int argc, char *argv[], char *envp[])
 			//printf("\nEXPANSION\n\n");
 			//print_tokens();
 			(void)init_cmd();
-			printf("\nCOMANDS ARRAY\n\n");
-			print_cmd_array();
+			//printf("\nCOMANDS ARRAY\n\n");
+			//print_cmd_array();
             executer();
             /*while (shell->cmd[i])
             {
