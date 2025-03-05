@@ -39,19 +39,22 @@ t_token	*tokenlast(t_token *first)
 void    free_tokens(void)
 {
     t_shell *shell = get_shell();
-    t_token *aux = shell->tokens;
+	t_token *next;
 
-    while (aux)
+    while (shell->tokens)
     {
-        t_token *next = aux->next;
-        if (aux->str)
+       	next = shell->tokens->next;
+        if (shell->tokens->str)
         {
-            free(aux->str);
-            aux->str = NULL;
+            free(shell->tokens->str);
+            shell->tokens->str = NULL;
         }
-        free(aux);
-        aux = next;
+        free(shell->tokens);
+		shell->tokens = NULL;
+        shell->tokens = next;
     }
+	printf("\n\nIN FREE TOKENS\n\n\n");
+	print_tokens();
     shell->tokens = NULL;
 }
 
