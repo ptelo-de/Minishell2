@@ -15,6 +15,8 @@
 #include "executer.h"
 #include "minishell.h"
 
+//dar handle de qd hereDoc da return de -1
+
 void	manage_hd(t_shell *shell)
 {
 	t_shell	*temp;
@@ -145,7 +147,6 @@ int	is_build_in(t_cmd *cmd)
 	return (0);
 }
 
-
 void	executer()
 {
 	t_shell	*shell;
@@ -161,63 +162,10 @@ void	executer()
 	prev_pipe0 = 0;
 	while (shell->cmd[i])
 	{
-		if (shell->cmd[i]->arg[0]) // para ignorar qd nao ha comandos e apenas redirecoes
+		if (shell->cmd[i]->arg[0])
 		{
-			//printf("cmd: %s has fd_in[%d]: %d\n", shell->cmd[i]->arg[0], i, shell->cmd[i]->fd_in);
-			//printf("cmd: %s has fd_out[%d]: %d\n", shell->cmd[i]->arg[0], i, shell->cmd[i]->fd_out);
-
-			if (shell->cmd[i + 1])
-				pipe(shell->cmd[i]->pipe);
-
-			if (!is_build_in(shell->cmd[i]))
+			if (!shell->cmd[i + 1] && is_build_in(shell->cmd[i]))
 			{
-				pid[i] = fork();
-				if (pid[i] == -1)
-					perror("Error fork");
-				if (pid[i] == 0)
-				{
-					if (shell->cmd[i]->fd_in != 0)
-					{
-						if (prev_pipe0)
-							close(prev_pipe0);
-						dup2(shell->cmd[i]->fd_in, STDIN_FILENO);
-						close(shell->cmd[i]->fd_in);
-					}
-					else if (prev_pipe0)
-					{
-						dup2(prev_pipe0, STDIN_FILENO);
-						close(prev_pipe0);
-					}
-					else if (i != 0 || (i == 0 && shell->cmd[i + 1])) // para dar de input empty file qd cat e wc nao tem input e ficam infinitamente à espera
-					{
-						dev_null = open("/dev/null", O_RDONLY);
-						if (dev_null == -1)
-						{
-							perror("Error opening /dev/null");
-							exit(1);
-						}
-						dup2(dev_null, STDIN_FILENO);
-						close(dev_null);
-					}
-					if (shell->cmd[i]->fd_out != 1)
-					{
-						dup2(shell->cmd[i]->fd_out, STDOUT_FILENO);
-						close(shell->cmd[i]->fd_out);
-					}
-					else if (shell->cmd[i + 1])
-						dup2(shell->cmd[i]->pipe[1], STDOUT_FILENO);
-					if (shell->cmd[i + 1])
-					{
-						close(shell->cmd[i]->pipe[0]);
-						close(shell->cmd[i]->pipe[1]);
-					}
-					exec_command(shell->cmd[i]->arg, make_env_arr(shell->env));
-				}
-				waitpid(pid[i], NULL, 0);
-			}
-			else
-			{
-				orig_stdout = dup(STDOUT_FILENO);
 				if (shell->cmd[i]->fd_out != 1)
 				{
 					dup2(shell->cmd[i]->fd_out, STDOUT_FILENO);
@@ -226,30 +174,103 @@ void	executer()
 				else if (shell->cmd[i + 1])
 					dup2(shell->cmd[i]->pipe[1], STDOUT_FILENO);
 				build_ins(shell->cmd[i]);
-				dup2(orig_stdout, STDOUT_FILENO);
-				close(orig_stdout);
 			}
+			else // para ignorar qd nao ha comandos e apenas redirecoes
+			{
+				//printf("cmd: %s has fd_in[%d]: %d\n", shell->cmd[i]->arg[0], i, shell->cmd[i]->fd_in);
+				//printf("cmd: %s has fd_out[%d]: %d\n", shell->cmd[i]->arg[0], i, shell->cmd[i]->fd_out);
 
-			if (prev_pipe0)
-			{
-				close(prev_pipe0);
-				prev_pipe0 = 0;
-			}
-			if (shell->cmd[i + 1])
-			{
+				if (shell->cmd[i + 1])
+					pipe(shell->cmd[i]->pipe);
+
+				pid[i] = fork();
+				if (pid[i] == -1)
+					perror("Error fork");
+				if (pid[i] == 0)
+				{
+					if (is_build_in(shell->cmd[i]))
+					{
+						if (shell->cmd[i]->fd_in != 0)
+							close(shell->cmd[i]->fd_in);
+						orig_stdout = dup(STDOUT_FILENO);
+						if (shell->cmd[i]->fd_out != 1)
+						{
+							dup2(shell->cmd[i]->fd_out, STDOUT_FILENO);
+							close(shell->cmd[i]->fd_out);
+						}
+						else if (shell->cmd[i + 1])
+							dup2(shell->cmd[i]->pipe[1], STDOUT_FILENO);
+						if (shell->cmd[i + 1])
+						{
+							close(shell->cmd[i]->pipe[0]);
+							close(shell->cmd[i]->pipe[1]);
+						}
+						build_ins(shell->cmd[i]);
+						dup2(orig_stdout, STDOUT_FILENO);
+						close(orig_stdout);
+						error_exec(NULL, NULL);
+					}
+					else
+					{
+						if (shell->cmd[i]->fd_in != 0)
+						{
+							if (prev_pipe0)
+								close(prev_pipe0);
+							dup2(shell->cmd[i]->fd_in, STDIN_FILENO);
+							close(shell->cmd[i]->fd_in);
+						}
+						else if (prev_pipe0)
+						{
+							dup2(prev_pipe0, STDIN_FILENO);
+							close(prev_pipe0);
+						}
+						else if (i != 0) // para dar de input empty file qd cat e wc nao tem input e ficam infinitamente à espera
+						{
+							dev_null = open("/dev/null", O_RDONLY);
+							if (dev_null == -1)
+							{
+								perror("Error opening /dev/null");
+								exit(1);
+							}
+							dup2(dev_null, STDIN_FILENO);
+							close(dev_null);
+						}
+						if (shell->cmd[i]->fd_out != 1)
+						{
+							dup2(shell->cmd[i]->fd_out, STDOUT_FILENO);
+							close(shell->cmd[i]->fd_out);
+						}
+						else if (shell->cmd[i + 1])
+							dup2(shell->cmd[i]->pipe[1], STDOUT_FILENO);
+						if (shell->cmd[i + 1])
+						{
+							close(shell->cmd[i]->pipe[0]);
+							close(shell->cmd[i]->pipe[1]);
+						}
+							exec_command(shell->cmd[i]->arg, make_env_arr(shell->env));
+					}
+				}
+				waitpid(pid[i], NULL, 0);
+				if (prev_pipe0)
+				{
+					close(prev_pipe0);
+					prev_pipe0 = 0;
+				}
+				if (shell->cmd[i + 1])
+				{
+					if (shell->cmd[i]->fd_out != 1)
+						close(shell->cmd[i]->pipe[0]);
+					else
+						prev_pipe0 = shell->cmd[i]->pipe[0];
+					close(shell->cmd[i]->pipe[1]);
+				}
+				if (shell->cmd[i]->fd_in != 0)
+					close(shell->cmd[i]->fd_in);
 				if (shell->cmd[i]->fd_out != 1)
-					close(shell->cmd[i]->pipe[0]);
-				else
-					prev_pipe0 = shell->cmd[i]->pipe[0];
-				close(shell->cmd[i]->pipe[1]);
+					close(shell->cmd[i]->fd_out);
 			}
-
-			if (shell->cmd[i]->fd_in != 0)
-				close(shell->cmd[i]->fd_in);
-			if (shell->cmd[i]->fd_out != 1)
-				close(shell->cmd[i]->fd_out);
+			i++;
 		}
-		i++;
 	}	
 }
 
@@ -390,3 +411,112 @@ char	**make_env_arr(t_list *env)
 	env_arr[i] = NULL;
 	return (env_arr);
 }
+
+
+/*void	executer()
+{
+	t_shell	*shell;
+	int		i = 0;
+	int		pid[4];
+	int		prev_pipe0;
+	int		orig_stdout;
+	int		dev_null;
+
+	shell = get_shell();
+	manage_hd(shell);
+	manage_redir(&shell);
+	prev_pipe0 = 0;
+	while (shell->cmd[i])
+	{
+		if (shell->cmd[i]->arg[0]) // para ignorar qd nao ha comandos e apenas redirecoes
+		{
+			//printf("cmd: %s has fd_in[%d]: %d\n", shell->cmd[i]->arg[0], i, shell->cmd[i]->fd_in);
+			//printf("cmd: %s has fd_out[%d]: %d\n", shell->cmd[i]->arg[0], i, shell->cmd[i]->fd_out);
+
+			if (shell->cmd[i + 1])
+				pipe(shell->cmd[i]->pipe);
+
+			if (!is_build_in(shell->cmd[i]))
+			{
+				pid[i] = fork();
+				if (pid[i] == -1)
+					perror("Error fork");
+				if (pid[i] == 0)
+				{
+					if (shell->cmd[i]->fd_in != 0)
+					{
+						if (prev_pipe0)
+							close(prev_pipe0);
+						dup2(shell->cmd[i]->fd_in, STDIN_FILENO);
+						close(shell->cmd[i]->fd_in);
+					}
+					else if (prev_pipe0)
+					{
+						dup2(prev_pipe0, STDIN_FILENO);
+						close(prev_pipe0);
+					}
+					else if (i != 0) // para dar de input empty file qd cat e wc nao tem input e ficam infinitamente à espera
+					{
+						dev_null = open("/dev/null", O_RDONLY);
+						if (dev_null == -1)
+						{
+							perror("Error opening /dev/null");
+							exit(1);
+						}
+						dup2(dev_null, STDIN_FILENO);
+						close(dev_null);
+					}
+					if (shell->cmd[i]->fd_out != 1)
+					{
+						dup2(shell->cmd[i]->fd_out, STDOUT_FILENO);
+						close(shell->cmd[i]->fd_out);
+					}
+					else if (shell->cmd[i + 1])
+						dup2(shell->cmd[i]->pipe[1], STDOUT_FILENO);
+					if (shell->cmd[i + 1])
+					{
+						close(shell->cmd[i]->pipe[0]);
+						close(shell->cmd[i]->pipe[1]);
+					}
+					exec_command(shell->cmd[i]->arg, make_env_arr(shell->env));
+				}
+				if (!shell->cmd[i + 1])
+					waitpid(pid[i], NULL, 0);
+			}
+			else
+			{
+				orig_stdout = dup(STDOUT_FILENO);
+				if (shell->cmd[i]->fd_out != 1)
+				{
+					dup2(shell->cmd[i]->fd_out, STDOUT_FILENO);
+					close(shell->cmd[i]->fd_out);
+				}
+				else if (shell->cmd[i + 1])
+					dup2(shell->cmd[i]->pipe[1], STDOUT_FILENO);
+				build_ins(shell->cmd[i]);
+				dup2(orig_stdout, STDOUT_FILENO);
+				close(orig_stdout);
+			}
+
+			if (prev_pipe0)
+			{
+				close(prev_pipe0);
+				prev_pipe0 = 0;
+			}
+			if (shell->cmd[i + 1])
+			{
+				if (shell->cmd[i]->fd_out != 1)
+					close(shell->cmd[i]->pipe[0]);
+				else
+					prev_pipe0 = shell->cmd[i]->pipe[0];
+				close(shell->cmd[i]->pipe[1]);
+			}
+
+			if (shell->cmd[i]->fd_in != 0)
+				close(shell->cmd[i]->fd_in);
+			if (shell->cmd[i]->fd_out != 1)
+				close(shell->cmd[i]->fd_out);
+		}
+		i++;
+	}	
+}*/

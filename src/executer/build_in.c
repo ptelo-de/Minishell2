@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 15:37:38 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/03/05 15:05:57 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/03/06 18:27:54 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,11 @@ void	free_arr(char **arr)
 	while (arr[i])
 	{
 		free(arr[i]);
+		arr[i] = NULL;
 		i++;
 	}
 	free(arr);
+	arr = NULL;
 }
 
 char	*trim_beggining(char *str, char *set)
