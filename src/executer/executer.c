@@ -82,6 +82,7 @@ void	manage_redir(t_shell **shell)
 		j = 0;
 		fd_outfile = 1;
 		error = 0;
+		temp->cmd[i]->infile_error = 0;	//retirar isto e pedir a pilar para inicializar no parsing
 		while (temp->cmd[i]->red[j])
 		{
 			if (temp->cmd[i]->red[j]->type == INFILE)
@@ -89,6 +90,7 @@ void	manage_redir(t_shell **shell)
 				if (access(temp->cmd[i]->red[j]->str, F_OK) == -1)
 				{
 					printf("Error: %s: No such file or directory\n", temp->cmd[i]->red[j]->str);
+					temp->cmd[i]->infile_error = 1;
 					(*shell)->exit_status = 1;
 					error = 1;
 					break;
@@ -151,9 +153,7 @@ void	executer()
 {
 	t_shell	*shell;
 	int		i = 0;
-	int		pid[4];
 	int		prev_pipe0;
-	int		orig_stdout;
 	int		dev_null;
 
 	shell = get_shell();
@@ -162,7 +162,7 @@ void	executer()
 	prev_pipe0 = 0;
 	while (shell->cmd[i])
 	{
-		if (shell->cmd[i]->arg[0])
+		if (shell->cmd[i]->arg[0] && shell->cmd[i]->infile_error == 0)
 		{
 			if (!shell->cmd[i + 1] && is_build_in(shell->cmd[i]))
 			{
@@ -183,16 +183,15 @@ void	executer()
 				if (shell->cmd[i + 1])
 					pipe(shell->cmd[i]->pipe);
 
-				pid[i] = fork();
-				if (pid[i] == -1)
+				shell->cmd[i]->pid = fork();
+				if (shell->cmd[i]->pid == -1)
 					perror("Error fork");
-				if (pid[i] == 0)
+				if (shell->cmd[i]->pid == 0)
 				{
 					if (is_build_in(shell->cmd[i]))
 					{
 						if (shell->cmd[i]->fd_in != 0)
 							close(shell->cmd[i]->fd_in);
-						orig_stdout = dup(STDOUT_FILENO);
 						if (shell->cmd[i]->fd_out != 1)
 						{
 							dup2(shell->cmd[i]->fd_out, STDOUT_FILENO);
@@ -206,8 +205,6 @@ void	executer()
 							close(shell->cmd[i]->pipe[1]);
 						}
 						build_ins(shell->cmd[i]);
-						dup2(orig_stdout, STDOUT_FILENO);
-						close(orig_stdout);
 						error_exec(NULL, NULL);
 					}
 					else
@@ -250,7 +247,6 @@ void	executer()
 							exec_command(shell->cmd[i]->arg, make_env_arr(shell->env));
 					}
 				}
-				waitpid(pid[i], NULL, 0);
 				if (prev_pipe0)
 				{
 					close(prev_pipe0);
@@ -269,8 +265,15 @@ void	executer()
 				if (shell->cmd[i]->fd_out != 1)
 					close(shell->cmd[i]->fd_out);
 			}
-			i++;
 		}
+		i++;
+	}
+
+	i = 0;
+	while (shell->cmd[i])
+	{
+		waitpid(shell->cmd[i]->pid, &shell->exit_status, 0);
+		i++;
 	}	
 }
 
@@ -358,7 +361,7 @@ void	error_exec(char *path, char **envp)
 		free(path);
 	free_arr(envp);
 	free_atributes();
-	//free(shell->readline); //nao sei se é necessário
+	free(shell->readline); //nao sei se é necessário
 	free_lst(shell->env);
     free_lst(shell->exp);
 	exit(1);

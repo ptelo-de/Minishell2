@@ -57,6 +57,8 @@ typedef struct s_cmd
 
     int             pid;
 
+    int             infile_error;
+
 	char			*path;
 	char			**arg;
     int             n_arg;
