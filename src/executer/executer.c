@@ -149,6 +149,23 @@ int	is_build_in(t_cmd *cmd)
 	return (0);
 }
 
+void	close_all_fd_red()
+{
+	t_shell	*shell;
+	int		i;
+
+	shell = get_shell();
+	i = 0;
+	while (shell->cmd[i])
+	{
+		if (shell->cmd[i]->fd_in != 0)
+			close(shell->cmd[i]->fd_in);
+		if (shell->cmd[i]->fd_out != 1)
+			close(shell->cmd[i]->fd_out);
+		i++;
+	}
+}
+
 void	executer()
 {
 	t_shell	*shell;
@@ -164,7 +181,7 @@ void	executer()
 	{
 		if (shell->cmd[i]->arg[0] && shell->cmd[i]->infile_error == 0)
 		{
-			if (!shell->cmd[i + 1] && is_build_in(shell->cmd[i]))
+			if (!shell->cmd[1] && is_build_in(shell->cmd[i]))	//posso pôr i ou 0
 			{
 				if (shell->cmd[i]->fd_out != 1)
 				{
@@ -177,9 +194,6 @@ void	executer()
 			}
 			else // para ignorar qd nao ha comandos e apenas redirecoes
 			{
-				//printf("cmd: %s has fd_in[%d]: %d\n", shell->cmd[i]->arg[0], i, shell->cmd[i]->fd_in);
-				//printf("cmd: %s has fd_out[%d]: %d\n", shell->cmd[i]->arg[0], i, shell->cmd[i]->fd_out);
-
 				if (shell->cmd[i + 1])
 					pipe(shell->cmd[i]->pipe);
 
@@ -190,8 +204,7 @@ void	executer()
 				{
 					if (is_build_in(shell->cmd[i]))
 					{
-						if (shell->cmd[i]->fd_in != 0)
-							close(shell->cmd[i]->fd_in);
+						printf("ola\n");
 						if (shell->cmd[i]->fd_out != 1)
 						{
 							dup2(shell->cmd[i]->fd_out, STDOUT_FILENO);
@@ -204,15 +217,18 @@ void	executer()
 							close(shell->cmd[i]->pipe[0]);
 							close(shell->cmd[i]->pipe[1]);
 						}
+						if (ft_strncmp(shell->cmd[i]->arg[0], "exit", 5) == 0 && prev_pipe0)	//para o caso de echo hello | exit
+							close(prev_pipe0);
 						build_ins(shell->cmd[i]);
+						if (prev_pipe0)
+							close(prev_pipe0);
+						close_all_fd_red();
 						error_exec(NULL, NULL);
 					}
 					else
 					{
 						if (shell->cmd[i]->fd_in != 0)
 						{
-							if (prev_pipe0)
-								close(prev_pipe0);
 							dup2(shell->cmd[i]->fd_in, STDIN_FILENO);
 							close(shell->cmd[i]->fd_in);
 						}
@@ -244,7 +260,7 @@ void	executer()
 							close(shell->cmd[i]->pipe[0]);
 							close(shell->cmd[i]->pipe[1]);
 						}
-							exec_command(shell->cmd[i]->arg, make_env_arr(shell->env));
+						exec_command(shell->cmd[i]->arg, make_env_arr(shell->env));
 					}
 				}
 				if (prev_pipe0)
@@ -273,6 +289,7 @@ void	executer()
 	while (shell->cmd[i])
 	{
 		waitpid(shell->cmd[i]->pid, &shell->exit_status, 0);
+		shell->exit_status = WEXITSTATUS(shell->exit_status);
 		i++;
 	}	
 }

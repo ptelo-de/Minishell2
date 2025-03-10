@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_itoa.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptelo-de <ptelo-de@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ptelo-de <ptelo-de@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/12 14:22:40 by ptelo-de          #+#    #+#             */
-/*   Updated: 2024/04/21 18:24:49 by ptelo-de         ###   ########.fr       */
+/*   Updated: 2025/03/10 23:33:26 by ptelo-de         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ char	*ft_itoa(int n)
 	rl = ft_countchr(n);
 	i = 0;
 	n2 = n;
-	r = (char *)ft_calloc(rl + 1, sizeof(char));
+	r = ft_calloc(rl + 1, sizeof(char));
 	if (!r)
 		return (NULL);
 	if (n2 < 0)

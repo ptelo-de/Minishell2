@@ -31,6 +31,7 @@ int hereDoc(char *del)
 	}
 	close(shell->here_pipe[1]);
 	waitpid(pid, &(shell->exit_status),0);
+	shell->exit_status = WEXITSTATUS(shell->exit_status);
 	if (!shell->sigint_flag)
 	{
 		close (shell->here_pipe[0]);
