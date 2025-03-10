@@ -53,7 +53,7 @@ void    free_tokens(void)
 		shell->tokens = NULL;
         shell->tokens = next;
     }
-	printf("\n\nIN FREE TOKENS\n\n\n");
+	//printf("\n\nIN FREE TOKENS\n\n\n");
 	print_tokens();
     shell->tokens = NULL;
 }

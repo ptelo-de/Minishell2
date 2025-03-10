@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   build_in.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptelo-de <ptelo-de@student.42lisboa.com    +#+  +:+       +#+        */
+/*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 15:37:38 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/02/12 16:57:26 by ptelo-de         ###   ########.fr       */
+/*   Updated: 2025/03/06 18:27:54 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,11 @@ void	free_arr(char **arr)
 	while (arr[i])
 	{
 		free(arr[i]);
+		arr[i] = NULL;
 		i++;
 	}
 	free(arr);
+	arr = NULL;
 }
 
 char	*trim_beggining(char *str, char *set)
@@ -364,6 +366,8 @@ void	ms_pwd()
 		ft_putendl_fd("Error: Failed to get current directory\n", 2);
 		return;
 	}
+	//write(1, pwd, ft_strlen(pwd));
+	//write(1, "\n", 2);
 	printf("%s\n", pwd);
 	free(pwd);
 }
@@ -689,8 +693,12 @@ void	ms_exit(t_shell **shell, t_cmd *cmd, int here)
 		free_all();
 		exit((*shell)->exit_status);
 	}
-	printf("exit\n");
-	if (cmd->arg[1] && str_isdigit(cmd->arg[1]) && cmd->n_arg > 2)
+	if (cmd->n_arg == 0)
+	{
+		free_all();
+		exit((*shell)->exit_status);
+	}
+	else if (cmd->arg[1] && str_isdigit(cmd->arg[1]) && cmd->n_arg > 2)
 	{
 		printf("Error: exit: too many arguments\n");
 		(*shell)->exit_status = 1;
@@ -739,7 +747,10 @@ int	build_ins(t_cmd *cmd)
 	else if (ft_strncmp(cmd->arg[0], "env", 4) == 0)
 		ms_env(shell->env);
 	else if (ft_strncmp(cmd->arg[0], "exit", 5) == 0)
+	{
+		printf("exit\n");
 		ms_exit(&shell, cmd, 0);
+	}
 	else
 		return (0);
 	return (1);

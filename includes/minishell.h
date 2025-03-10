@@ -15,6 +15,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <signal.h>
+#include <fcntl.h>
 
 typedef enum s_type{
     
@@ -56,11 +57,13 @@ typedef struct s_cmd
 
     int             pid;
 
+    int             infile_error;
+
 	char			*path;
 	char			**arg;
     int             n_arg;
 
-   
+
 }	t_cmd;
 
 typedef struct s_shell
