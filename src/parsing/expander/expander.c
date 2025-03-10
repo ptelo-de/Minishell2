@@ -1,4 +1,3 @@
-
 #include "parsing.h"
 //$a $b "aaaaaaaaaaaaaaa $c" 'aaaaaaaaa""'
 
@@ -42,7 +41,8 @@ void	process_dollar(int *len, char *src, char **update)
 {
 	int i;
 	char *aux;
-	char *auxx;
+	char *var_name;
+	char *value;
 
 	if (!ft_isalpha(src[1]) && src[1] != '_' && src[1] != '?')
 	{
@@ -63,16 +63,21 @@ void	process_dollar(int *len, char *src, char **update)
 		while (ft_isalnum(src[i]) || src[i] == '_')
 			i++;
 		i--;
-		auxx = ft_substr(src, 1, i);
+		var_name = ft_substr(src, 1, i);
+		value = get_value(var_name);
+		if (value)
+		{
+
 		aux = ft_strdup(*update);
 		if (*update)
 			free(*update);
-		*update = ms_strjoin(aux, get_value(auxx));
+		*update = ms_strjoin(aux, get_value(var_name));
 		if (aux)
 			free(aux);
-		if (auxx)
-			free(auxx);
+		}
 		*len = *len + i + 1;
+		if (var_name)
+			free(var_name);
 	}
 }
 void expand_quote(int *i, char **update, char *src)
@@ -114,15 +119,11 @@ void	expand_node(t_token **tmp)
 	while ((*tmp)->str && (*tmp)->str[i])
 	{
 		if ((*tmp)->str[i] == '\'' || (*tmp)->str[i] == '\"')
-		{
 			expand_quote(&i, &update, (*tmp)->str + i++);
-		}
 		else if ((*tmp)->str[i] == '$')
 			process_dollar(&i, (*tmp)->str + i, &update);
-		else{
-
+		else
 			update_str(&update, (*tmp)->str, i++, 1);
-		}
 	}
 	if ((*tmp)->str)
 		free((*tmp)->str);
