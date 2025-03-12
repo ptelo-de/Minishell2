@@ -33,6 +33,7 @@ void exit_status_expander( char **update)
 
 	shell = get_shell();
 	aux = ft_itoa(shell->exit_status);
+	//printf("itoa exit status %d\n", shell->exit_status);
 	update_str(update, aux, 0, safe_strlen(aux));
 	if (aux)
 		free(aux);

@@ -289,7 +289,9 @@ void	executer()
 	while (shell->cmd[i])
 	{
 		waitpid(shell->cmd[i]->pid, &shell->exit_status, 0);
+		printf("exit status before; %d\n", shell->exit_status);
 		shell->exit_status = WEXITSTATUS(shell->exit_status);
+		printf("exit status after; %d\n", shell->exit_status);
 		i++;
 	}	
 }
