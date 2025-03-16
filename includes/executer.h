@@ -14,12 +14,12 @@ int		arr_len(char **arr);
 char	 **alpha_order(char **envp);
 t_list	*get_exp(char **envp);
 int		flag_n(char *arg);
-void	ms_echo(t_cmd *cmd);
+int		ms_echo(t_cmd *cmd);
 void	update_pwd_env(char *path, t_list **env);
 void	update_pwd_exp(char *path, t_list **exp);
 char	*join_all_args(t_cmd *cmd);
-void	ms_cd(t_list **env, t_list **exp, t_cmd *cmd);
-void	ms_pwd();
+int		ms_cd(t_list **env, t_list **exp, t_cmd *cmd);
+int		ms_pwd();
 int		has_equal(char *var);
 void	put_export_mid_end(t_list **exp, char *var, t_list *new_node);
 void	put_export(t_list **exp, char *var);
@@ -27,11 +27,11 @@ char	*trim_value(char *var);
 int		update_lst(t_list **lst, char *var, int b);
 void	print_exp(t_list *exp);
 int		arg_valid(char *arg);
-void	ms_export(t_list **env, t_list **exp, t_cmd *cmd);
+int		ms_export(t_list **env, t_list **exp, t_cmd *cmd);
 void	delete_var(t_list **lst, char *var);
 int		delete_var_no_equal(t_list **lst, char *var_no_equal);
-void	ms_unset(t_list **env, t_list **exp, t_cmd *cmd);
-void	ms_env(t_list *env);
+int		ms_unset(t_list **env, t_list **exp, t_cmd *cmd);
+int		ms_env(t_list *env);
 int		str_isdigit(char *str);
 void	free_all();
 void	ms_exit(t_shell **shell, t_cmd *cmd, int here);
@@ -54,5 +54,7 @@ void	error_exec(char *path, char **envp);
 void	exec_command(char **args, char **envp);
 char	**make_env_arr(t_list *env);
 //int		executer(t_cmd *cmd);
+
+void exec_mode(void);
 
 #endif

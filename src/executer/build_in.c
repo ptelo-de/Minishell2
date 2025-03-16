@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 15:37:38 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/03/10 19:25:34 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/03/12 14:57:16 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void	free_arr(char **arr)
 
 char	*trim_beggining(char *str, char *set)
 {
-	int		start;
+	size_t	start;
 	char	*trim;
 	
 	start = 0;
@@ -223,7 +223,7 @@ int	flag_n(char *arg)
 	return (1);
 }
 
-void	ms_echo(t_cmd *cmd)
+int	ms_echo(t_cmd *cmd)
 {
 	int	i;
 
@@ -239,6 +239,7 @@ void	ms_echo(t_cmd *cmd)
 	}
 	if (!flag_n(cmd->arg[1]))
 		printf("\n");
+	return (0);
 }
 
 void	update_pwd_env(char *path, t_list **env)
@@ -324,20 +325,40 @@ char	*join_all_args(t_cmd *cmd)
 	return (str2);
 }
 
-void	ms_cd(t_list **env, t_list **exp, t_cmd *cmd)
+char	*ms_getenv(t_list *env, char *var)
+{
+	t_list	*temp;
+
+	temp = env;
+	while (temp != NULL)
+	{
+		if (ft_strncmp(var, temp->content, ft_strlen(var)) == 0)
+			return (trim_beggining(temp->content, var));
+		temp = temp->next;
+	}
+	return (NULL);
+}
+
+int	ms_cd(t_list **env, t_list **exp, t_cmd *cmd)
 {
 	char	*join_arg;
 	char	*cwd;
+	char	*get_env_home;
 	
 	if (cmd->n_arg == 1)
 	{
-		if (getenv("HOME") == NULL)
+		get_env_home = ms_getenv((*env), "HOME=");
+		if (get_env_home == NULL)
+		{
 			ft_putendl_fd("Error: cd: no home directory found\n", 2);
+			return (1);
+		}
 		else
 		{
-			chdir(getenv("HOME"));
-			update_pwd_env(getenv("HOME"), env);
-			update_pwd_exp(getenv("HOME"), exp);
+			chdir(get_env_home);
+			update_pwd_env(get_env_home, env);
+			update_pwd_exp(get_env_home, exp);
+			free(get_env_home);
 		}
 	}
 	else
@@ -351,12 +372,16 @@ void	ms_cd(t_list **env, t_list **exp, t_cmd *cmd)
 			free(cwd);
 		}
 		else
+		{
 			ft_putendl_fd("Error: cd: Unable to execute cd\n", 2);
+			return (1);
+		}
 		free(join_arg);
 	}
+	return (0);
 }
 
-void	ms_pwd()
+int	ms_pwd()
 {
 	char	*pwd;
 
@@ -364,12 +389,11 @@ void	ms_pwd()
 	if (pwd == NULL)
 	{
 		ft_putendl_fd("Error: Failed to get current directory\n", 2);
-		return;
+		return (1);
 	}
-	//write(1, pwd, ft_strlen(pwd));
-	//write(1, "\n", 2);
 	printf("%s\n", pwd);
 	free(pwd);
+	return (0);
 }
 
 int	has_equal(char *var)
@@ -525,7 +549,7 @@ int	arg_valid(char *arg)
 	return (1);
 }
 
-void	ms_export(t_list **env, t_list **exp, t_cmd *cmd)
+int	ms_export(t_list **env, t_list **exp, t_cmd *cmd)
 {
 	int		i;
 	char	*arg_with_quotes;
@@ -537,7 +561,10 @@ void	ms_export(t_list **env, t_list **exp, t_cmd *cmd)
 	while (i < cmd->n_arg)
 	{
 		if (!arg_valid(cmd->arg[i]))
+		{
 			printf("Error: export: '%s': not a valid identifier\n", cmd->arg[i]);
+			return (1);
+		}
 		else if (has_equal(cmd->arg[i]))
 		{
 			arg_with_quotes = put_double_quotes(cmd->arg[i]);
@@ -545,7 +572,7 @@ void	ms_export(t_list **env, t_list **exp, t_cmd *cmd)
 			{
 				dup = ft_strdup(cmd->arg[i]);
 				if (!dup)
-					return;
+					return (1);
 				ft_lstadd_back(env, ft_lstnew(dup));
 			}
 			if (!update_lst(exp, arg_with_quotes, 1))
@@ -556,6 +583,7 @@ void	ms_export(t_list **env, t_list **exp, t_cmd *cmd)
 			put_export(exp, cmd->arg[i]);
 		i++;
 	}
+	return (0);
 }
 
 //funtion that deletes either in env or exp the variable that wants to be unset if this variable has an "=" in the list
@@ -616,7 +644,7 @@ int	delete_var_no_equal(t_list **lst, char *var_no_equal)
 	return (0);
 }
 
-void	ms_unset(t_list **env, t_list **exp, t_cmd *cmd)
+int	ms_unset(t_list **env, t_list **exp, t_cmd *cmd)
 {
 	char	*var_join_env;
 	char	*var_join_exp_no_equal;
@@ -628,19 +656,19 @@ void	ms_unset(t_list **env, t_list **exp, t_cmd *cmd)
 	{
 		var_join_env = ft_strjoin(cmd->arg[i], "=");
 		if (!var_join_env)
-			return;
+			return (1);
 		var_join_exp_no_equal = ft_strjoin("declare -x ", cmd->arg[i]);
 		if (!var_join_exp_no_equal)
 		{
 			free(var_join_env);
-			return;
+			return (1);
 		}
 		var_join_exp = ft_strjoin("declare -x ", var_join_env);
 		if (!var_join_exp)
 		{
 			free(var_join_env);
 			free(var_join_exp_no_equal);
-			return;
+			return (1);
 		}
 		delete_var(env, var_join_env);
 		if (!delete_var_no_equal(exp, var_join_exp_no_equal))
@@ -650,15 +678,17 @@ void	ms_unset(t_list **env, t_list **exp, t_cmd *cmd)
 		free(var_join_exp);
 		i++;
 	}
+	return (0);
 }
 
-void	ms_env(t_list *env)
+int	ms_env(t_list *env)
 {
 	while (env != NULL)
 	{
 		printf("%s\n", (char *)env->content);
 		env = env->next;
 	}
+	return (0);
 }
 
 int	str_isdigit(char *str)
@@ -691,6 +721,7 @@ void	ms_exit(t_shell **shell, t_cmd *cmd, int here)
 	if (here)
 	{
 		free_all();
+		printf("shell exit status ms_exit %d\n",(*shell)->exit_status);
 		exit((*shell)->exit_status);
 	}
 	if (cmd->n_arg == 0)
@@ -734,18 +765,18 @@ int	build_ins(t_cmd *cmd)
 	shell = get_shell();
 	if (!cmd || !cmd->arg || !cmd->arg[0])
 		return (0);
-	else if (ft_strncmp(cmd->arg[0], "cd", 3) == 0)
-		ms_cd(&shell->env, &shell->exp, cmd);
 	else if (ft_strncmp(cmd->arg[0], "echo", 5) == 0)
-		ms_echo(cmd);
+		shell->exit_status = ms_echo(cmd);
+	else if (ft_strncmp(cmd->arg[0], "cd", 3) == 0)
+		shell->exit_status = ms_cd(&shell->env, &shell->exp, cmd);
 	else if (ft_strncmp(cmd->arg[0], "pwd", 4) == 0)
-		ms_pwd();
+		shell->exit_status = ms_pwd();
 	else if (ft_strncmp(cmd->arg[0], "export", 7) == 0)
-		ms_export(&shell->env, &shell->exp, cmd);
+		shell->exit_status = ms_export(&shell->env, &shell->exp, cmd);
 	else if (ft_strncmp(cmd->arg[0], "unset", 6) == 0)
-		ms_unset(&shell->env, &shell->exp, cmd);
+		shell->exit_status = ms_unset(&shell->env, &shell->exp, cmd);
 	else if (ft_strncmp(cmd->arg[0], "env", 4) == 0)
-		ms_env(shell->env);
+		shell->exit_status = ms_env(shell->env);
 	else if (ft_strncmp(cmd->arg[0], "exit", 5) == 0)
 	{
 		printf("exit\n");

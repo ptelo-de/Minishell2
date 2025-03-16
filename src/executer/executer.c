@@ -37,6 +37,7 @@ void	manage_hd(t_shell *shell)
 				if (fd_hd != 0)
 					close(fd_hd);
 				fd_hd = hereDoc(temp->cmd[i]->red[j]->str);
+				printf("fd_hd: %d\n", fd_hd);
 			}
 			j++;
 		}
@@ -177,6 +178,7 @@ void	executer()
 	manage_hd(shell);
 	manage_redir(&shell);
 	prev_pipe0 = 0;
+	exec_mode();
 	while (shell->cmd[i])
 	{
 		if (shell->cmd[i]->arg[0] && shell->cmd[i]->infile_error == 0)
@@ -204,7 +206,6 @@ void	executer()
 				{
 					if (is_build_in(shell->cmd[i]))
 					{
-						printf("ola\n");
 						if (shell->cmd[i]->fd_out != 1)
 						{
 							dup2(shell->cmd[i]->fd_out, STDOUT_FILENO);
@@ -284,13 +285,19 @@ void	executer()
 		}
 		i++;
 	}
-
 	i = 0;
 	while (shell->cmd[i])
 	{
-		waitpid(shell->cmd[i]->pid, &shell->exit_status, 0);
-		i++;
-	}	
+		if (shell->cmd[i]->pid > 0)
+		{
+			waitpid(shell->cmd[i]->pid, &shell->exit_status, 0);
+			if (WIFEXITED(shell->exit_status))
+				shell->exit_status = WEXITSTATUS(shell->exit_status);
+			else if (WIFSIGNALED(shell->exit_status))
+				shell->exit_status = 128 + WTERMSIG(shell->exit_status);
+		}
+    	i++;
+	}
 }
 
 //função que recebe o nome do último infile e o abre para poder retornar o fd correspondente
@@ -329,7 +336,7 @@ char	**find_path(char **envp)
 	i = 0;
 	while (envp[i])
 	{
-		if (ft_strncmp(envp[i], "PATH=", sizeof(char) * 5) == 0)
+		if (ft_strncmp(envp[i], "PATH=", 5) == 0)
 		{
 			path_trim = trim_beggining(envp[i], "PATH=");
 			path_env = ft_split(path_trim, ':');
@@ -339,6 +346,33 @@ char	**find_path(char **envp)
 		i++;
 	}
 	return (NULL);
+}
+
+void	increase_shlvl()
+{
+	int	shlvl;
+	t_shell *shell;
+	t_list *temp;
+	char *trim_val;
+	char *itoa_shlvl;
+
+	shell = get_shell();
+	temp = shell->env;
+	while (temp)
+	{
+		if (ft_strncmp(temp->content, "SHLVL=", 6) == 0)
+		{
+			shlvl = ft_atoi(trim_beggining(temp->content, "SHLVL="));
+			shlvl++;
+			trim_val = trim_value(temp->content);
+			free(temp->content);
+			itoa_shlvl = ft_itoa(shlvl);
+			temp->content = ft_strjoin(trim_val, itoa_shlvl);
+			free(trim_val);
+			free(itoa_shlvl);
+		}
+		temp = temp->next;
+	}
 }
 
 char	*create_path(char *function, char **envp)
@@ -363,8 +397,18 @@ char	*create_path(char *function, char **envp)
 		free(path);
 		i++;
 	}
-	//write(2, "Error not able to execute or find function\n", 43);
 	free_arr(path_env);
+
+	path_join = ft_strjoin(getcwd(NULL, 0), "/");
+	path = ft_strjoin(path_join, function);
+	free(path_join);
+	if (access(path, X_OK) == 0)
+	{
+		increase_shlvl();
+		return (path);
+	}
+	free(path);
+
 	return (NULL);
 }
 
