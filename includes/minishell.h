@@ -92,5 +92,6 @@ void check_main_args(int ac);
 void interactive_mode(void);
 void	ignore_signal(int signal);
 void here_sigint(void);
+void executer_mode(void);
 
 #endif

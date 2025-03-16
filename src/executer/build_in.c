@@ -6,7 +6,7 @@
 /*   By: ptelo-de <ptelo-de@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 15:37:38 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/03/12 00:10:51 by ptelo-de         ###   ########.fr       */
+/*   Updated: 2025/03/16 21:07:00 by ptelo-de         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -691,7 +691,6 @@ void	ms_exit(t_shell **shell, t_cmd *cmd, int here)
 	if (here)
 	{
 		free_all();
-		printf("shell exit statos ms_exit %d\n",(*shell)->exit_status);
 		exit((*shell)->exit_status);
 	}
 	if (cmd->n_arg == 0)

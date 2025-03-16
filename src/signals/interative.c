@@ -44,6 +44,7 @@ void interactive_mode(void)
 	ignore_signal(SIGQUIT);
 }
 
+
 /*
 sigaction mask:  
 The mask in struct sigaction are signals that 
