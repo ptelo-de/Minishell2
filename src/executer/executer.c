@@ -192,7 +192,6 @@ void	executer()
 			}
 			else // para ignorar qd nao ha comandos e apenas redirecoes
 			{
-				printf("1: i: %d\n", i);
 				if (shell->cmd[i + 1])
 					pipe(shell->cmd[i]->pipe);
 
@@ -203,29 +202,20 @@ void	executer()
 				{
 					if (is_build_in(shell->cmd[i]))
 					{
-						printf("2: i: %d\n", i);
 						if (shell->cmd[i]->fd_out != 1)
 						{
-							printf("3: i: %d\n", i);
 							dup2(shell->cmd[i]->fd_out, STDOUT_FILENO);
 							close(shell->cmd[i]->fd_out);
 						}
 						else if (shell->cmd[i + 1])
-						{
-							printf("4: i: %d\n", i);
 							dup2(shell->cmd[i]->pipe[1], STDOUT_FILENO);
-						}
 						if (shell->cmd[i + 1])
 						{
-							printf("5: i: %d\n", i);
 							close(shell->cmd[i]->pipe[0]);
 							close(shell->cmd[i]->pipe[1]);
 						}
 						if (ft_strncmp(shell->cmd[i]->arg[0], "exit", 5) == 0 && prev_pipe0)	//para o caso de echo hello | exit
-						{
-							printf("6: i: %d\n", i);
 							close(prev_pipe0);
-						}
 						build_ins(shell->cmd[i]);
 						if (prev_pipe0)
 							close(prev_pipe0);
