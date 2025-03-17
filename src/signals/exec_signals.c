@@ -1,33 +1,51 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exec_signals.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/12 17:53:03 by bde-luce          #+#    #+#             */
+/*   Updated: 2025/03/13 14:08:54 by bde-luce         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
-#include "executer.h"
 
-
-void	exec_handler(int signal)
+static void	exec_handler(int signal)
 {
+	t_shell *shell;
 	
-	t_shell	*shell;
-	
-	shell = get_shell();
-	
+    shell = get_shell();    
 	if (signal == SIGQUIT)
-		get_shell()->exit_status = 131;
+	{
+		shell->exit_status = 131;
+		write(1, "\n", 1);
+	}
 	if (signal == SIGINT)
 	{
-		get_shell()->exit_status = 130;
-		ms_exit(&shell, NULL, 0);
+		shell->exit_status = 130;
+		write(1, "\n", 1);
 	}
 }
-void executer_mode(void)
+
+void exec_mode(void)
 {
 	struct sigaction sa;
 
 	sa.sa_handler = exec_handler;
-	sa.sa_flags = SA_RESTART; //dar restart a system calls, fazer teste de zerar esta variavel
-	if (sigemptyset(&sa.sa_mask) || sigaction(SIGINT, &sa, NULL))
+	sa.sa_flags = SA_RESTART;
+	sigemptyset(&sa.sa_mask);
+	if (sigaction(SIGINT, &sa, NULL))
 	{
-		write(2, "sigaction failed at interactive mode in SIGINT\n", 48);
+		perror("sigaction failed at execution mode in SIGINT");
 		//free all minishell memory
 		exit(1);
 	}
-	ignore_signal(SIGQUIT);
+	if (sigaction(SIGQUIT, &sa, NULL))
+	{
+		perror("sigaction failed at execution mode in SIGQUIT");
+		//free all minishell memory
+		exit(1);
+	}
 }

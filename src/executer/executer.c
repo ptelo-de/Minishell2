@@ -37,11 +37,11 @@ void	manage_hd(t_shell *shell)
 				if (fd_hd != 0)
 					close(fd_hd);
 				fd_hd = hereDoc(temp->cmd[i]->red[j]->str);
+				printf("fd_hd: %d\n", fd_hd);
 			}
 			j++;
 		}
 		temp->cmd[i]->fd_in = fd_hd;
-		//printf("hd_fd_in: %d\n", temp->cmd[i]->fd_in);
 		i++;
 	}
 }
@@ -121,9 +121,7 @@ void	manage_redir(t_shell **shell)
 				temp->cmd[i]->fd_in = get_fd_infile(last_in);
 			}
 		}
-		//printf("redir_fd_in: %d\n", temp->cmd[i]->fd_in);
 		temp->cmd[i]->fd_out = fd_outfile; //posso por isto dentro do if de erro
-		//printf("redir_fd_out: %d\n", temp->cmd[i]->fd_out); 
 		i++;
 	}
 }
@@ -177,6 +175,7 @@ void	executer()
 	manage_hd(shell);
 	manage_redir(&shell);
 	prev_pipe0 = 0;
+	exec_mode();
 	while (shell->cmd[i])
 	{
 		if (shell->cmd[i]->arg[0] && shell->cmd[i]->infile_error == 0)
@@ -204,7 +203,6 @@ void	executer()
 				{
 					if (is_build_in(shell->cmd[i]))
 					{
-						printf("ola\n");
 						if (shell->cmd[i]->fd_out != 1)
 						{
 							dup2(shell->cmd[i]->fd_out, STDOUT_FILENO);
@@ -284,14 +282,19 @@ void	executer()
 		}
 		i++;
 	}
-
 	i = 0;
 	while (shell->cmd[i])
 	{
-		waitpid(shell->cmd[i]->pid, &shell->exit_status, 0);
-		shell->exit_status = WEXITSTATUS(shell->exit_status);
-		i++;
-	}	
+		if (shell->cmd[i]->pid > 0)
+		{
+			waitpid(shell->cmd[i]->pid, &shell->exit_status, 0);
+			if (WIFEXITED(shell->exit_status))
+				shell->exit_status = WEXITSTATUS(shell->exit_status);
+			else if (WIFSIGNALED(shell->exit_status))
+				shell->exit_status = 128 + WTERMSIG(shell->exit_status);
+		}
+    	i++;
+	}
 }
 
 //função que recebe o nome do último infile e o abre para poder retornar o fd correspondente
@@ -330,7 +333,7 @@ char	**find_path(char **envp)
 	i = 0;
 	while (envp[i])
 	{
-		if (ft_strncmp(envp[i], "PATH=", sizeof(char) * 5) == 0)
+		if (ft_strncmp(envp[i], "PATH=", 5) == 0)
 		{
 			path_trim = trim_beggining(envp[i], "PATH=");
 			path_env = ft_split(path_trim, ':');
@@ -340,6 +343,35 @@ char	**find_path(char **envp)
 		i++;
 	}
 	return (NULL);
+}
+
+char	*increase_shlvl(char *envp_i)
+{
+	char	*envp_shlvl;
+	int		shlvl;
+	char	*increased_shlvl;
+
+	envp_shlvl = trim_beggining(envp_i, "SHLVL=");	//initial shlvl value but still in ascii
+	shlvl = ft_atoi(envp_shlvl);					//initial shlvl value already as int
+	shlvl++;										//increased shlvl value as int
+	free(envp_shlvl);
+	increased_shlvl = ft_itoa(shlvl);				//increased shlvl value in ascii
+	return (increased_shlvl);
+}
+
+
+char	*set_shlvl(char *envp_i)
+{
+	char	*increased_shlvl;
+	char	*trim_val;
+	char 	*updated_shlvl;
+	
+	increased_shlvl = increase_shlvl(envp_i);				//increased shlvl
+	trim_val = trim_value(envp_i);							//trimmed SHLVL= string from envp
+	updated_shlvl = ft_strjoin(trim_val, increased_shlvl);	//joined string SHLVL= and increased shlvl value
+	free(trim_val);
+	free(increased_shlvl);
+	return (updated_shlvl);
 }
 
 char	*create_path(char *function, char **envp)
@@ -364,8 +396,15 @@ char	*create_path(char *function, char **envp)
 		free(path);
 		i++;
 	}
-	//write(2, "Error not able to execute or find function\n", 43);
 	free_arr(path_env);
+
+	path_join = ft_strjoin(getcwd(NULL, 0), "/");
+	path = ft_strjoin(path_join, function);
+	free(path_join);
+	if (access(path, X_OK) == 0)
+		return (path);
+	free(path);
+
 	return (NULL);
 }
 
@@ -389,7 +428,6 @@ void	exec_command(char **args, char **envp)
 	char	*path;
 
 	path = create_path(args[0], envp);
-	executer_mode();
 	if (!path)
 	{
 		write(2, args[0], ft_strlen(args[0]));

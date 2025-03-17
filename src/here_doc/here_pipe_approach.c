@@ -10,9 +10,9 @@ int hereDoc(char *del)
 
 	shell = get_shell();
 	if(!del)
-		return -1;
+		return (-1);
 	if(pipe(shell->here_pipe) == -1)
-		return -2;
+		return (-2);
 	int pid = fork();
 	if(pid == 0)
 	{
@@ -29,10 +29,10 @@ int hereDoc(char *del)
 			printf("minishell: warning: here-document at line 1 delimited by end-of-file( wanted \'%s\')\n", del);
 		
 		close(shell->here_pipe[1]);
-		ms_exit(&shell, NULL, 0);
+		ms_exit(&shell, NULL, 1);
 	}
 	close(shell->here_pipe[1]);
-	waitpid(pid, &(shell->exit_status),0);
+	waitpid(pid, &(shell->exit_status),1);
 	shell->exit_status = WEXITSTATUS(shell->exit_status);
 	return (shell->here_pipe[0]);
 }
