@@ -1,5 +1,10 @@
 #include "parsing.h"
-//$a $b "aaaaaaaaaaaaaaa $c" 'aaaaaaaaa""'
+
+/* 
+returns value o enviroment variable
+if it exists, an empty string if the value is empty, 
+and NULL if the variable does not exist.
+ */
 
 char *get_value(char *name)
 {
@@ -65,15 +70,15 @@ void	process_dollar(int *len, char *src, char **update)
 		i--;
 		var_name = ft_substr(src, 1, i);
 		value = get_value(var_name);
-		if (value)
+		if (value && value[0])
 		{
-
-		aux = ft_strdup(*update);
-		if (*update)
-			free(*update);
-		*update = ms_strjoin(aux, get_value(var_name));
-		if (aux)
-			free(aux);
+			printf("in here\n");
+			aux = ft_strdup(*update);
+			if (*update)
+				free(*update);
+			*update = ms_strjoin(aux, value);
+			if (aux)
+				free(aux);
 		}
 		*len = *len + i + 1;
 		if (var_name)
@@ -152,4 +157,3 @@ void expander(void)
 	}
 	clear_empty_token();
 }
-

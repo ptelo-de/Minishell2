@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 15:37:38 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/03/17 17:02:36 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/03/17 19:08:28 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -732,7 +732,6 @@ void	ms_exit(t_shell **shell, t_cmd *cmd, int here)
 	if (here)
 	{
 		free_all();
-		printf("shell exit status ms_exit %d\n",(*shell)->exit_status);
 		exit((*shell)->exit_status);
 	}
 	if (cmd->n_arg == 0)

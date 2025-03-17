@@ -1,4 +1,3 @@
-
 #ifndef MINISHELL_H
 #define MINISHELL_H
 
@@ -75,8 +74,7 @@ typedef struct s_shell
 	t_list *env;
 	t_list  *exp;
 
-	int exit_status; // ? para eu poder expandir $?
-    int sigint_flag;
+	int exit_status;
 
 	int here_pipe[2];
 
@@ -90,5 +88,6 @@ void check_main_args(int ac);
 void interactive_mode(void);
 void	ignore_signal(int signal);
 void here_sigint(void);
+void executer_mode(void);
 
 #endif

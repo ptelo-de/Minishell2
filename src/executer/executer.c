@@ -37,7 +37,6 @@ void	manage_hd(t_shell *shell)
 				if (fd_hd != 0)
 					close(fd_hd);
 				fd_hd = hereDoc(temp->cmd[i]->red[j]->str);
-				printf("fd_hd: %d\n", fd_hd);
 			}
 			j++;
 		}
@@ -73,7 +72,7 @@ void	manage_redir(t_shell **shell)
 	int		j;
 	char	*last_in;
 	int		fd_outfile;
-	int		error;
+	//int		error;
 
 	temp = *shell;
 	i = 0;
@@ -81,7 +80,7 @@ void	manage_redir(t_shell **shell)
 	{
 		j = 0;
 		fd_outfile = 1;
-		error = 0;
+		//error = 0;
 		temp->cmd[i]->infile_error = 0;	//retirar isto e pedir a pilar para inicializar no parsing
 		while (temp->cmd[i]->red[j])
 		{
@@ -92,7 +91,7 @@ void	manage_redir(t_shell **shell)
 					printf("Error: %s: No such file or directory\n", temp->cmd[i]->red[j]->str);
 					temp->cmd[i]->infile_error = 1;
 					(*shell)->exit_status = 1;
-					error = 1;
+					//error = 1;
 					break;
 				}
 				else
@@ -112,7 +111,7 @@ void	manage_redir(t_shell **shell)
 			}
 			j++;
 		}
-		if (error != 1)
+		if (temp->cmd[i]->infile_error != 1)
 		{
 			if (last_is_infile(temp->cmd[i]) == 0)
 			{
@@ -193,6 +192,7 @@ void	executer()
 			}
 			else // para ignorar qd nao ha comandos e apenas redirecoes
 			{
+				printf("1: i: %d\n", i);
 				if (shell->cmd[i + 1])
 					pipe(shell->cmd[i]->pipe);
 
@@ -203,20 +203,29 @@ void	executer()
 				{
 					if (is_build_in(shell->cmd[i]))
 					{
+						printf("2: i: %d\n", i);
 						if (shell->cmd[i]->fd_out != 1)
 						{
+							printf("3: i: %d\n", i);
 							dup2(shell->cmd[i]->fd_out, STDOUT_FILENO);
 							close(shell->cmd[i]->fd_out);
 						}
 						else if (shell->cmd[i + 1])
+						{
+							printf("4: i: %d\n", i);
 							dup2(shell->cmd[i]->pipe[1], STDOUT_FILENO);
+						}
 						if (shell->cmd[i + 1])
 						{
+							printf("5: i: %d\n", i);
 							close(shell->cmd[i]->pipe[0]);
 							close(shell->cmd[i]->pipe[1]);
 						}
 						if (ft_strncmp(shell->cmd[i]->arg[0], "exit", 5) == 0 && prev_pipe0)	//para o caso de echo hello | exit
+						{
+							printf("6: i: %d\n", i);
 							close(prev_pipe0);
+						}
 						build_ins(shell->cmd[i]);
 						if (prev_pipe0)
 							close(prev_pipe0);
@@ -261,25 +270,25 @@ void	executer()
 						exec_command(shell->cmd[i]->arg, make_env_arr(shell->env));
 					}
 				}
-				if (prev_pipe0)
-				{
-					close(prev_pipe0);
-					prev_pipe0 = 0;
-				}
-				if (shell->cmd[i + 1])
-				{
-					if (shell->cmd[i]->fd_out != 1)
-						close(shell->cmd[i]->pipe[0]);
-					else
-						prev_pipe0 = shell->cmd[i]->pipe[0];
-					close(shell->cmd[i]->pipe[1]);
-				}
-				if (shell->cmd[i]->fd_in != 0)
-					close(shell->cmd[i]->fd_in);
+			}
+			if (prev_pipe0)
+			{
+				close(prev_pipe0);
+				prev_pipe0 = 0;
+			}
+			if (shell->cmd[i + 1])
+			{
 				if (shell->cmd[i]->fd_out != 1)
-					close(shell->cmd[i]->fd_out);
+					close(shell->cmd[i]->pipe[0]);
+				else
+					prev_pipe0 = shell->cmd[i]->pipe[0];
+				close(shell->cmd[i]->pipe[1]);
 			}
 		}
+		if (shell->cmd[i]->fd_in != 0)
+			close(shell->cmd[i]->fd_in);
+		if (shell->cmd[i]->fd_out != 1)
+			close(shell->cmd[i]->fd_out);
 		i++;
 	}
 	i = 0;
@@ -380,6 +389,7 @@ char	*create_path(char *function, char **envp)
 	char	**path_env;
 	char	*path_join;
 	char	*path;
+	char	*cwd;
 
 	path_env = find_path(envp);
 	i = 0;
@@ -398,11 +408,13 @@ char	*create_path(char *function, char **envp)
 	}
 	free_arr(path_env);
 
-	path_join = ft_strjoin(getcwd(NULL, 0), "/");
+	cwd = getcwd(NULL, 0);
+	path_join = ft_strjoin(cwd, "/");
 	path = ft_strjoin(path_join, function);
 	free(path_join);
 	if (access(path, X_OK) == 0)
 		return (path);
+	free(cwd);
 	free(path);
 
 	return (NULL);
