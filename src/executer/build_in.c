@@ -6,7 +6,7 @@
 /*   By: ptelo-de <ptelo-de@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 15:37:38 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/03/16 21:07:00 by ptelo-de         ###   ########.fr       */
+/*   Updated: 2025/03/17 17:36:00 by ptelo-de         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -681,9 +681,14 @@ void	free_all()
 	
 	shell = get_shell();
 	free_atributes();
-	free(shell->readline);
-	free_lst(shell->env);
-    free_lst(shell->exp);
+	if ((shell->readline))
+	{
+		free(shell->readline);
+	}
+	if (shell->env)
+		free_lst(shell->env);
+	if (shell->exp)
+		free_lst(shell->exp);
 }
 
 void	ms_exit(t_shell **shell, t_cmd *cmd, int here)

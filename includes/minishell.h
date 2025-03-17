@@ -59,7 +59,6 @@ typedef struct s_cmd
 
     int             infile_error;
 
-	char			*path;
 	char			**arg;
     int             n_arg;
 
@@ -69,7 +68,6 @@ typedef struct s_cmd
 typedef struct s_shell
 {
 	char *readline;
-    int shlvl_1st;
 
 	t_token *tokens;
 	t_cmd   **cmd;
@@ -77,8 +75,7 @@ typedef struct s_shell
 	t_list *env;
 	t_list  *exp;
 
-	int exit_status; // ? para eu poder expandir $?
-    int sigint_flag;
+	int exit_status;
 
 	int here_pipe[2];
 
