@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 15:37:38 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/03/12 14:57:16 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/03/17 17:02:36 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,10 @@ t_list	*get_env(char **envp)
 	env = NULL;
 	while (envp[i])
 	{
-		dup = ft_strdup(envp[i]);
+		if (ft_strncmp(envp[i], "SHLVL=", 6) == 0)
+			dup = set_shlvl(envp[i]);
+		else
+			dup = ft_strdup(envp[i]);
 		if (!dup)
 		{
 			free_lst(env);
@@ -184,6 +187,7 @@ t_list	*get_exp(char **envp)
 	char	**env_order;
 	t_list	*exp;
 	char	*var_with_quotes;
+	char	*var_shlvl;
 	int		i;
 
 	env_order = alpha_order(envp);
@@ -191,7 +195,14 @@ t_list	*get_exp(char **envp)
 	exp = NULL;
 	while (env_order[i])
 	{
-		var_with_quotes = put_double_quotes(env_order[i]);
+		if (ft_strncmp(env_order[i], "SHLVL=", 6) == 0)
+		{
+			var_shlvl = set_shlvl(env_order[i]);
+			var_with_quotes = put_double_quotes(var_shlvl);
+			free(var_shlvl);
+		}
+		else
+			var_with_quotes = put_double_quotes(env_order[i]);
 		if (!var_with_quotes)
 		{
 			free_arr(env_order);

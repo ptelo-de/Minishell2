@@ -49,6 +49,8 @@ int		get_fd_infile(char *infile);
 int		error_open_outfile(int fd_outfile, char *name_outfile);
 //int		fd_last_out_red(t_cmd *cmd);
 char	**find_path(char **envp);
+char	*increase_shlvl(char *envp_i);
+char	*set_shlvl(char *envp_i);
 char	*create_path(char *function, char **envp);
 void	error_exec(char *path, char **envp);
 void	exec_command(char **args, char **envp);

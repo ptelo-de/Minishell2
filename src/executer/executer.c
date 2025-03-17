@@ -42,7 +42,6 @@ void	manage_hd(t_shell *shell)
 			j++;
 		}
 		temp->cmd[i]->fd_in = fd_hd;
-		//printf("hd_fd_in: %d\n", temp->cmd[i]->fd_in);
 		i++;
 	}
 }
@@ -122,9 +121,7 @@ void	manage_redir(t_shell **shell)
 				temp->cmd[i]->fd_in = get_fd_infile(last_in);
 			}
 		}
-		//printf("redir_fd_in: %d\n", temp->cmd[i]->fd_in);
 		temp->cmd[i]->fd_out = fd_outfile; //posso por isto dentro do if de erro
-		//printf("redir_fd_out: %d\n", temp->cmd[i]->fd_out); 
 		i++;
 	}
 }
@@ -348,31 +345,33 @@ char	**find_path(char **envp)
 	return (NULL);
 }
 
-void	increase_shlvl()
+char	*increase_shlvl(char *envp_i)
 {
-	int	shlvl;
-	t_shell *shell;
-	t_list *temp;
-	char *trim_val;
-	char *itoa_shlvl;
+	char	*envp_shlvl;
+	int		shlvl;
+	char	*increased_shlvl;
 
-	shell = get_shell();
-	temp = shell->env;
-	while (temp)
-	{
-		if (ft_strncmp(temp->content, "SHLVL=", 6) == 0)
-		{
-			shlvl = ft_atoi(trim_beggining(temp->content, "SHLVL="));
-			shlvl++;
-			trim_val = trim_value(temp->content);
-			free(temp->content);
-			itoa_shlvl = ft_itoa(shlvl);
-			temp->content = ft_strjoin(trim_val, itoa_shlvl);
-			free(trim_val);
-			free(itoa_shlvl);
-		}
-		temp = temp->next;
-	}
+	envp_shlvl = trim_beggining(envp_i, "SHLVL=");	//initial shlvl value but still in ascii
+	shlvl = ft_atoi(envp_shlvl);					//initial shlvl value already as int
+	shlvl++;										//increased shlvl value as int
+	free(envp_shlvl);
+	increased_shlvl = ft_itoa(shlvl);				//increased shlvl value in ascii
+	return (increased_shlvl);
+}
+
+
+char	*set_shlvl(char *envp_i)
+{
+	char	*increased_shlvl;
+	char	*trim_val;
+	char 	*updated_shlvl;
+	
+	increased_shlvl = increase_shlvl(envp_i);				//increased shlvl
+	trim_val = trim_value(envp_i);							//trimmed SHLVL= string from envp
+	updated_shlvl = ft_strjoin(trim_val, increased_shlvl);	//joined string SHLVL= and increased shlvl value
+	free(trim_val);
+	free(increased_shlvl);
+	return (updated_shlvl);
 }
 
 char	*create_path(char *function, char **envp)
@@ -403,10 +402,7 @@ char	*create_path(char *function, char **envp)
 	path = ft_strjoin(path_join, function);
 	free(path_join);
 	if (access(path, X_OK) == 0)
-	{
-		increase_shlvl();
 		return (path);
-	}
 	free(path);
 
 	return (NULL);
@@ -474,112 +470,3 @@ char	**make_env_arr(t_list *env)
 	env_arr[i] = NULL;
 	return (env_arr);
 }
-
-
-/*void	executer()
-{
-	t_shell	*shell;
-	int		i = 0;
-	int		pid[4];
-	int		prev_pipe0;
-	int		orig_stdout;
-	int		dev_null;
-
-	shell = get_shell();
-	manage_hd(shell);
-	manage_redir(&shell);
-	prev_pipe0 = 0;
-	while (shell->cmd[i])
-	{
-		if (shell->cmd[i]->arg[0]) // para ignorar qd nao ha comandos e apenas redirecoes
-		{
-			//printf("cmd: %s has fd_in[%d]: %d\n", shell->cmd[i]->arg[0], i, shell->cmd[i]->fd_in);
-			//printf("cmd: %s has fd_out[%d]: %d\n", shell->cmd[i]->arg[0], i, shell->cmd[i]->fd_out);
-
-			if (shell->cmd[i + 1])
-				pipe(shell->cmd[i]->pipe);
-
-			if (!is_build_in(shell->cmd[i]))
-			{
-				pid[i] = fork();
-				if (pid[i] == -1)
-					perror("Error fork");
-				if (pid[i] == 0)
-				{
-					if (shell->cmd[i]->fd_in != 0)
-					{
-						if (prev_pipe0)
-							close(prev_pipe0);
-						dup2(shell->cmd[i]->fd_in, STDIN_FILENO);
-						close(shell->cmd[i]->fd_in);
-					}
-					else if (prev_pipe0)
-					{
-						dup2(prev_pipe0, STDIN_FILENO);
-						close(prev_pipe0);
-					}
-					else if (i != 0) // para dar de input empty file qd cat e wc nao tem input e ficam infinitamente à espera
-					{
-						dev_null = open("/dev/null", O_RDONLY);
-						if (dev_null == -1)
-						{
-							perror("Error opening /dev/null");
-							exit(1);
-						}
-						dup2(dev_null, STDIN_FILENO);
-						close(dev_null);
-					}
-					if (shell->cmd[i]->fd_out != 1)
-					{
-						dup2(shell->cmd[i]->fd_out, STDOUT_FILENO);
-						close(shell->cmd[i]->fd_out);
-					}
-					else if (shell->cmd[i + 1])
-						dup2(shell->cmd[i]->pipe[1], STDOUT_FILENO);
-					if (shell->cmd[i + 1])
-					{
-						close(shell->cmd[i]->pipe[0]);
-						close(shell->cmd[i]->pipe[1]);
-					}
-					exec_command(shell->cmd[i]->arg, make_env_arr(shell->env));
-				}
-				if (!shell->cmd[i + 1])
-					waitpid(pid[i], NULL, 0);
-			}
-			else
-			{
-				orig_stdout = dup(STDOUT_FILENO);
-				if (shell->cmd[i]->fd_out != 1)
-				{
-					dup2(shell->cmd[i]->fd_out, STDOUT_FILENO);
-					close(shell->cmd[i]->fd_out);
-				}
-				else if (shell->cmd[i + 1])
-					dup2(shell->cmd[i]->pipe[1], STDOUT_FILENO);
-				build_ins(shell->cmd[i]);
-				dup2(orig_stdout, STDOUT_FILENO);
-				close(orig_stdout);
-			}
-
-			if (prev_pipe0)
-			{
-				close(prev_pipe0);
-				prev_pipe0 = 0;
-			}
-			if (shell->cmd[i + 1])
-			{
-				if (shell->cmd[i]->fd_out != 1)
-					close(shell->cmd[i]->pipe[0]);
-				else
-					prev_pipe0 = shell->cmd[i]->pipe[0];
-				close(shell->cmd[i]->pipe[1]);
-			}
-
-			if (shell->cmd[i]->fd_in != 0)
-				close(shell->cmd[i]->fd_in);
-			if (shell->cmd[i]->fd_out != 1)
-				close(shell->cmd[i]->fd_out);
-		}
-		i++;
-	}	
-}*/
