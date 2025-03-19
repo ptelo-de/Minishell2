@@ -72,7 +72,6 @@ void	process_dollar(int *len, char *src, char **update)
 		value = get_value(var_name);
 		if (value && value[0])
 		{
-			printf("in here\n");
 			aux = ft_strdup(*update);
 			if (*update)
 				free(*update);

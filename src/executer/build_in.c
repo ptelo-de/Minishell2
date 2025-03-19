@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 15:37:38 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/03/17 19:08:28 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/03/19 16:53:27 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,19 +31,23 @@ void	free_arr(char **arr)
 	arr = NULL;
 }
 
-char	*trim_beggining(char *str, char *set)
+//function that trims a prefix from a string
+
+char	*trim_prefix(char *str, char *prefix)
 {
 	size_t	start;
 	char	*trim;
 	
 	start = 0;
-	if (ft_strncmp(str, set, ft_strlen(set)) == 0)
-		start += ft_strlen(set);
+	if (ft_strncmp(str, prefix, ft_strlen(prefix)) == 0)
+		start += ft_strlen(prefix);
 	trim = ft_substr(str, start, ft_strlen(str) - start);
 	if (!trim)
 		return (NULL);
 	return (trim);
 }
+
+//function that generates env from envp
 
 t_list	*get_env(char **envp)
 {
@@ -70,6 +74,8 @@ t_list	*get_env(char **envp)
 	return (env);
 }
 
+//function that puts the value of a variable in envp under double quotes     SHLVL=1 turns to SHLVL="1"
+
 char	*put_double_quotes(char *str)
 {
 	char	*with_quotes;
@@ -81,16 +87,12 @@ char	*put_double_quotes(char *str)
 	if (!with_quotes)
 		return (NULL);
 	i = 0;
-	if (has_equal(str))
+	while (str[i] != '=')
 	{
-		while (str[i] != '=')
-		{
-			with_quotes[i] = str[i];
-			i++;
-		}
 		with_quotes[i] = str[i];
 		i++;
 	}
+	with_quotes[i++] = '=';
 	with_quotes[i++] = '"';
 	while (str[i - 1])
 	{
@@ -101,6 +103,8 @@ char	*put_double_quotes(char *str)
 	with_quotes[i] = '\0';
 	return (with_quotes);
 }
+
+//function that returns the length of the longest of 2 strings
 
 int	is_longer(char	*str1, char	*str2)
 {
@@ -113,6 +117,8 @@ int	is_longer(char	*str1, char	*str2)
 		return (l1);
 	return (l2);
 }
+
+//function that checks if 2 strings are repeated (are the same)
 
 int	is_repeated(char *str, char **env_order)
 {
@@ -127,6 +133,8 @@ int	is_repeated(char *str, char **env_order)
 	}
 	return (0);
 }
+
+//function that returns the smallest variable of envp, in alphabetical order, that is not already in env_order
 
 char	*get_smallest(char **env_order, char **envp)
 {
@@ -149,6 +157,8 @@ char	*get_smallest(char **env_order, char **envp)
 	return (temp);
 }
 
+//function that returns the length of an array of strings
+
 int	arr_len(char **arr)
 {
 	int	i;
@@ -158,6 +168,8 @@ int	arr_len(char **arr)
 		i++;
 	return (i);
 }
+
+//funtion that returns envp ordered alphabetically without the variable that starts with "_"
 
 char **alpha_order(char **envp)
 {
@@ -197,13 +209,13 @@ t_list	*get_exp(char **envp)
 	{
 		if (ft_strncmp(env_order[i], "SHLVL=", 6) == 0)
 		{
-			var_shlvl = set_shlvl(env_order[i]);
+			var_shlvl = set_shlvl(env_order[i]);										//será que faço de forma a que as double quotes ja venham com o set_shlvl no caso em que se trata de export (posso acrescentar um parametro booleano que ativa as double quotes)
 			var_with_quotes = put_double_quotes(var_shlvl);
 			free(var_shlvl);
 		}
 		else
 			var_with_quotes = put_double_quotes(env_order[i]);
-		if (!var_with_quotes)
+		if (!var_with_quotes) 															//será necessário este error handling??
 		{
 			free_arr(env_order);
 			return (NULL);
@@ -294,7 +306,7 @@ void	update_pwd_exp(char *path, t_list **exp)
 	{
 		if (ft_strncmp("declare -x PWD=", temp_exp->content, 15) == 0)
 		{
-			temp_new_oldpwd = trim_beggining(temp_exp->content, "declare -x ");
+			temp_new_oldpwd = trim_prefix(temp_exp->content, "declare -x ");
 			new_oldpwd = ft_strjoin("declare -x OLD", temp_new_oldpwd);
 			free(temp_new_oldpwd);
 			path_with_quotes = put_double_quotes(path);
@@ -344,7 +356,7 @@ char	*ms_getenv(t_list *env, char *var)
 	while (temp != NULL)
 	{
 		if (ft_strncmp(var, temp->content, ft_strlen(var)) == 0)
-			return (trim_beggining(temp->content, var));
+			return (trim_prefix(temp->content, var));
 		temp = temp->next;
 	}
 	return (NULL);
@@ -407,6 +419,8 @@ int	ms_pwd()
 	return (0);
 }
 
+//function that checks if there's an "=" in a string
+
 int	has_equal(char *var)
 {
 	int	i;
@@ -430,8 +444,8 @@ void	put_export_mid_end(t_list **exp, char *var, t_list *new_node)
 	temp = *exp;
 	while (temp->next != NULL)
 		{
-			trim1 = trim_beggining(temp->content, "declare -x ");
-			trim2 = trim_beggining(temp->next->content, "declare -x ");
+			trim1 = trim_prefix(temp->content, "declare -x ");
+			trim2 = trim_prefix(temp->next->content, "declare -x ");
 			if (ft_strncmp(trim1, var, ft_strlen(var)) < 0 && ft_strncmp(trim2, var, ft_strlen(var)) > 0)
 			{
 				new_node->next = temp->next;
@@ -465,7 +479,7 @@ void	put_export(t_list **exp, char *var)
 		*exp = new_node;
 		return;
 	}
-	trim1 = trim_beggining((*exp)->content, "declare -x ");
+	trim1 = trim_prefix((*exp)->content, "declare -x ");
 	if (ft_strncmp(trim1, var, ft_strlen(var_join)) > 0)
 		ft_lstadd_front(exp, new_node);
 	else
@@ -506,7 +520,7 @@ int	update_lst(t_list **lst, char *var, int b)
 	len_cmp = ft_strlen(trim_var);
 	while (temp != NULL)
 	{
-		lst_cmp = trim_beggining(temp->content, "declare -x ");
+		lst_cmp = trim_prefix(temp->content, "declare -x ");
 		if (!lst_cmp)
 		{
 			free(trim_var);
@@ -747,7 +761,10 @@ void	ms_exit(t_shell **shell, t_cmd *cmd, int here)
 	else
 	{
 		if (cmd->arg[1] && !str_isdigit(cmd->arg[1]))
+		{
 			printf("Error: exit: %s: numeric argument required\n", cmd->arg[1]);
+			(*shell)->exit_status = 2;
+		}
 		free_all();
 		exit((*shell)->exit_status);
 	}

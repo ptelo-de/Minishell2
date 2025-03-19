@@ -4,7 +4,7 @@
 # include "minishell.h"
 
 void	free_arr(char **arr);
-char	*trim_beggining(char *str, char *set);
+char	*trim_prefix(char *str, char *prefix);
 t_list	*get_env(char **envp);
 char	*put_double_quotes(char *str);
 int		is_longer(char	*str1, char	*str2);
