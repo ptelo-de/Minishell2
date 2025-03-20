@@ -6,7 +6,7 @@
 /*   By: ptelo-de <ptelo-de@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/22 15:37:38 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/03/20 01:09:36 by ptelo-de         ###   ########.fr       */
+/*   Updated: 2025/03/20 02:15:45 by ptelo-de         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,21 @@ char	*trim_prefix(char *str, char *prefix)
 		return (NULL);
 	return (trim);
 }
+//if shelvl has not been set it will be set to 1
+void check_shlvl_setup(t_list **env)
+{
+	char	*value;
+	char	*content;
+	
+	value = get_value("SHLVL");
+	if (!value)
+	{
+		content = ft_strdup("SHLVL=1");
+		ft_lstadd_back(env, ft_lstnew(content));
+	}
+	else
+		free(value);
+}
 
 //function that generates env from envp
 
@@ -71,6 +86,8 @@ t_list	*get_env(char **envp)
 		ft_lstadd_back(&env, ft_lstnew(dup));
 		i++;
 	}
+	if (envp[0])
+		check_shlvl_setup(&env);
 	return (env);
 }
 
