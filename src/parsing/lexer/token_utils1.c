@@ -99,4 +99,3 @@ void free_atributes(void)
 		free (shell->cmd);
 	shell->cmd = NULL;
 }
-

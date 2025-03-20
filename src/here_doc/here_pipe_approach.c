@@ -1,4 +1,3 @@
-
 #include "minishell.h"
 #include "parsing.h"
 #include "executer.h"
@@ -10,9 +9,9 @@ int hereDoc(char *del)
 
 	shell = get_shell();
 	if(!del)
-		return (-1);
+		return -1;
 	if(pipe(shell->here_pipe) == -1)
-		return (-2);
+		return -2;
 	int pid = fork();
 	if(pid == 0)
 	{
@@ -22,6 +21,7 @@ int hereDoc(char *del)
 		while(line && strcmp(line, del))
 		{
 			write(shell->here_pipe[1], line, strlen(line));
+			write(shell->here_pipe[1], "\n", 1);
 			free(line);
 			line = readline(">");//lida com os sinais
 		}
@@ -32,22 +32,7 @@ int hereDoc(char *del)
 		ms_exit(&shell, NULL, 1);
 	}
 	close(shell->here_pipe[1]);
-	waitpid(pid, &(shell->exit_status),1);
+	waitpid(pid, &(shell->exit_status), 0);
 	shell->exit_status = WEXITSTATUS(shell->exit_status);
 	return (shell->here_pipe[0]);
 }
-/*
-
-int main(void)
-{
-	int fd =hereDoc("fim");
-
-	char buffer[11];
-
-	buffer[10] = 0;
-
-	while(read(fd,buffer,1) > 0)
-		write(1,buffer, 1);
-	close(fd);
-	return(0);
-}*/

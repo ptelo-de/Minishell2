@@ -85,6 +85,7 @@ t_cmd *get_cmd(t_token *token)
     {
         return(NULL);
     }
+	cmd->pid = 0;
     get_args(token, cmd);
     if (!cmd->arg)
     {

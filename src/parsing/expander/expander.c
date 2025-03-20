@@ -1,4 +1,3 @@
-
 #include "parsing.h"
 
 /* 
@@ -73,7 +72,6 @@ void	process_dollar(int *len, char *src, char **update)
 		value = get_value(var_name);
 		if (value && value[0])
 		{
-			printf("in here\n");
 			aux = ft_strdup(*update);
 			if (*update)
 				free(*update);
@@ -103,8 +101,13 @@ void expand_quote(int *i, char **update, char *src)
 		}
 		if (quote == '\"')
 		{
-			if (src[len] == '$')
+			if (src[len] == '$' && src[len + 1] != '\"')
 				process_dollar(&len, src + len, update);
+			else if (src[len] == '$' && src[len + 1] == '\"')
+			{
+				update_str(update, src, len, 1);
+				len ++;
+			}
 			if (src[len] != '\"')
 				update_str(update, src, len, 1);
 			else if (src[len] == '\"')
@@ -125,7 +128,9 @@ void	expand_node(t_token **tmp)
 	while ((*tmp)->str && (*tmp)->str[i])
 	{
 		if ((*tmp)->str[i] == '\'' || (*tmp)->str[i] == '\"')
+		{
 			expand_quote(&i, &update, (*tmp)->str + i++);
+		}
 		else if ((*tmp)->str[i] == '$')
 			process_dollar(&i, (*tmp)->str + i, &update);
 		else
@@ -158,4 +163,3 @@ void expander(void)
 	}
 	clear_empty_token();
 }
-

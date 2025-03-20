@@ -47,15 +47,6 @@ int main(int argc, char *argv[], char *envp[])
 			//printf("\nCOMANDS ARRAY\n\n");
 			//print_cmd_array();
             executer();
-            /*while (shell->cmd[i])
-            {
-                if (!build_ins(shell->cmd[i]))
-                {
-                    if (!executer(shell->cmd[i]))
-                        break;
-                }
-                i++;
-            }*/
         }
         free_atributes();
         free(shell->readline);
@@ -64,7 +55,6 @@ int main(int argc, char *argv[], char *envp[])
     free_lst(shell->env);
     free_lst(shell->exp);
 }
-// cat explain << a << b < c > 1 >> 2 | ls < Doc1 << Desktop |  "ech"'o' 123
 
 
 
