@@ -169,6 +169,7 @@ void	executer()
 	int		i = 0;
 	int		prev_pipe0;
 	int		dev_null;
+	int 	orig_stdout;
 
 	shell = get_shell();
 	manage_hd(shell);
@@ -179,16 +180,19 @@ void	executer()
 	{
 		if (shell->cmd[i]->arg[0] && shell->cmd[i]->infile_error == 0)
 		{
-			if (!shell->cmd[1] && is_build_in(shell->cmd[i]))	//posso pôr i ou 0
+			if (!shell->cmd[1] && is_build_in(shell->cmd[i]))	//single build_in command (posso pôr i ou 0)
 			{
+				orig_stdout = dup(STDOUT_FILENO);
 				if (shell->cmd[i]->fd_out != 1)
 				{
 					dup2(shell->cmd[i]->fd_out, STDOUT_FILENO);
 					close(shell->cmd[i]->fd_out);
 				}
-				else if (shell->cmd[i + 1])
-					dup2(shell->cmd[i]->pipe[1], STDOUT_FILENO);
+				//else if (shell->cmd[i + 1])						//acho que não é preciso pq é para situacoes de single build_in logo nao vai haver pipe nem segundo comando
+				//	dup2(shell->cmd[i]->pipe[1], STDOUT_FILENO);
 				build_ins(shell->cmd[i]);
+				dup2(orig_stdout, STDOUT_FILENO);  // Restore stdout
+    			close(orig_stdout);
 			}
 			else // para ignorar qd nao ha comandos e apenas redirecoes
 			{
@@ -220,6 +224,7 @@ void	executer()
 						if (prev_pipe0)
 							close(prev_pipe0);
 						close_all_fd_red();
+						shell->exit_status = 1;
 						error_exec(NULL, NULL);
 					}
 					else
@@ -334,7 +339,7 @@ char	**find_path(char **envp)
 	{
 		if (ft_strncmp(envp[i], "PATH=", 5) == 0)
 		{
-			path_trim = trim_beggining(envp[i], "PATH=");
+			path_trim = trim_prefix(envp[i], "PATH=");
 			path_env = ft_split(path_trim, ':');
 			free(path_trim);
 			return (path_env);
@@ -350,7 +355,7 @@ char	*increase_shlvl(char *envp_i)
 	int		shlvl;
 	char	*increased_shlvl;
 
-	envp_shlvl = trim_beggining(envp_i, "SHLVL=");	//initial shlvl value but still in ascii
+	envp_shlvl = trim_prefix(envp_i, "SHLVL=");	//initial shlvl value but still in ascii
 	shlvl = ft_atoi(envp_shlvl);					//initial shlvl value already as int
 	shlvl++;										//increased shlvl value as int
 	free(envp_shlvl);
@@ -422,7 +427,7 @@ void	error_exec(char *path, char **envp)
 	free(shell->readline); //nao sei se é necessário
 	free_lst(shell->env);
     free_lst(shell->exp);
-	exit(1);
+	exit(shell->exit_status);
 }
 
 void	exec_command(char **args, char **envp)
@@ -434,6 +439,7 @@ void	exec_command(char **args, char **envp)
 	{
 		write(2, args[0], ft_strlen(args[0]));
 		write(2, ": command not found\n", 20);
+		get_shell()->exit_status = 127;
 	}
 	else if (execve(path, args, envp) == -1)
 		perror("execve error");
