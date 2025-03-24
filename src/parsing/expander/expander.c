@@ -134,10 +134,14 @@ void	expand_node(t_token **tmp)
 	{
 		if ((*tmp)->str[i] == '\'' || (*tmp)->str[i] == '\"')
 		{
+			(*tmp)->type = QUOTE;
 			expand_quote(&i, &update, (*tmp)->str + i++);
 		}
 		else if ((*tmp)->str[i] == '$')
+		{
+			(*tmp)->type = DOLLAR;
 			process_dollar(&i, (*tmp)->str + i, &update);
+		}
 		else
 			update_str(&update, (*tmp)->str, i++, 1);
 	}
@@ -166,5 +170,5 @@ void expander(void)
 		}
 		tmp = tmp->next;
 	}
-	//clear_empty_token();
+	clear_empty_token();
 }

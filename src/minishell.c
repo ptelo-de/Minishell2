@@ -7,7 +7,6 @@
 int main(int argc, char *argv[], char *envp[])
 {
     t_shell *shell;
-    //int     i;
     (void)argv;
 
     shell = get_shell();
@@ -40,11 +39,11 @@ int main(int argc, char *argv[], char *envp[])
 			//printf("\nLEXER\n\n");
 			//print_tokens();		
             expander();
-			printf("\nEXPANSION\n\n");
-			print_tokens();
+			//printf("\nEXPANSION\n\n");
+			//print_tokens();
 			(void)init_cmd();
-			printf("\nCOMANDS ARRAY\n\n");
-			print_cmd_array();
+			//printf("\nCOMANDS ARRAY\n\n");
+			//print_cmd_array();
             shell->exit_status = 0; //importante, isto ja foi usado no expander e agora é preciso impar o ex code do cmd anterior
             executer();
         }

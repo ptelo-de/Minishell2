@@ -53,6 +53,23 @@ char	*ms_strjoin(const char *s1, const char *s2)
 	join[i + j] = 0;
 	return (join);
 }
+void restore_empty_str()
+{
+	t_token *tmp;
+	t_token *next;
+
+	tmp = get_shell()->tokens;
+	while (tmp)
+	{
+		next = tmp->next;
+		if (tmp->type == QUOTE && (!tmp->str))
+		{
+			tmp->str = ft_calloc(1,1);
+		}
+		tmp = next;
+	}
+}
+
 void clear_empty_token(void)
 {
 	t_shell *shell;
@@ -64,7 +81,7 @@ void clear_empty_token(void)
 	while (tmp)
 	{
 		next = tmp->next;
-		if (!tmp->str || !tmp->str[0])
+		if (tmp->type == DOLLAR && (!tmp->str || !tmp->str[0]))
 		{
 			if (tmp->prev)
 				tmp->prev->next = tmp->next;
@@ -78,5 +95,6 @@ void clear_empty_token(void)
 		}
 		tmp = next;
 	}
+	restore_empty_str();
 }
 

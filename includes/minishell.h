@@ -21,7 +21,8 @@ typedef enum s_type{
     PIPE,
     REDIR,
     WORD,
-    EXPANDED, //? maybe will be neded in executer, ask miguel
+    QUOTE, //? maybe will be neded in executer, ask miguel
+    DOLLAR,
     APPEND, // >>
     INFILE, // <
     OUTFILE,// >

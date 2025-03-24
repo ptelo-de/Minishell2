@@ -57,7 +57,7 @@ void	get_args(t_token *token, t_cmd *cmd)
 	arg_num = 0;
 	while (tmp && tmp->type != PIPE)
 	{
-		if (tmp->type == WORD && (!tmp->prev || tmp->prev->type != REDIR))
+		if ((tmp->type == WORD || tmp->type == QUOTE) && (!tmp->prev || tmp->prev->type != REDIR))
 			arg_num++;
 		tmp = tmp->next;
 	}
@@ -68,7 +68,7 @@ void	get_args(t_token *token, t_cmd *cmd)
 	tmp = token;
 	while (tmp && tmp->type != PIPE)
 	{
-		if (tmp->type == WORD && (!tmp->prev || tmp->prev->type != REDIR))
+		if ((tmp->type == WORD || tmp->type == QUOTE) && (!tmp->prev || tmp->prev->type != REDIR))
 			(cmd->arg)[i++] = tmp->str;
 		tmp = tmp->next; 
 	}
