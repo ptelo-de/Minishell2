@@ -17,6 +17,7 @@
 
 //dar handle de qd hereDoc da return de -1
 
+
 void	manage_hd(t_shell *shell)
 {
 	t_shell	*temp;
@@ -37,6 +38,11 @@ void	manage_hd(t_shell *shell)
 				if (fd_hd != 0)
 					close(fd_hd);
 				fd_hd = hereDoc(temp->cmd[i]->red[j]->str);
+				if (shell->exit_status == 130)//a pilar esteve aqui
+				{
+					close_all_fd_red();
+					return;
+				}
 			}
 			j++;
 		}
@@ -173,6 +179,8 @@ void	executer()
 
 	shell = get_shell();
 	manage_hd(shell);
+	if (shell->exit_status == 130)
+		return;
 	manage_redir(&shell);
 	prev_pipe0 = 0;
 	exec_mode();

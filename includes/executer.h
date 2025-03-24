@@ -3,6 +3,7 @@
 
 # include "minishell.h"
 
+void	close_all_fd_red();
 void	free_arr(char **arr);
 char	*trim_prefix(char *str, char *prefix);
 t_list	*get_env(char **envp);

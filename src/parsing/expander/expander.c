@@ -49,6 +49,11 @@ void	process_dollar(int *len, char *src, char **update)
 	char *var_name;
 	char *value;
 
+	if (src[1] == '\"' || src[1] == '\'')
+	{
+		(*len)++;
+		return;
+	}
 	if (!ft_isalpha(src[1]) && src[1] != '_' && src[1] != '?')
 	{
 		update_str(update, src, 0, 2);
@@ -161,5 +166,5 @@ void expander(void)
 		}
 		tmp = tmp->next;
 	}
-	clear_empty_token();
+	//clear_empty_token();
 }

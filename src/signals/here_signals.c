@@ -7,6 +7,7 @@ void here_sigint_handler(int signum)
 	
 	shell = get_shell();
 	(void)signum;
+	write(1, "\n", 1);
 	close(shell->here_pipe[1]);
 	shell->exit_status = 130;
 	ms_exit(&shell, NULL, 1);
