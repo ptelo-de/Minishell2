@@ -43,6 +43,7 @@ typedef struct s_token
 typedef struct s_redir
 {
     t_type type;
+    t_type  expantion_rule;
     char *str;
 }   t_redir;
 

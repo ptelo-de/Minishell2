@@ -30,8 +30,9 @@ t_redir **get_red(t_token	*token)
 	tmp = token;
 	while (tmp && tmp->type != PIPE)
 	{
-		if (tmp->type == REDIR )
+		if (tmp->type == REDIR)
 		{
+			red[i]->type = tmp->next->type;
 			red[i]->str = tmp->next->str;
 			if (ft_strncmp(tmp->str, "<<", 2) == 0)
 				red[i++]->type = HERE_DOC;
@@ -57,7 +58,7 @@ void	get_args(t_token *token, t_cmd *cmd)
 	arg_num = 0;
 	while (tmp && tmp->type != PIPE)
 	{
-		if ((tmp->type == WORD || tmp->type == QUOTE) && (!tmp->prev || tmp->prev->type != REDIR))
+		if ((tmp->type == WORD || tmp->type == QUOTE || tmp->type == DOLLAR) && (!tmp->prev || tmp->prev->type != REDIR))
 			arg_num++;
 		tmp = tmp->next;
 	}
@@ -68,7 +69,7 @@ void	get_args(t_token *token, t_cmd *cmd)
 	tmp = token;
 	while (tmp && tmp->type != PIPE)
 	{
-		if ((tmp->type == WORD || tmp->type == QUOTE) && (!tmp->prev || tmp->prev->type != REDIR))
+		if ((tmp->type == WORD || tmp->type == QUOTE || tmp->type == DOLLAR) && (!tmp->prev || tmp->prev->type != REDIR))
 			(cmd->arg)[i++] = tmp->str;
 		tmp = tmp->next; 
 	}
@@ -86,6 +87,8 @@ t_cmd *get_cmd(t_token *token)
         return(NULL);
     }
 	cmd->pid = 0;
+	cmd->fd_in = 0;
+	cmd->fd_out = 1;
     get_args(token, cmd);
     if (!cmd->arg)
     {

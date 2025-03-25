@@ -2,7 +2,7 @@
 #include "parsing.h"
 #include "executer.h"
 
-int hereDoc(char *del)
+int hereDoc(char *del, t_type expantion_rule)
 {
 	t_shell *shell;
 	char *line;
@@ -20,6 +20,8 @@ int hereDoc(char *del)
 		line =readline(">");
 		while(line && strcmp(line, del))
 		{
+			if (expantion_rule !=  QUOTE)
+				here_expander(&line);
 			write(shell->here_pipe[1], line, strlen(line));
 			write(shell->here_pipe[1], "\n", 1);
 			free(line);

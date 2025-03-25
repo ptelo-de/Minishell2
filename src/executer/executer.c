@@ -37,9 +37,10 @@ void	manage_hd(t_shell *shell)
 			{
 				if (fd_hd != 0)
 					close(fd_hd);
-				fd_hd = hereDoc(temp->cmd[i]->red[j]->str);
+				fd_hd = hereDoc(temp->cmd[i]->red[j]->str, temp->cmd[i]->red[j]->expantion_rule);
 				if (shell->exit_status == 130)//a pilar esteve aqui
 				{
+					close(fd_hd);
 					close_all_fd_red();
 					return;
 				}
@@ -161,9 +162,9 @@ void	close_all_fd_red()
 	i = 0;
 	while (shell->cmd[i])
 	{
-		if (shell->cmd[i]->fd_in != 0)
+		if (shell->cmd[i]->fd_in != 0 && shell->cmd[i]->fd_in != 1) // a pilar esteve aqui
 			close(shell->cmd[i]->fd_in);
-		if (shell->cmd[i]->fd_out != 1)
+		if (shell->cmd[i]->fd_out != 1 && shell->cmd[i]->fd_out != 0) // a pilar esteve aqui
 			close(shell->cmd[i]->fd_out);
 		i++;
 	}

@@ -31,9 +31,8 @@ size_t safe_strlen(const char *s);
 //expantion.c
 
 void    expander(void);
-int has_dollar(const char *str);
-void remove_double_quotes(t_token **tmp);
-void remove_single_quote(t_token **tmp);
+void	process_dollar(int *len, char *src, char **update);
+void expand_quote(int *i, char **update, char *src);
 
 //edit_token.c
 void skip_till_dollar(int *i, char *s);
@@ -46,6 +45,9 @@ void handle_one_dollar(int *i, t_token **tmp);
 int init_cmd(void);
 
 //here
-int hereDoc(char *del);
+int hereDoc(char *del, t_type expantion_rule);
+
+//here_expander.c
+void	here_expander(char **line);
 
 #endif
