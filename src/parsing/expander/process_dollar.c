@@ -37,14 +37,36 @@ void exit_status_expander( char **update)
 	if (aux)
 		free(aux);
 }
+void	expand_standard_dollar_format(int **pointer_add, char	*src, char **update)
+{
+		int	i;
+		char	*var_name;
+		char	*value;
+		char	*aux;
+		int	*len_pointer;
 
+		i = 1;
+		len_pointer = *pointer_add;
+		while (ft_isalnum(src[i]) || src[i] == '_')
+			i++;
+		i--;
+		var_name = ft_substr(src, 1, i);
+		value = get_value(var_name);
+		if (value && value[0])
+		{
+			aux = ft_strdup(*update);
+			if (*update)
+				free(*update);
+			*update = ms_strjoin(aux, value);
+			if (aux)
+				free(aux);
+		}
+		*len_pointer = *len_pointer + i + 1;
+		if (var_name)
+			free(var_name);
+}
 void	process_dollar(int *len, char *src, char **update)
 {
-	int i;
-	char *aux;
-	char *var_name;
-	char *value;
-
 	if (src[1] == '\"' || src[1] == '\'')
 	{
 		(*len)++;
@@ -64,24 +86,5 @@ void	process_dollar(int *len, char *src, char **update)
 		*len +=2;
 	}
 	else
-	{
-		i = 1;
-		while (ft_isalnum(src[i]) || src[i] == '_')
-			i++;
-		i--;
-		var_name = ft_substr(src, 1, i);
-		value = get_value(var_name);
-		if (value && value[0])
-		{
-			aux = ft_strdup(*update);
-			if (*update)
-				free(*update);
-			*update = ms_strjoin(aux, value);
-			if (aux)
-				free(aux);
-		}
-		*len = *len + i + 1;
-		if (var_name)
-			free(var_name);
-	}
+		expand_standard_dollar_format(&len, src, update);
 }

@@ -7,11 +7,19 @@
 void print_tokens(void);
 void print_cmd_array(void);
 
-//../parsing/cmd_array_build.c
-t_redir **get_red(t_token	*token);
+//../parsing/cmd_array_build/get_args.c
+int	is_arg(t_token *token);
+void	assign_args(t_token	*tokens, char	***args);
 void	get_args(t_token *token, t_cmd *cmd);
+
+//../parsing/cmd_array_build/get_redirs.c
+void	assign_redirs(t_token	*token, t_redir	***redir);
+t_redir **get_red(t_token	*token);
+
+//../parsing/cmd_array_build/init_cmd.c
 t_cmd *get_next_cmd(t_token *token);
 void get_next_cmd_token(t_token **token);
+int count_cmds(t_token	*tokens);
 int init_cmd(void);
 
 //../parsing/expander/expansion_utils.c
@@ -22,13 +30,14 @@ void clear_empty_token(void);
 void update_str( char **update, char *src, int start, int len);
 
 //../parsing/expander/expander.c
-void expand_quote(int *i, char **update, char *src);
-void	expand_node(t_token **tmp, char *update); //+ de 25
+void expand_quote(int *i, char **update, char *src, char quote_char);
+void	expand_node(t_token **tmp, char *update);
 void expander(void);
 
 //../parsing/expander/process_dollar.c
 char *get_value(char *name);
 void exit_status_expander( char **update);
+void	expand_standard_dollar_format(int **pointer_add, char	*src, char **update);
 void	process_dollar(int *len, char *src, char **update);
 
 //../parsing/frees/free_atributes.c

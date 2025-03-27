@@ -1,35 +1,29 @@
 #include "parsing.h"
 
-void expand_quote(int *i, char **update, char *src)
+void expand_quote(int *i, char **update, char *src, char quote_char)
 {
-	char quote;
 	int len;
 
-	quote = *src;
-	len = 1;
-	while (src && src[len])
+	len = 0;
+	while (src && src[++len])
 	{
-		if (quote == '\'')
+		if (quote_char == '\'')
 		{
 			if (src[len] == '\'')
 				break;
 			update_str(update, src, len, 1);
 		}
-		if (quote == '\"')
+		if (quote_char == '\"')
 		{
 			if (src[len] == '$' && src[len + 1] != '\"')
 				process_dollar(&len, src + len, update);
 			else if (src[len] == '$' && src[len + 1] == '\"')
-			{
-				update_str(update, src, len, 1);
-				len ++;
-			}
+				update_str(update, src, len++, 1);
 			if (src[len] != '\"')
 				update_str(update, src, len, 1);
 			else if (src[len] == '\"')
 				break;
 		}
-		len++;
 	}
 	*i += len;
 }
@@ -44,7 +38,8 @@ void	expand_node(t_token **tmp, char	*update)
 		if ((*tmp)->str[i] == '\'' || (*tmp)->str[i] == '\"')
 		{
 			(*tmp)->type = QUOTE;
-			expand_quote(&i, &update, (*tmp)->str + i++);
+			expand_quote(&i, &update, (*tmp)->str + i, (*tmp)->str[i]);
+			i++;
 		}
 		else if ((*tmp)->str[i] == '$')
 		{
