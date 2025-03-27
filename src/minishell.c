@@ -43,7 +43,7 @@ int main(int argc, char *argv[], char *envp[])
 			//print_tokens();
 			(void)init_cmd();
 			//printf("\nCOMANDS ARRAY\n\n");
-			//print_cmd_array();
+			print_cmd_array();
             shell->exit_status = 0; //importante, isto ja foi usado no expander e agora é preciso impar o ex code do cmd anterior
             executer();
         }

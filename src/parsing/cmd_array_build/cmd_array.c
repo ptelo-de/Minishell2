@@ -48,6 +48,15 @@ t_redir **get_red(t_token	*token)
 	red[i] = NULL;
 	return (red);
 }
+int	is_arg(t_token *token)
+{
+	if ((token->type == WORD || token->type == QUOTE || token->type == DOLLAR) \
+	&& (!token->prev || token->prev->type != REDIR))
+	{
+		return 1;
+	}
+	return 0;
+}
 void	get_args(t_token *token, t_cmd *cmd)
 {
 	t_token *tmp;
@@ -58,7 +67,7 @@ void	get_args(t_token *token, t_cmd *cmd)
 	arg_num = 0;
 	while (tmp && tmp->type != PIPE)
 	{
-		if ((tmp->type == WORD || tmp->type == QUOTE || tmp->type == DOLLAR) && (!tmp->prev || tmp->prev->type != REDIR))
+		if (is_arg(tmp))
 			arg_num++;
 		tmp = tmp->next;
 	}
@@ -69,7 +78,7 @@ void	get_args(t_token *token, t_cmd *cmd)
 	tmp = token;
 	while (tmp && tmp->type != PIPE)
 	{
-		if ((tmp->type == WORD || tmp->type == QUOTE || tmp->type == DOLLAR) && (!tmp->prev || tmp->prev->type != REDIR))
+		if (is_arg(tmp))
 			(cmd->arg)[i++] = tmp->str;
 		tmp = tmp->next; 
 	}
@@ -77,6 +86,13 @@ void	get_args(t_token *token, t_cmd *cmd)
 	cmd->n_arg = arg_num;
 }
 
+void get_next_cmd_token(t_token **token)
+{
+	while(*token && (*token)->type != PIPE)
+		*token = (*token)->next;
+	if (*token)
+		(*token) = (*token)->next;
+}
 t_cmd *get_cmd(t_token *token)
 {
     t_cmd *cmd;
@@ -97,22 +113,13 @@ t_cmd *get_cmd(t_token *token)
     cmd->red= get_red(token);
     return (cmd);
 }
-void get_next_cmd_token(t_token **token)
-{
-	while(*token && (*token)->type != PIPE)
-		*token = (*token)->next;
-	if (*token)
-		(*token) = (*token)->next;
-}
 int init_cmd(void)
 {
-    t_shell *shell;
     int     cmd_num;
     t_token *tmp;
     int     i;
 
-    shell = get_shell();
-    tmp = shell->tokens;
+    tmp = get_shell()->tokens;
     cmd_num = 1;
     while(tmp != NULL)
     {
@@ -120,18 +127,17 @@ int init_cmd(void)
             cmd_num++;
 		tmp = tmp->next;
     }
-    shell->cmd = ft_calloc(sizeof(t_cmd *) * (cmd_num + 1), 1);
-    if (shell->cmd == NULL)
+    get_shell()->cmd = ft_calloc(sizeof(t_cmd *) * (cmd_num + 1), 1);
+    if (get_shell()->cmd == NULL)
         return(1);
-    tmp = shell->tokens;
-	shell->cmd[0] = get_cmd(tmp);
+    tmp = get_shell()->tokens;
+	get_shell()->cmd[0] = get_cmd(tmp);
     i = 1;
     while(i < cmd_num)
     {
 		get_next_cmd_token(&tmp);
-        shell->cmd[i] = get_cmd(tmp);
-		i++;
+        get_shell()->cmd[i++] = get_cmd(tmp);
     }
-	shell->cmd[i] = NULL;
+	get_shell()->cmd[i] = NULL;
     return (0);
 }
