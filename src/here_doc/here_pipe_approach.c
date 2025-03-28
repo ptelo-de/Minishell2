@@ -22,7 +22,7 @@ int hereDoc(char *del, t_type expantion_rule)
 		{
 			if (expantion_rule !=  QUOTE)
 				here_expander(&line);
-			write(shell->here_pipe[1], line, strlen(line));
+			write(shell->here_pipe[1], line, safe_strlen(line));
 			write(shell->here_pipe[1], "\n", 1);
 			free(line);
 			line = readline(">");//lida com os sinais

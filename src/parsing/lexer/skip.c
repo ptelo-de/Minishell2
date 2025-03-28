@@ -7,8 +7,11 @@ void white_space_skip(int *i)
 
     shell = get_shell();
     s = shell->readline;
-    while (s[*i] && (s[*i] == ' ' || s[*i] == '\t' || s[*i] == '\n'))
+    while (s[*i] && (s[*i] == ' ' || s[*i] == '\t' \
+			|| s[*i] == '\n'))
+	{
         *i = *i + 1;
+	}
 }
 
 int quote_skip(int *i)

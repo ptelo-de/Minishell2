@@ -12,7 +12,6 @@ void add_token(int start, int len, t_type type)
         free_atributes();
         exit(1);
     }
-    // printf("new token: %p \n", token);
     token->type = type;
     token->str = ft_substr(shell->readline, start, len);
     token->next = NULL;
