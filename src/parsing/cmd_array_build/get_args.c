@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_args.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ptelo-de <ptelo-de@student.42lisboa.com    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/29 02:00:04 by ptelo-de          #+#    #+#             */
+/*   Updated: 2025/03/29 02:02:00 by ptelo-de         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 #include "parsing.h"
 
@@ -7,9 +19,9 @@ int	is_arg(t_token *token)
 	token->type == QUOTE || token->type == DOLLAR) \
 	&& (!token->prev || token->prev->type != REDIR))
 	{
-		return 1;
+		return (1);
 	}
-	return 0;
+	return (0);
 }
 
 void	assign_args(t_token	*tokens, char	***args)
@@ -19,17 +31,17 @@ void	assign_args(t_token	*tokens, char	***args)
 	i = 0;
 	while (tokens && tokens->type != PIPE)
 	{
-	if (is_arg(tokens))
-		(*args)[i++] = tokens->str;
-	tokens = tokens->next; 
+		if (is_arg(tokens))
+			(*args)[i++] = tokens->str;
+		tokens = tokens->next;
 	}
 	(*args)[i] = NULL;
 }
 
 void	get_args(t_token *token, t_cmd *cmd)
 {
-	t_token *tmp;
-	int arg_num;
+	t_token	*tmp;
+	int		arg_num;
 
 	tmp = token;
 	arg_num = 0;
@@ -39,10 +51,10 @@ void	get_args(t_token *token, t_cmd *cmd)
 			arg_num++;
 		tmp = tmp->next;
 	}
-	cmd->arg = ft_calloc(sizeof(char*) \
+	cmd->arg = ft_calloc(sizeof(char *) \
 				* (arg_num + 1), 1);
 	if (!(cmd->arg))
-		return;
+		return ;
 	assign_args(token, &cmd->arg);
 	cmd->n_arg = arg_num;
 }

@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   free_cmds.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ptelo-de <ptelo-de@student.42lisboa.com    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/29 01:27:26 by ptelo-de          #+#    #+#             */
+/*   Updated: 2025/03/29 01:28:10 by ptelo-de         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "parsing.h"
 
-void free_cmd_redir(t_cmd **cmd)
+void	free_cmd_redir(t_cmd **cmd)
 {
 	int	i;
 
@@ -26,9 +38,9 @@ void free_cmd_redir(t_cmd **cmd)
 	(*cmd)->here = NULL;
 }
 
-void free_cmds(void)
+void	free_cmds(void)
 {
-	int k;
+	int	k;
 
 	k = 0;
 	while (get_shell() && get_shell()->cmd \

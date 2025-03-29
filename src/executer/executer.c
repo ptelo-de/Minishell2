@@ -37,7 +37,7 @@ void	manage_hd(t_shell *shell)
 			{
 				if (fd_hd != 0)
 					close(fd_hd);
-				fd_hd = hereDoc(temp->cmd[i]->red[j]->str, temp->cmd[i]->red[j]->expantion_rule);
+				fd_hd = here_doc(temp->cmd[i]->red[j]->str, temp->cmd[i]->red[j]->expantion_rule);
 				if (shell->exit_status == 130)
 				{
 					close(fd_hd);

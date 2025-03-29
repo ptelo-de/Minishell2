@@ -69,7 +69,7 @@ int syntax_check(void);
 int init_cmd(void);
 
 //here
-int hereDoc(char *del, t_type expantion_rule);
+int here_doc(char *del, t_type expantion_rule);
 
 //here_expander.c
 void	here_expander(char **line);

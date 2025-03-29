@@ -1,9 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   here_expander.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ptelo-de <ptelo-de@student.42lisboa.com    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/29 01:34:35 by ptelo-de          #+#    #+#             */
+/*   Updated: 2025/03/29 01:36:45 by ptelo-de         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "parsing.h"
 
 void	here_expander(char **line)
 {
-	int i;
-	char *update;
+	int		i;
+	char	*update;
 
 	update = NULL;
 	i = 0;

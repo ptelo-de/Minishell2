@@ -1,8 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   expander.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ptelo-de <ptelo-de@student.42lisboa.com    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/29 01:31:50 by ptelo-de          #+#    #+#             */
+/*   Updated: 2025/03/29 01:34:20 by ptelo-de         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "parsing.h"
 
-void expand_quote(int *i, char **update, char *src, char quote_char)
+void	expand_quote(int *i, char **update, char *src, char quote_char)
 {
-	int len;
+	int	len;
 
 	len = 0;
 	while (src && src[++len])
@@ -10,7 +22,7 @@ void expand_quote(int *i, char **update, char *src, char quote_char)
 		if (quote_char == '\'')
 		{
 			if (src[len] == '\'')
-				break;
+				break ;
 			update_str(update, src, len, 1);
 		}
 		if (quote_char == '\"')
@@ -22,7 +34,7 @@ void expand_quote(int *i, char **update, char *src, char quote_char)
 			if (src[len] != '\"')
 				update_str(update, src, len, 1);
 			else if (src[len] == '\"')
-				break;
+				break ;
 		}
 	}
 	*i += len;
@@ -30,7 +42,7 @@ void expand_quote(int *i, char **update, char *src, char quote_char)
 
 void	expand_node(t_token **tmp, char	*update)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while ((*tmp)->str && (*tmp)->str[i])
@@ -57,12 +69,12 @@ void	expand_node(t_token **tmp, char	*update)
 		(*tmp)->str = NULL;
 }
 
-void expander(void)
+void	expander(void)
 {
-	t_token *tmp;
+	t_token	*tmp;
 
 	if (!get_shell() || !get_shell()->tokens)
-		return;
+		return ;
 	tmp = get_shell()->tokens;
 	while (tmp)
 	{
