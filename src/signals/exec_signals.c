@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 17:53:03 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/03/13 14:08:54 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/03/25 13:31:39 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,12 @@ static void	exec_handler(int signal)
 	if (signal == SIGQUIT)
 	{
 		shell->exit_status = 131;
-		write(1, "\n", 1);
+		//write(1, "\n", 1);
 	}
 	if (signal == SIGINT)
 	{
 		shell->exit_status = 130;
-		write(1, "\n", 1);
+		//write(1, "\n", 1);
 	}
 }
 

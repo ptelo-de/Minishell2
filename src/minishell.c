@@ -13,7 +13,7 @@ int main(int argc, char *argv[], char *envp[])
     shell = get_shell();
     check_main_args(argc);
     shell->env = get_env(envp);
-    shell->exp = get_exp(envp);
+    shell->exp = get_exp(make_env_arr(shell->env));
     while(1)
     {
         interactive_mode();
@@ -46,7 +46,8 @@ int main(int argc, char *argv[], char *envp[])
 			(void)init_cmd();
 			//printf("\nCOMANDS ARRAY\n\n");
 			//print_cmd_array();
-            executer();
+            shell->exit_status = 0;
+            executer(shell);
         }
         free_atributes();
         free(shell->readline);

@@ -7,9 +7,10 @@ void here_sigint_handler(int signum)
 	
 	shell = get_shell();
 	(void)signum;
+	write(1, "\n", 1);
 	close(shell->here_pipe[1]);
 	shell->exit_status = 130;
-	ms_exit(&shell, NULL, 1);
+	ms_exit(&shell, NULL);
 }
 void here_sigint(void)
 {
@@ -22,6 +23,6 @@ void here_sigint(void)
 	if (sigemptyset(&sa.sa_mask) || sigaction(SIGINT, &sa, NULL))
 	{
 		write(2, "sigaction failed at interactive mode in SIGINT\n", 48);
-		ms_exit(&shell, NULL, 1);
+		ms_exit(&shell, NULL);
 	}
 }
