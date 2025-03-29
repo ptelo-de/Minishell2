@@ -6,12 +6,20 @@
 /*   By: ptelo-de <ptelo-de@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 01:27:26 by ptelo-de          #+#    #+#             */
-/*   Updated: 2025/03/29 01:28:10 by ptelo-de         ###   ########.fr       */
+/*   Updated: 2025/03/29 03:21:11 by ptelo-de         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parsing.h"
 
+/**
+ * @brief frees a cmd->redir memory and sets all regarding
+ * pointers to NULL.
+ *
+ *auxiliar functions: free.
+ * @param cmd adress of pointer to t_cmd allocated struct.
+ * @return void.
+ */
 void	free_cmd_redir(t_cmd **cmd)
 {
 	int	i;
@@ -38,6 +46,13 @@ void	free_cmd_redir(t_cmd **cmd)
 	(*cmd)->here = NULL;
 }
 
+/**
+ * @brief frees shell->cmd memory and sets all regarding
+ * pointers to NULL.
+ *
+ *auxiliar functions: get_shell, free.
+ * @return void.
+ */
 void	free_cmds(void)
 {
 	int	k;

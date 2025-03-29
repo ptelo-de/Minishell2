@@ -6,12 +6,19 @@
 /*   By: ptelo-de <ptelo-de@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 01:12:54 by ptelo-de          #+#    #+#             */
-/*   Updated: 2025/03/29 01:24:13 by ptelo-de         ###   ########.fr       */
+/*   Updated: 2025/03/29 03:04:57 by ptelo-de         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parsing.h"
 
+/**
+ * @brief edits index while char is space, tab or line break.
+ *
+ *auxiliar functions: get_shell.
+ * @param i adress of index of the string where white spaces are to be skipped.
+ * @return void.
+ */
 void	white_space_skip(int *i)
 {
 	t_shell	*shell;
@@ -26,6 +33,14 @@ void	white_space_skip(int *i)
 	}
 }
 
+/**
+ * @brief skips a substring between the first quote it finds.
+ *
+ *auxiliar functions: get_shell.
+ * @param i adress of index of the string where a substring
+ * between quotes is to be skipped.
+ * @return 0 if quotes are closed 1 otherwise.
+ */
 int	quote_skip(int *i)
 {
 	t_shell	*shell;
@@ -45,6 +60,13 @@ int	quote_skip(int *i)
 		return (1);
 }
 
+/**
+ * @brief skips a redirection in a string.
+ *
+ *auxiliar functions: get_shell, quote_skip, add_token.
+ * @param i adress of index of the string where a word is to be skipped.
+ * @return void.
+ */
 void	word_skip(int *i)
 {
 	t_shell	*shell;
@@ -69,6 +91,13 @@ void	word_skip(int *i)
 		add_token(j, *i - j, WORD);
 }
 
+/**
+ * @brief skips a redirection in a string.
+ *
+ * auxiliar functions: get_shell, add_token.
+ * @param i adress of index of the string where a redir is to be skipped.
+ * @return void.
+ */
 void	redir_skip(int *i)
 {
 	t_shell	*shell;

@@ -6,7 +6,7 @@
 /*   By: ptelo-de <ptelo-de@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 01:31:50 by ptelo-de          #+#    #+#             */
-/*   Updated: 2025/03/29 01:34:20 by ptelo-de         ###   ########.fr       */
+/*   Updated: 2025/03/29 03:32:55 by ptelo-de         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,15 @@ void	expand_quote(int *i, char **update, char *src, char quote_char)
 	*i += len;
 }
 
+/**
+ * @brief expands the node passed as parramether
+ *
+ * @param tmp adress of a shell->tokens node, shell 
+ * is returned from get_shell function.
+ * @param update buffer of expander token, must be NULL.
+ *auxiliar functions: expand_quote, process_dollar, update_str, free.
+ * @return void.
+ */
 void	expand_node(t_token **tmp, char	*update)
 {
 	int	i;
@@ -69,6 +78,13 @@ void	expand_node(t_token **tmp, char	*update)
 		(*tmp)->str = NULL;
 }
 
+/**
+ * @brief edits shell->tokens list so that each node is expanded
+ * according bash rule.
+ *
+ *auxiliar functions: get_shell, expand_node, clear_empty_token.
+ * @return void.
+ */
 void	expander(void)
 {
 	t_token	*tmp;

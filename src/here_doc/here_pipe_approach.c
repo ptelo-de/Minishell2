@@ -6,7 +6,7 @@
 /*   By: ptelo-de <ptelo-de@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 00:51:40 by ptelo-de          #+#    #+#             */
-/*   Updated: 2025/03/29 00:58:57 by ptelo-de         ###   ########.fr       */
+/*   Updated: 2025/03/29 02:31:17 by ptelo-de         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,17 @@
 #include "parsing.h"
 #include "executer.h"
 
+/**
+ * @brief catches user input for here doc.
+ *
+ * generates readline loop, and writes input in command's
+ * here_pipe[1].
+ * Input is expanded according to bash rules for here doc
+ *
+ * @param del is delimiter for here doc.
+ * @param rule if it is QUOTE it will expand input, otherwise it will not.
+ * @return void.
+ */
 void	catch_here_input(char *del, t_type rule)
 {
 	char	*line;
@@ -35,6 +46,13 @@ void	catch_here_input(char *del, t_type rule)
 		1 delimited by end-of-file( wanted \'%s\')\n", del);
 }
 
+/**
+ * @brief Preforms here doc according to bash rules.
+ * 
+ * @param del here doc delimeter;
+ * @param rule if it is QUOTE it will expand input, otherwise it will not.
+ * @return file descripto, type pipe, where here is stored.
+ */
 int	here_doc(char *del, t_type expantion_rule)
 {
 	t_shell	*shell;

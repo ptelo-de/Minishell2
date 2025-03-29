@@ -6,12 +6,19 @@
 /*   By: ptelo-de <ptelo-de@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 01:08:13 by ptelo-de          #+#    #+#             */
-/*   Updated: 2025/03/29 01:23:53 by ptelo-de         ###   ########.fr       */
+/*   Updated: 2025/03/29 02:53:12 by ptelo-de         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parsing.h"
 
+/**
+ * @brief checks if commandline has closed single and double quotes.
+ * 
+ * In case of error quotes error is printed in stderr.
+ * auxiliar functons: quote_skip, ft_putendl_fd, get_shell
+ * @return 0 if success 1 if error.
+ */
 int	quotes_check(void)
 {
 	t_shell	*shell;
@@ -35,6 +42,17 @@ int	quotes_check(void)
 	return (0);
 }
 
+/**
+ * @brief builds list of tokens and adds it to statuc t_shell.
+ *
+ * tokens are separated according to bash manual.
+ * They are stored in a t_token linked list and added to get_shell()
+ * returned static t_shell structure at it's token attribute.
+ * 
+ * auxiliar functons: get_shell, quotes_check, white_space_skip, add_token
+ * redir_skip, word_skip.
+ * @return void.
+ */
 int	lexer(void)
 {
 	t_shell	*shell;
