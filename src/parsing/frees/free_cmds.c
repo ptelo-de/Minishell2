@@ -3,16 +3,24 @@
 /*                                                        :::      ::::::::   */
 /*   free_cmds.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ptelo-de <ptelo-de@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/28 20:41:58 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/03/28 20:42:09 by bde-luce         ###   ########.fr       */
+/*   Created: 2025/03/29 01:27:26 by ptelo-de          #+#    #+#             */
+/*   Updated: 2025/03/29 03:21:11 by ptelo-de         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parsing.h"
 
-void free_cmd_redir(t_cmd **cmd)
+/**
+ * @brief frees a cmd->redir memory and sets all regarding
+ * pointers to NULL.
+ *
+ *auxiliar functions: free.
+ * @param cmd adress of pointer to t_cmd allocated struct.
+ * @return void.
+ */
+void	free_cmd_redir(t_cmd **cmd)
 {
 	int	i;
 
@@ -38,9 +46,16 @@ void free_cmd_redir(t_cmd **cmd)
 	(*cmd)->here = NULL;
 }
 
-void free_cmds(void)
+/**
+ * @brief frees shell->cmd memory and sets all regarding
+ * pointers to NULL.
+ *
+ *auxiliar functions: get_shell, free.
+ * @return void.
+ */
+void	free_cmds(void)
 {
-	int k;
+	int	k;
 
 	k = 0;
 	while (get_shell() && get_shell()->cmd \

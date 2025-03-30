@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils2.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ptelo-de <ptelo-de@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 19:13:10 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/03/28 19:14:33 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/03/29 23:35:39 by ptelo-de         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ int	has_equal(char *var)
 
 char	*get_var_name(char *var)
 {
-	int 	i;
+	int		i;
 	char	*no_prefix;
 	char	*var_name;
 
@@ -57,9 +57,9 @@ char	*get_var_name(char *var)
 void	free_lst(t_list *lst)
 {
 	t_list	*temp;
-	
+
 	if (!lst)
-		return;
+		return ;
 	while (lst != NULL)
 	{
 		temp = lst;
@@ -71,13 +71,13 @@ void	free_lst(t_list *lst)
 
 //function that frees everything that is needed before leaving the program
 
-void	free_all()
+void	free_all(void)
 {
 	t_shell	*shell;
-	
+
 	shell = get_shell();
 	free_atributes();
 	free(shell->readline);
 	free_lst(shell->env);
-    free_lst(shell->exp);
+	free_lst(shell->exp);
 }
