@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   process_dollar.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptelo-de <ptelo-de@student.42lisboa.com    +#+  +:+       +#+        */
+/*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 01:48:57 by ptelo-de          #+#    #+#             */
-/*   Updated: 2025/03/30 00:30:26 by ptelo-de         ###   ########.fr       */
+/*   Updated: 2025/04/01 00:04:57 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,9 +152,11 @@ void	process_dollar(int *len, char *src, char **update)
 		(*len)++;
 		return ;
 	}
-	if (!ft_isalpha(src[1]) && src[1] != '_' && src[1] != '?')
+	if ((!ft_isalpha(src[1]) && src[1] != '_' && src[1] != '?')
+		|| ft_isdigit(src[1]))
 	{
-		update_str(update, src, 0, 2);
+		if (src[1] == 0 || src[1] == ' ' || src[1] == '\t' || src[1] == '\n')
+			update_str(update, src, 0, 2);
 		if (src[1] == '\0')
 			(*len)++;
 		else

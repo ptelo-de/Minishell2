@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 19:43:29 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/03/28 20:03:33 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/04/01 00:18:15 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,15 @@ int	ms_exit(t_shell **shell, t_cmd *cmd)
 	exit((*shell)->exit_status);
 }
 
+void	close_pipes_for_exit(t_cmd *cmd)
+{
+	printf("exit\n");
+	if (cmd->pipe[0] > 2)
+		close(cmd->pipe[0]);
+	if (cmd->pipe[1] > 2)
+		close(cmd->pipe[1]);
+}
+
 //function that calls for the execution of a build_in
 
 int	build_ins(t_cmd *cmd)
@@ -87,7 +96,7 @@ int	build_ins(t_cmd *cmd)
 		shell->exit_status = ms_env(shell->env);
 	else if (ft_strncmp(cmd->arg[0], "exit", 5) == 0)
 	{
-		printf("exit\n");
+		close_pipes_for_exit(cmd);
 		shell->exit_status = ms_exit(&shell, cmd);
 	}
 	else

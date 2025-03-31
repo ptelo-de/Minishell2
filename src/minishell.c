@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 18:51:39 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/03/31 19:14:42 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/03/31 23:56:51 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,11 +34,11 @@ int	main(int argc, char *argv[], char *envp[])
 			(void)init_cmd();
 			shell->exit_status = 0;
 			executer(shell);
+			close_all_fd_red();
 		}
 		free_atributes();
 		free(shell->readline);
 		shell->readline = NULL;
 	}
-	free_lst(shell->env);
-	free_lst(shell->exp);
+	free_all();
 }

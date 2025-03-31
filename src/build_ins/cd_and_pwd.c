@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 19:41:44 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/03/31 13:53:46 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/04/01 00:24:17 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,10 @@ int	ms_cd(t_shell *shell, t_list **env, t_cmd *cmd)
 	{
 		join_arg = join_all_args(cmd);
 		if (chdir(join_arg) == -1)
+		{
+			free(join_arg);
 			return (print_and_return("Error: cd: Unable to execute cd", 1));
+		}
 		new_pwd = getcwd(NULL, 0);
 		free(join_arg);
 	}
@@ -107,8 +110,7 @@ int	ms_cd(t_shell *shell, t_list **env, t_cmd *cmd)
 	update_pwd_env(new_pwd, env);
 	free_lst(shell->exp);
 	shell->exp = get_exp(make_env_arr(*env));
-	free(new_pwd);
-	return (0);
+	return (free(new_pwd), 0);
 }
 
 //pwd function
