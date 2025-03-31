@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 19:36:30 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/03/31 13:58:48 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/04/01 00:52:01 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,18 @@ static char	*set_shlvl(char *shlvl_value)
 	return (updated_shlvl);
 }
 
+void	set_env_i(t_list **env)
+{
+	char	*pwd;
+	char	*pwd_var;
+
+	pwd = getcwd(NULL, 0);
+	pwd_var = ft_strjoin("PWD=", pwd);
+	ft_lstadd_back(env, ft_lstnew(pwd_var));
+	ft_lstadd_back(env, ft_lstnew(ft_strdup("SHLVL=1")));
+	free(pwd);
+}
+
 //function that generates env from envp
 
 t_list	*get_env(char **envp)
@@ -40,6 +52,10 @@ t_list	*get_env(char **envp)
 
 	i = 0;
 	env = NULL;
+	if (*envp == NULL)
+		set_env_i(&env);
+	else if (!getenv("SHLVL"))
+		ft_lstadd_back(&env, ft_lstnew(ft_strdup("SHLVL=1")));
 	while (envp[i])
 	{
 		if (ft_strncmp(envp[i], "SHLVL=", 6) == 0)
@@ -54,7 +70,5 @@ t_list	*get_env(char **envp)
 		ft_lstadd_back(&env, ft_lstnew(dup));
 		i++;
 	}
-	if (!getenv("SHLVL"))
-		ft_lstadd_back(&env, ft_lstnew(ft_strdup("SHLVL=1")));
 	return (env);
 }
