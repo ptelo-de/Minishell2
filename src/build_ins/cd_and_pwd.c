@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 19:41:44 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/03/28 20:01:02 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/03/31 13:53:46 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,10 +42,10 @@ static void	update_pwd_env(char *new_pwd, t_list **env)
 		}
 		temp_env = temp_env->next;
 	}
-	//error handling??
 }
 
-//function that joins all arguments (for cd to execute when a directory has more than a word)
+//function that joins all arguments
+//(for cd to execute when a directory has more than a word)
 
 static char	*join_all_args(t_cmd *cmd)
 {
@@ -88,7 +88,7 @@ int	ms_cd(t_shell *shell, t_list **env, t_cmd *cmd)
 {
 	char	*join_arg;
 	char	*new_pwd;
-	
+
 	if (cmd->n_arg == 1)
 	{
 		new_pwd = ms_getenv((*env), "HOME=");
@@ -113,7 +113,7 @@ int	ms_cd(t_shell *shell, t_list **env, t_cmd *cmd)
 
 //pwd function
 
-int	ms_pwd()
+int	ms_pwd(void)
 {
 	char	*pwd;
 

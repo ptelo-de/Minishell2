@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 19:42:35 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/03/28 20:05:19 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/03/31 14:32:09 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,8 @@
 #include "executer.h"
 #include "minishell.h"
 
-//function that adds the variable to exp and/or env lists in case it doesnt exist there
+//function that adds the variable to exp and/or
+//env lists in case it doesnt exist there
 
 static void	put_export(t_list **exp, char *var)
 {
@@ -23,7 +24,7 @@ static void	put_export(t_list **exp, char *var)
 
 	new_node = ft_lstnew(ft_strjoin("declare -x ", var));
 	if (*exp == NULL)
-	 	*exp = new_node;
+		*exp = new_node;
 	else if (ft_strncmp((*exp)->content, new_node->content, ft_strlen((*exp)->content)) > 0)
 		ft_lstadd_front(exp, new_node);
 	else
@@ -35,7 +36,7 @@ static void	put_export(t_list **exp, char *var)
 			{
 				new_node->next = temp->next;
 				temp->next = new_node;
-				return;
+				return ;
 			}
 			temp = temp->next;
 		}
@@ -43,14 +44,15 @@ static void	put_export(t_list **exp, char *var)
 	}
 }
 
-//function that updates a variable value in exp and/or env lists if it already exists there
+//function that updates a variable value in exp
+//and/or env lists if it already exists there
 
 static int	update_lst(t_list **lst, char *var, int b)
 {
 	t_list	*temp;
 	char	*lst_var;
 	char	*var_name;
-	
+
 	if (!lst || !(*lst) || !var)
 		return (0);
 	temp = *lst;
@@ -64,7 +66,7 @@ static int	update_lst(t_list **lst, char *var, int b)
 			free(var_name);
 			if (b == 0 || b == 1)
 				free(temp->content);
-			if (b == 0)	
+			if (b == 0)
 				temp->content = ft_strdup(var);
 			if (b == 1)
 				temp->content = ft_strjoin("declare -x ", var);
@@ -93,6 +95,7 @@ static void	print_exp(t_list *exp)
 static int	arg_valid(char *arg)
 {
 	int	i;
+
 	if (!ft_isalpha(arg[0]) && arg[0] != '_')
 	{
 		printf("Error: export: '%s': not a valid identifier\n", arg);
@@ -117,7 +120,7 @@ int	ms_export(t_list **env, t_list **exp, t_cmd *cmd)
 {
 	int		i;
 	char	*arg_with_quotes;
-	
+
 	if (cmd->n_arg == 1)
 		print_exp(*exp);
 	i = 1;

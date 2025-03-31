@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 19:37:49 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/03/28 20:07:03 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/03/31 14:25:21 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,8 @@
 #include "executer.h"
 #include "minishell.h"
 
-//function that puts the value of a variable in envp under double quotes     (SHLVL=1 becomes SHLVL="1")
+//function that puts the value of a variable in envp under double quotes
+//(SHLVL=1 becomes SHLVL="1")
 
 char	*put_double_quotes(char *str)
 {
@@ -60,7 +61,8 @@ static int	is_repeated(char *str, char **env_order)
 	return (0);
 }
 
-//function that returns the smallest variable of envp, in alphabetical order, that is not already in env_order
+//function that returns the smallest variable of envp, in alphabetical
+//order, that is not already in env_order
 
 static char	*get_smallest(char **env_order, char **envp)
 {
@@ -73,7 +75,8 @@ static char	*get_smallest(char **env_order, char **envp)
 	temp = envp[i];
 	while (envp[i])
 	{
-		if (!is_repeated(envp[i], env_order) && ft_strncmp(envp[i], "_=", 2) != 0)
+		if (!is_repeated(envp[i], env_order) && 
+			ft_strncmp(envp[i], "_=", 2) != 0)
 		{
 			if (ft_strncmp(temp, envp[i], is_longer(temp, envp[i])) > 0)
 				temp = envp[i];
@@ -83,18 +86,19 @@ static char	*get_smallest(char **env_order, char **envp)
 	return (temp);
 }
 
-//funtion that returns envp ordered alphabetically without the variable that starts with "_"
+//funtion that returns envp ordered alphabetically without
+//the variable that starts with "_"
 
-static char **alpha_order(char **envp)
+static char	**alpha_order(char **envp)
 {
 	char	**env_order;
 	int		i;
 
-	env_order = ft_calloc(arr_len(envp), sizeof(char *)); // -1 de menos 1 var +1 de str nula = 0
+	env_order = ft_calloc(arr_len(envp), sizeof(char *));
 	if (!env_order)
 		return (NULL);
 	i = 0;
-	while (i < arr_len(envp) - 1) // -1 porque exp tem menos 1 var que o env (não tem o "_=")
+	while (i < arr_len(envp) - 1)
 	{
 		env_order[i] = ft_strdup(get_smallest(env_order, envp));
 		if (!env_order[i])
@@ -114,7 +118,7 @@ t_list	*get_exp(char **envp)
 {
 	char	**env_order;
 	t_list	*exp;
-	char	*var_with_quotes;
+	char	*with_quotes;
 	int		i;
 
 	env_order = alpha_order(envp);
@@ -122,14 +126,14 @@ t_list	*get_exp(char **envp)
 	exp = NULL;
 	while (env_order[i])
 	{
-		var_with_quotes = put_double_quotes(env_order[i]);
-		if (!var_with_quotes) 															//será necessário este error handling??
+		with_quotes = put_double_quotes(env_order[i]);
+		if (!with_quotes)
 		{
 			free_arr(env_order);
 			return (NULL);
 		}
-		ft_lstadd_back(&exp, ft_lstnew(ft_strjoin("declare -x ", var_with_quotes)));
-		free(var_with_quotes);
+		ft_lstadd_back(&exp, ft_lstnew(ft_strjoin("declare -x ", with_quotes)));
+		free(with_quotes);
 		i++;
 	}
 	free_arr(env_order);

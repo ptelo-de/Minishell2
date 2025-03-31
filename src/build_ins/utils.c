@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 19:10:53 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/03/28 19:12:41 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/03/31 14:01:45 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void	free_arr(char **arr)
 
 	i = 0;
 	if (!arr)
-		return;
+		return ;
 	while (arr[i])
 	{
 		free(arr[i]);
@@ -39,7 +39,7 @@ char	*trim_prefix(char *str, char *prefix)
 {
 	size_t	start;
 	char	*trim;
-	
+
 	start = 0;
 	if (ft_strncmp(str, prefix, ft_strlen(prefix)) == 0)
 		start += ft_strlen(prefix);
@@ -68,7 +68,7 @@ int	is_longer(char	*str1, char	*str2)
 int	arr_len(char **arr)
 {
 	int	i;
-	
+
 	i = 0;
 	while (arr[i])
 		i++;

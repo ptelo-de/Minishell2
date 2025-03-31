@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init_cmd.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptelo-de <ptelo-de@student.42lisboa.com    +#+  +:+       +#+        */
+/*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 02:04:54 by ptelo-de          #+#    #+#             */
-/*   Updated: 2025/03/29 02:07:51 by ptelo-de         ###   ########.fr       */
+/*   Updated: 2025/03/31 16:13:44 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,10 +61,11 @@ int	init_cmd(void)
 	int		cmd_num;
 	t_token	*tmp;
 	int		i;
+	size_t	size_p;
 
 	cmd_num = count_cmds(get_shell()->tokens);
-	get_shell()->cmd = ft_calloc(sizeof(t_cmd *) \
-						* (cmd_num + 1), 1);
+	size_p = sizeof(t_cmd *);
+	get_shell()->cmd = ft_calloc(cmd_num + 1, size_p);
 	if (get_shell()->cmd == NULL)
 		return (1);
 	tmp = get_shell()->tokens;

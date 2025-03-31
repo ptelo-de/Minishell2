@@ -1,25 +1,24 @@
-/* ***********************
-*************************************************** */
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   executer.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/11 17:09:19 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/02/12 15:45:48 by bde-luce         ###   ########.fr       */
+/*   Created: 2025/03/31 14:03:25 by bde-luce          #+#    #+#             */
+/*   Updated: 2025/03/31 14:39:47 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "minishell.h"
 #include "parsing.h"
 #include "executer.h"
-#include "minishell.h"
 
 //function that handles when there's only a build_in to be executed 
 
 static void	perform_single_build_in(t_cmd *cmd)
 {
-	int 	orig_stdout;
+	int	orig_stdout;
 
 	if (cmd->fd_out > 1)
 	{
@@ -31,7 +30,7 @@ static void	perform_single_build_in(t_cmd *cmd)
 	if (cmd->fd_out > 1)
 	{
 		dup2(orig_stdout, STDOUT_FILENO);
-    	close(orig_stdout);
+		close(orig_stdout);
 	}
 }
 
@@ -60,7 +59,8 @@ static void	handle_parent(t_shell *shell, int i, int *prev_pipe0)
 		close(*prev_pipe0);
 		*prev_pipe0 = 0;
 	}
-	if (shell->cmd[i + 1] && infile_error(shell->cmd[i]) == 0 && shell->cmd[i]->arg[0])
+	if (shell->cmd[i + 1] && infile_error(shell->cmd[i]) == 0
+		&& shell->cmd[i]->arg[0])
 	{
 		if (shell->cmd[i]->fd_out > 1)
 			close(shell->cmd[i]->pipe[0]);
@@ -74,7 +74,8 @@ static void	handle_parent(t_shell *shell, int i, int *prev_pipe0)
 		close(shell->cmd[i]->fd_out);
 }
 
-//fucntion that does the waiting of the child processes while storing the last exit_status
+//fucntion that does the waiting of the child processes
+//while storing the last exit_status
 
 static void	wait_loop(t_shell *shell)
 {
@@ -91,7 +92,7 @@ static void	wait_loop(t_shell *shell)
 			else if (WIFSIGNALED(shell->exit_status))
 				shell->exit_status = 128 + WTERMSIG(shell->exit_status);
 		}
-    	i++;
+		i++;
 	}
 }
 
@@ -99,13 +100,14 @@ static void	wait_loop(t_shell *shell)
 
 void	executer(t_shell *shell)
 {
-	int		i = 0;
+	int		i;
 	int		prev_pipe0;
 
 	manage_hd(shell);
 	if (shell->exit_status == 130)
-		return;
+		return ;
 	manage_redir(&shell);
+	i = 0;
 	prev_pipe0 = 0;
 	exec_mode();
 	while (shell->cmd[i])

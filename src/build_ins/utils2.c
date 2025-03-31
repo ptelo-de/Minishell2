@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils2.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptelo-de <ptelo-de@student.42lisboa.com    +#+  +:+       +#+        */
+/*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 19:13:10 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/03/29 23:35:39 by ptelo-de         ###   ########.fr       */
+/*   Updated: 2025/03/31 14:02:10 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,8 @@ int	has_equal(char *var)
 	return (0);
 }
 
-//function that gives the name of var (declare -x SHLVL=1 or SHLVL=1 become SHLVL)
+//function that gives the name of var
+//(declare -x SHLVL=1 or SHLVL=1 become SHLVL)
 
 char	*get_var_name(char *var)
 {
