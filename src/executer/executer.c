@@ -1,13 +1,12 @@
-/* ***********************
-*************************************************** */
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   executer.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/11 17:09:19 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/02/12 15:45:48 by bde-luce         ###   ########.fr       */
+/*   Created: 2025/03/29 20:44:40 by bde-luce          #+#    #+#             */
+/*   Updated: 2025/03/29 20:46:58 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +18,7 @@
 
 static void	perform_single_build_in(t_cmd *cmd)
 {
-	int 	orig_stdout;
+	int	orig_stdout;
 
 	if (cmd->fd_out > 1)
 	{
@@ -31,7 +30,7 @@ static void	perform_single_build_in(t_cmd *cmd)
 	if (cmd->fd_out > 1)
 	{
 		dup2(orig_stdout, STDOUT_FILENO);
-    	close(orig_stdout);
+		close(orig_stdout);
 	}
 }
 
@@ -74,7 +73,8 @@ static void	handle_parent(t_shell *shell, int i, int *prev_pipe0)
 		close(shell->cmd[i]->fd_out);
 }
 
-//fucntion that does the waiting of the child processes while storing the last exit_status
+//fucntion that does the waiting of the child processes while
+//storing the last exit_status
 
 static void	wait_loop(t_shell *shell)
 {
@@ -91,7 +91,7 @@ static void	wait_loop(t_shell *shell)
 			else if (WIFSIGNALED(shell->exit_status))
 				shell->exit_status = 128 + WTERMSIG(shell->exit_status);
 		}
-    	i++;
+		i++;
 	}
 }
 
@@ -99,12 +99,13 @@ static void	wait_loop(t_shell *shell)
 
 void	executer(t_shell *shell)
 {
-	int		i = 0;
+	int		i;
 	int		prev_pipe0;
 
+	i = 0;
 	manage_hd(shell);
 	if (shell->exit_status == 130)
-		return;
+		return ;
 	manage_redir(&shell);
 	prev_pipe0 = 0;
 	exec_mode();

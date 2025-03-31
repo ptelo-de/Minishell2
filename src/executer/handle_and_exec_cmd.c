@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 19:54:07 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/03/28 20:26:21 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/03/29 20:51:04 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ void	handle_cmd_input(t_shell *shell, int i, int prev_pipe0)
 		dup2(prev_pipe0, STDIN_FILENO);
 		close(prev_pipe0);
 	}
-	else if (i != 0) // para dar de input empty file qd cat e wc nao tem input e ficam infinitamente à espera
+	else if (i != 0)
 	{
 		dev_null = open("/dev/null", O_RDONLY);
 		if (dev_null == -1)
@@ -43,17 +43,18 @@ void	handle_cmd_input(t_shell *shell, int i, int prev_pipe0)
 	}
 }
 
-//function that frees and closes stuff to avoid leaks when execve fails or build_ins are executed
+//function that frees and closes stuff to avoid leaks when execve 
+//fails or build_ins are executed
 
 static void	error_exec(char *path, char **envp, int prev_pipe0)
 {
 	t_shell	*shell;
-	
+
 	shell = get_shell();
 	if (path)
 		free(path);
 	free_arr(envp);
-	if (prev_pipe0)					//pus aqui para a situacao de haver um invalid command e por isso execve nao ser executado caso haja um pipe antes fechar o prev_pipe0
+	if (prev_pipe0)
 		close(prev_pipe0);
 	ms_exit(&shell, NULL);
 }
@@ -77,7 +78,7 @@ static void	exec_command(char **args, char **envp, int prev_pipe0)
 
 //funtion that closes all fd red from all the commands to avoid leaks
 
-static void	close_all_fd_red()
+static void	close_all_fd_red(void)
 {
 	t_shell	*shell;
 	int		i;
@@ -94,7 +95,8 @@ static void	close_all_fd_red()
 	}
 }
 
-//funcntion that handles the output of the command to be executed and executes it
+//funcntion that handles the output of the command
+//to be executed and executes it
 
 void	handle_cmd_output_and_execute(t_shell *shell, int i, int prev_pipe0)
 {
@@ -105,11 +107,11 @@ void	handle_cmd_output_and_execute(t_shell *shell, int i, int prev_pipe0)
 	}
 	else if (shell->cmd[i + 1])
 		dup2(shell->cmd[i]->pipe[1], STDOUT_FILENO);
-	if (prev_pipe0)																	//temos de fechar antes de fazer build_in o prev_pipe0 para o caso de exit
+	if (prev_pipe0)
 		close(prev_pipe0);
 	if (is_build_in(shell->cmd[i]))
 		build_ins(shell->cmd[i]);
-	if (shell->cmd[i + 1])															//temos de fechar depois de fazer build_in os fds do pipe para conseguirmos escrever para dentro do pipe e antes do execve para o cat nao ficar a espera
+	if (shell->cmd[i + 1])
 	{
 		close(shell->cmd[i]->pipe[0]);
 		close(shell->cmd[i]->pipe[1]);

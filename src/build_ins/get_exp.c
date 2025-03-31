@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 19:37:49 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/03/28 20:07:03 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/03/29 20:39:34 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,8 @@
 #include "executer.h"
 #include "minishell.h"
 
-//function that puts the value of a variable in envp under double quotes     (SHLVL=1 becomes SHLVL="1")
+//function that puts the value of a variable in envp under double quotes
+//(SHLVL=1 becomes SHLVL="1")
 
 char	*put_double_quotes(char *str)
 {
@@ -60,7 +61,8 @@ static int	is_repeated(char *str, char **env_order)
 	return (0);
 }
 
-//function that returns the smallest variable of envp, in alphabetical order, that is not already in env_order
+//function that returns the smallest variable of envp, in 
+//alphabetical order, that is not already in env_order
 
 static char	*get_smallest(char **env_order, char **envp)
 {
@@ -83,18 +85,19 @@ static char	*get_smallest(char **env_order, char **envp)
 	return (temp);
 }
 
-//funtion that returns envp ordered alphabetically without the variable that starts with "_"
+//funtion that returns envp ordered alphabetically 
+//without the variable that starts with "_"
 
-static char **alpha_order(char **envp)
+static char	**alpha_order(char **envp)
 {
 	char	**env_order;
 	int		i;
 
-	env_order = ft_calloc(arr_len(envp), sizeof(char *)); // -1 de menos 1 var +1 de str nula = 0
+	env_order = ft_calloc(arr_len(envp), sizeof(char *));
 	if (!env_order)
 		return (NULL);
 	i = 0;
-	while (i < arr_len(envp) - 1) // -1 porque exp tem menos 1 var que o env (não tem o "_=")
+	while (i < arr_len(envp) - 1)
 	{
 		env_order[i] = ft_strdup(get_smallest(env_order, envp));
 		if (!env_order[i])

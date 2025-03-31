@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 19:51:58 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/03/28 20:09:06 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/03/29 20:43:53 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,8 @@ static char	**find_path(char **envp)
 	return (NULL);
 }
 
-//fucntion that gets the joining of path and '/', the path depending if it's a system command or a 'program' that we want to execute
+//fucntion that gets the joining of path and '/', the path depending if it's a
+//system command or a 'program' that we want to execute
 
 static char	*get_path_join(char **path_env, char *path_env_i)
 {

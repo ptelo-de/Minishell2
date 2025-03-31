@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 19:40:21 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/03/28 20:02:17 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/03/29 20:29:01 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,17 +56,18 @@ int	ms_echo(t_cmd *cmd)
 }
 
 //function that deletes a variable (node) from a list
+//será preciso error handling (if (!lst || !(*lst)))
 
 static void	delete_var(t_list **lst, char *var)
 {
 	t_list	*temp;
 	t_list	*prev;
 	char	*lst_var;
-																				//será preciso error handling (if (!lst || !(*lst)))
+
 	temp = *lst;
 	prev = NULL;
 	while (temp)
-	{	
+	{
 		lst_var = get_var_name(temp->content);
 		if (ft_strncmp(lst_var, var, is_longer(lst_var, var)) == 0)
 		{
@@ -77,7 +78,7 @@ static void	delete_var(t_list **lst, char *var)
 				prev->next = temp->next;
 			free(temp->content);
 			free(temp);
-			return;
+			return ;
 		}
 		free(lst_var);
 		prev = temp;

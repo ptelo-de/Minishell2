@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 19:36:30 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/03/28 20:05:48 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/03/29 20:37:14 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,8 @@ static char	*set_shlvl(char *shlvl_value)
 {
 	int		shlvl;
 	char	*increased_shlvl;
-	char 	*updated_shlvl;
-	
+	char	*updated_shlvl;
+
 	shlvl = ft_atoi(shlvl_value);
 	shlvl++;
 	increased_shlvl = ft_itoa(shlvl);
