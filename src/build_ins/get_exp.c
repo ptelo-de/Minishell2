@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 19:37:49 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/03/31 14:25:21 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/03/31 17:18:14 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,8 +75,8 @@ static char	*get_smallest(char **env_order, char **envp)
 	temp = envp[i];
 	while (envp[i])
 	{
-		if (!is_repeated(envp[i], env_order) && 
-			ft_strncmp(envp[i], "_=", 2) != 0)
+		if (!is_repeated(envp[i], env_order)
+			&& ft_strncmp(envp[i], "_=", 2) != 0)
 		{
 			if (ft_strncmp(temp, envp[i], is_longer(temp, envp[i])) > 0)
 				temp = envp[i];

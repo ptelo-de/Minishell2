@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   here_pipe_approach.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptelo-de <ptelo-de@student.42lisboa.com    +#+  +:+       +#+        */
+/*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 00:51:40 by ptelo-de          #+#    #+#             */
-/*   Updated: 2025/03/29 23:45:15 by ptelo-de         ###   ########.fr       */
+/*   Updated: 2025/03/31 18:47:28 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,7 @@ int	here_doc(char *del, t_type expansion_rule)
 		here_sigint();
 		catch_here_input(del, expansion_rule);
 		close(shell->here_pipe[1]);
+		close_all_fd_red();
 		ms_exit(&shell, NULL);
 	}
 	close(shell->here_pipe[1]);
@@ -83,32 +84,42 @@ int	here_doc(char *del, t_type expansion_rule)
 	return (shell->here_pipe[0]);
 }
 
+//returns 0 in case of error or sigint and 1 othewise.
+
+static int	manage_command_hd(t_cmd *cmd, int *fd_hd)
+{
+	int		j;
+
+	j = -1;
+	while (cmd->red[++j])
+	{
+		if (cmd->red[j]->type == HERE_DOC)
+		{
+			if (*fd_hd != 0)
+				close(*fd_hd);
+			*fd_hd = here_doc(cmd->red[j]->str, cmd->red[j]->expansion_rule);
+			if (infile_error(cmd))
+				close(*fd_hd);
+			if (get_shell()->exit_status == 130 || *fd_hd < 0)
+				return (0);
+		}
+	}
+	return (1);
+}
+
 //function that stores the value of the last heredoc fd in fd_in in each command
 
 void	manage_hd(t_shell *shell)
 {
 	int		i;
-	int		j;
 	int		fd_hd;
 
 	i = -1;
 	while (shell->cmd[++i])
 	{
-		j = -1;
 		fd_hd = 0;
-		while (shell->cmd[i]->red[++j])
-		{
-			if (shell->cmd[i]->red[j]->type == HERE_DOC)
-			{
-				if (fd_hd != 0)
-					close(fd_hd);
-				fd_hd = here_doc(shell->cmd[i]->red[j]->str, shell->cmd[i]->red[j]->expansion_rule);
-				if (infile_error(shell->cmd[i]))
-					close(fd_hd);
-				if (shell->exit_status == 130 || fd_hd < 0)
-					return ;
-			}
-		}
+		if (!manage_command_hd(shell->cmd[i], &fd_hd))
+			return ;
 		if (!infile_error(shell->cmd[i]))
 			shell->cmd[i]->fd_in = fd_hd;
 	}

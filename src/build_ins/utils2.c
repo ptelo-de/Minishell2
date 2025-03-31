@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 19:13:10 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/03/31 14:02:10 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/03/31 19:08:12 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,32 @@ void	free_all(void)
 
 	shell = get_shell();
 	free_atributes();
-	free(shell->readline);
+	if (shell->readline)
+		free(shell->readline);
 	free_lst(shell->env);
 	free_lst(shell->exp);
+}
+
+//function that checks if a variable has a valid name
+
+int	arg_valid(char *arg)
+{
+	int	i;
+
+	if (!ft_isalpha(arg[0]) && arg[0] != '_')
+	{
+		printf("Error: export: '%s': not a valid identifier\n", arg);
+		return (0);
+	}
+	i = 1;
+	while (arg[i] && arg[i] != '=')
+	{
+		if (!ft_isalnum(arg[i]) && arg[i] != '_')
+		{
+			printf("Error: export: '%s': not a valid identifier\n", arg);
+			return (0);
+		}
+		i++;
+	}
+	return (1);
 }

@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 19:54:07 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/03/31 14:07:31 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/03/31 19:56:18 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ static void	exec_command(char **args, char **envp, int prev_pipe0)
 
 //funtion that closes all fd red from all the commands to avoid leaks
 
-static void	close_all_fd_red(void)
+void	close_all_fd_red(void)
 {
 	t_shell	*shell;
 	int		i;

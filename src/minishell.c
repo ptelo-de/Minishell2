@@ -1,63 +1,44 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/03/31 18:51:39 by bde-luce          #+#    #+#             */
+/*   Updated: 2025/03/31 19:14:42 by bde-luce         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "minishell.h"
 #include "parsing.h"
 #include "executer.h"
 
-/* MAIN FOR TESTING AST_BUILDING*/
-int main(int argc, char *argv[], char *envp[])
+int	main(int argc, char *argv[], char *envp[])
 {
-    t_shell *shell;
-    //int     i;
-    (void)argv;
+	t_shell	*shell;
 
-    shell = get_shell();
-    check_main_args(argc);
-    shell->env = get_env(envp);
-    shell->exp = get_exp(make_env_arr(shell->env));
-    while(1)
-    {
-        interactive_mode();
-        shell->readline = readline("minishell>"); //aprender a defender leaks so readline
-        ignore_signal(SIGINT);
-        if(!shell->readline)//ctrl D
-        {
-            free_atributes();
-            printf("exit\n");
-            free_lst(shell->env);
-            free_lst(shell->exp);
-            exit(0);
-          //  ms_exit(shell, shell->cmd); // need exit status //must free env and export
-        }
-//      
-		//fim do modo interativo: SIG_Ignore CRTL_C  E SIG_iGNORE CTRL_/
-        add_history(shell->readline); //not put white spaces or repetitions
-        if (lexer() == 1 || syntax_check() == 1)// need t differ memory error from user input error
-        {
-            free_atributes();
-        }
-        else
-        {
-            //i = 0;
-			//printf("\nLEXER\n\n");
-			//print_tokens();			
-            expander();
-			//printf("\nEXPANSION\n\n");
-			//print_tokens();
+	(void)argv;
+	shell = get_shell();
+	check_main_args(argc);
+	shell->env = get_env(envp);
+	shell->exp = get_exp(make_env_arr(shell->env));
+	while (1)
+	{
+		interactive_mode();
+		if (lexer() == 1 || syntax_check() == 1)
+			free_atributes();
+		else
+		{
+			expander();
 			(void)init_cmd();
-			//printf("\nCOMANDS ARRAY\n\n");
-			//print_cmd_array();
-            shell->exit_status = 0;
-            executer(shell);
-        }
-        free_atributes();
-        free(shell->readline);
-        shell->readline = NULL;
-    }
-    free_lst(shell->env);
-    free_lst(shell->exp);
+			shell->exit_status = 0;
+			executer(shell);
+		}
+		free_atributes();
+		free(shell->readline);
+		shell->readline = NULL;
+	}
+	free_lst(shell->env);
+	free_lst(shell->exp);
 }
-
-
-
-     
-        

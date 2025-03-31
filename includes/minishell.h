@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptelo-de <ptelo-de@student.42lisboa.com    +#+  +:+       +#+        */
+/*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 23:53:27 by ptelo-de          #+#    #+#             */
-/*   Updated: 2025/03/30 00:06:00 by ptelo-de         ###   ########.fr       */
+/*   Updated: 2025/03/31 18:48:17 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,6 @@ typedef enum s_type
 	HERE_DOC,
 	COMMAND,
 	COMMAND_ARGS,
-
 }	t_type;
 
 typedef struct s_token
@@ -70,12 +69,8 @@ typedef struct s_cmd
 
 	int				pid;
 
-	int				infile_error;
-
 	char			**arg;
 	int				n_arg;
-
-
 }	t_cmd;
 
 typedef struct s_shell
@@ -91,10 +86,7 @@ typedef struct s_shell
 	int		exit_status;
 
 	int		here_pipe[2];
-
-
 }	t_shell;
-
 
 t_shell	*get_shell(void);
 void	check_main_args(int ac);

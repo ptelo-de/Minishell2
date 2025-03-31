@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 19:42:35 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/03/31 14:32:09 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/03/31 17:17:29 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,14 +25,16 @@ static void	put_export(t_list **exp, char *var)
 	new_node = ft_lstnew(ft_strjoin("declare -x ", var));
 	if (*exp == NULL)
 		*exp = new_node;
-	else if (ft_strncmp((*exp)->content, new_node->content, ft_strlen((*exp)->content)) > 0)
+	else if (ft_strncmp((*exp)->content, new_node->content,
+			ft_strlen((*exp)->content)) > 0)
 		ft_lstadd_front(exp, new_node);
 	else
 	{
 		temp = *exp;
 		while (temp->next != NULL)
 		{
-			if (ft_strncmp(temp->content, new_node->content, is_longer(temp->content, new_node->content)) < 0 && ft_strncmp(temp->next->content, new_node->content, is_longer(temp->next->content, new_node->content)) > 0)
+			if (ft_strncmp(temp->next->content, new_node->content,
+					is_longer(temp->next->content, new_node->content)) > 0)
 			{
 				new_node->next = temp->next;
 				temp->next = new_node;
@@ -44,22 +46,17 @@ static void	put_export(t_list **exp, char *var)
 	}
 }
 
-//function that updates a variable value in exp
-//and/or env lists if it already exists there
+//function  that updates the value of the variable to be updated in exp list
 
-static int	update_lst(t_list **lst, char *var, int b)
+static int	update_exp_value(t_list **lst, char *var_name, char *var, int b)
 {
 	t_list	*temp;
 	char	*lst_var;
-	char	*var_name;
 
-	if (!lst || !(*lst) || !var)
-		return (0);
 	temp = *lst;
 	while (temp != NULL)
 	{
 		lst_var = get_var_name(temp->content);
-		var_name = get_var_name(var);
 		if (ft_strncmp(lst_var, var_name, is_longer(lst_var, var_name)) == 0)
 		{
 			free(lst_var);
@@ -73,9 +70,24 @@ static int	update_lst(t_list **lst, char *var, int b)
 			return (1);
 		}
 		free(lst_var);
-		free(var_name);
 		temp = temp->next;
 	}
+	return (0);
+}
+
+//function that updates a variable value in exp
+//and/or env lists if it already exists there
+
+static int	update_lst(t_list **lst, char *var, int b)
+{
+	char	*var_name;
+
+	if (!lst || !(*lst) || !var)
+		return (0);
+	var_name = get_var_name(var);
+	if (update_exp_value(lst, var_name, var, b))
+		return (1);
+	free(var_name);
 	return (0);
 }
 
@@ -88,30 +100,6 @@ static void	print_exp(t_list *exp)
 		printf("%s\n", (char *)exp->content);
 		exp = exp->next;
 	}
-}
-
-//function that checks if a variable has a valid name
-
-static int	arg_valid(char *arg)
-{
-	int	i;
-
-	if (!ft_isalpha(arg[0]) && arg[0] != '_')
-	{
-		printf("Error: export: '%s': not a valid identifier\n", arg);
-		return (0);
-	}
-	i = 1;
-	while (arg[i] && arg[i] != '=')
-	{
-		if (!ft_isalnum(arg[i]) && arg[i] != '_')
-		{
-			printf("Error: export: '%s': not a valid identifier\n", arg);
-			return (0);
-		}
-		i++;
-	}
-	return (1);
 }
 
 //export function
