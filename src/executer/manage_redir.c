@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 19:50:31 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/03/31 14:41:46 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/04/01 17:10:00 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,77 +52,61 @@ static int	last_is_infile(t_cmd *cmd)
 
 //funtion that iterates through the reds in a command line and if the
 //last input red is an infile updates the fd_in with its fd
-
-static void	handle_infile(t_cmd *cmd, t_shell **shell, int j)
-{
-	char	*last_in;
-	int		i;
-
-	i = 0;
-	while (cmd->red[i])
-	{
-		if (cmd->red[i]->type == INFILE)
-		{
-			if (access(cmd->red[i]->str, F_OK) == -1)
-			{
-				printf("Error: %s: No such file or directory\n",
-					cmd->red[i]->str);
-				return ;
-			}
-			last_in = cmd->red[i]->str;
-		}
-		i++;
-	}
-	if (last_is_infile(cmd) == 0)
-	{
-		if ((*shell)->cmd[j]->fd_in != 0)
-			close((*shell)->cmd[j]->fd_in);
-		(*shell)->cmd[j]->fd_in = get_fd_infile(last_in);
-	}
-}
-
 //function that iterates through the reds in a command line and opens the output
 //red files, storing the last one's fd in fd_out
-
-static void	handle_outfile(t_cmd *cmd, t_shell **shell, int j)
-{
-	int	out;
-	int	i;
-
-	out = 1;
-	i = 0;
-	while (cmd->red[i])
-	{
-		if (cmd->red[i]->type == OUTFILE)
-		{
-			if (out != 1)
-				close(out);
-			out = open(cmd->red[i]->str, O_WRONLY | O_TRUNC | O_CREAT, 0644);
-			error_open_outfile(out, cmd->red[i]->str);
-		}
-		else if (cmd->red[i]->type == APPEND)
-		{
-			if (out != 1)
-				close(out);
-			out = open(cmd->red[i]->str, O_WRONLY | O_APPEND | O_CREAT, 0644);
-			error_open_outfile(out, cmd->red[i]->str);
-		}
-		i++;
-	}
-	(*shell)->cmd[j]->fd_out = out;
-}
 
 //function that manages both infile red and output red
 
 void	manage_redir(t_shell **shell)
 {
+	char	*last_in;
 	int		i;
+	int		j;
 
-	i = 0;
-	while ((*shell)->cmd[i])
+	j = 0;
+	while ((*shell)->cmd[j])
 	{
-		handle_infile((*shell)->cmd[i], shell, i);
-		handle_outfile((*shell)->cmd[i], shell, i);
-		i++;
+		i = 0;
+		while ((*shell)->cmd[j]->red[i])
+		{
+			if ((*shell)->cmd[j]->red[i]->type == OUTFILE)
+			{
+				if ((*shell)->cmd[j]->fd_out > 2)
+					close((*shell)->cmd[j]->fd_out);
+				(*shell)->cmd[j]->fd_out = open((*shell)->cmd[j]->red[i]->str,
+						O_WRONLY | O_TRUNC | O_CREAT, 0644);
+				if (error_open_outfile((*shell)->cmd[j]->fd_out,
+						(*shell)->cmd[j]->red[i]->str))
+					break ;
+			}
+			else if ((*shell)->cmd[j]->red[i]->type == APPEND)
+			{
+				if ((*shell)->cmd[j]->fd_out > 2)
+					close((*shell)->cmd[j]->fd_out);
+				(*shell)->cmd[j]->fd_out = open((*shell)->cmd[j]->red[i]->str,
+						O_WRONLY | O_APPEND | O_CREAT, 0644);
+				if (error_open_outfile((*shell)->cmd[j]->fd_out,
+						(*shell)->cmd[j]->red[i]->str))
+					break ;
+			}
+			else if ((*shell)->cmd[j]->red[i]->type == INFILE)
+			{
+				if (access((*shell)->cmd[j]->red[i]->str, F_OK) == -1)
+				{
+					printf("Error: %s: No such file or directory\n",
+						(*shell)->cmd[j]->red[i]->str);
+					break ;
+				}
+				last_in = (*shell)->cmd[j]->red[i]->str;
+			}
+			i++;
+		}
+		if (last_is_infile((*shell)->cmd[j]) == 0)
+		{
+			if ((*shell)->cmd[j]->fd_in != 0)
+				close((*shell)->cmd[j]->fd_in);
+			(*shell)->cmd[j]->fd_in = get_fd_infile(last_in);
+		}
+		j++;
 	}
 }

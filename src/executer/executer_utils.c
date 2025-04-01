@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 19:48:28 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/04/01 00:16:20 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/04/01 16:52:33 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,10 +37,19 @@ int	infile_error(t_cmd *cmd)
 
 int	error_open_outfile(int fd_outfile, char *name_outfile)
 {
-	if (fd_outfile == -1)
+	DIR	*aux;
+
+	aux = opendir(name_outfile);
+	if (aux != NULL)
+	{
+		printf("%s: is a directory\n", name_outfile);
+		closedir(aux);
+		return (1);
+	}
+	if (fd_outfile == -1 || access(name_outfile, W_OK) == -1)
 	{
 		printf("Error opening outfile: %s\n", name_outfile);
-		return (-1);
+		return (1);
 	}
 	return (0);
 }

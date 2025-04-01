@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 23:53:27 by ptelo-de          #+#    #+#             */
-/*   Updated: 2025/04/01 01:16:00 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/04/01 17:01:45 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@
 # include <sys/wait.h>
 # include <signal.h>
 # include <fcntl.h>
+# include <dirent.h>
 
 # define PRIVATE_PATH "/usr/local/sbin:/usr/local/bin:/usr/sbin\
 :/usr/bin:/sbin:/bin"
