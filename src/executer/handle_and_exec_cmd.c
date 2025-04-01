@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 19:54:07 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/04/01 00:09:14 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/04/01 01:46:36 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ static void	exec_command(char **args, char **envp, int prev_pipe0)
 	if (!path)
 	{
 		write(2, args[0], ft_strlen(args[0]));
-		write(2, ": command not found\n", 20);
+		write(2, ": No such file or directory\n", 29);
 	}
 	else if (execve(path, args, envp) == -1)
 		perror("execve error");
