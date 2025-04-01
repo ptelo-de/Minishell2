@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 14:03:25 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/04/01 16:03:47 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/04/01 19:08:00 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,7 +112,8 @@ void	executer(t_shell *shell)
 	exec_mode();
 	while (shell->cmd[i])
 	{
-		if (shell->cmd[i]->arg[0] && infile_error(shell->cmd[i]) == 0)
+		if (shell->cmd[i]->arg[0] && infile_error(shell->cmd[i]) == 0
+			&& !shell->cmd[i]->out_error)
 		{
 			if (!shell->cmd[1] && is_build_in(shell->cmd[0]))
 				perform_single_build_in(shell->cmd[i]);

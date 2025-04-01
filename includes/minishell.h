@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 23:53:27 by ptelo-de          #+#    #+#             */
-/*   Updated: 2025/04/01 17:01:45 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/04/01 19:01:13 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,7 @@ typedef struct s_cmd
 	int				fd_out;
 	int				pipe[2];
 	t_redir			**red;
+	int				out_error;
 
 	int				pid;
 

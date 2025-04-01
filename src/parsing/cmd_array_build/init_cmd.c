@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 02:04:54 by ptelo-de          #+#    #+#             */
-/*   Updated: 2025/03/31 16:13:44 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/04/01 19:04:55 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ t_cmd	*get_next_cmd(t_token *token)
 	cmd->pid = 0;
 	cmd->fd_in = 0;
 	cmd->fd_out = 1;
+	cmd->out_error = 0;
 	get_args(token, cmd);
 	if (!cmd->arg)
 	{

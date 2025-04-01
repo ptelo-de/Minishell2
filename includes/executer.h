@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 18:41:36 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/04/01 16:03:54 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/04/01 19:02:28 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,11 +44,14 @@ int		ms_exit(t_shell **shell, t_cmd *cmd);
 int		build_ins(t_cmd *cmd);
 
 int		infile_error(t_cmd *cmd);
-int		error_open_outfile(int fd_outfile, char *name_outfile);
+int		error_open_outfile(int fd_outfile, char *name_outfile, t_cmd *cmd);
 char	**make_env_arr(t_list *env);
 int		is_build_in(t_cmd *cmd);
 
 void	manage_hd(t_shell *shell);
+
+int		last_is_infile(t_cmd *cmd);
+int		get_fd_infile(char *infile);
 
 void	manage_redir(t_shell **shell);
 
