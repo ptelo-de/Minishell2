@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 19:40:21 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/03/31 13:55:16 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/04/01 01:20:54 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,6 +95,8 @@ int	ms_unset(t_list **env, t_list **exp, t_cmd *cmd)
 	i = 1;
 	while (i < cmd->n_arg)
 	{
+		if (ft_strncmp(cmd->arg[i], "PATH", 5) == 0)
+			get_shell()->private_path = NULL;
 		delete_var(env, cmd->arg[i]);
 		delete_var(exp, cmd->arg[i]);
 		i++;

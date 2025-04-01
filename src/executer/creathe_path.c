@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 19:51:58 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/03/31 19:57:53 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/04/01 01:17:23 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,8 @@ static char	**find_path(char **envp)
 		}
 		i++;
 	}
+	if (get_shell()->private_path != NULL)
+		return (ft_split(get_shell()->private_path, ':'));
 	return (NULL);
 }
 

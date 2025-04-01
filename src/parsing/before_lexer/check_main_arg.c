@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   check_main_arg.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ptelo-de <ptelo-de@student.42lisboa.com    +#+  +:+       +#+        */
+/*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 02:09:00 by ptelo-de          #+#    #+#             */
-/*   Updated: 2025/03/29 02:36:30 by ptelo-de         ###   ########.fr       */
+/*   Updated: 2025/04/01 01:10:26 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ void	check_main_args(int ac)
 		ft_putendl_fd("do not add parameters to executable", 1);
 		exit(0);
 	}
+	get_shell()->private_path = NULL;
 }
 
 /* [] Check main_args

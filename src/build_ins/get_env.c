@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 19:36:30 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/04/01 00:52:01 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/04/01 01:12:43 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ void	set_env_i(t_list **env)
 	ft_lstadd_back(env, ft_lstnew(pwd_var));
 	ft_lstadd_back(env, ft_lstnew(ft_strdup("SHLVL=1")));
 	free(pwd);
+	get_shell()->private_path = PRIVATE_PATH;
 }
 
 //function that generates env from envp
