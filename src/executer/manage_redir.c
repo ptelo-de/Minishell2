@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 19:50:31 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/04/01 19:02:07 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/04/02 20:26:08 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,6 @@ static void	manage_redir_aux(char **last_in, t_cmd *cmd)
 					cmd->red[i]->str);
 				break ;
 			}
-			printf("infile string: %s\n", cmd->red[i]->str);
 			*last_in = cmd->red[i]->str;
 		}
 	}

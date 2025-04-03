@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 19:54:07 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/04/01 17:11:34 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/04/02 20:32:44 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,7 @@ static void	exec_command(char **args, char **envp, int prev_pipe0)
 	{
 		write(2, args[0], ft_strlen(args[0]));
 		write(2, ": No such file or directory\n", 29);
+		get_shell()->exit_status = 127;
 	}
 	else if (execve(path, args, envp) == -1)
 		perror("execve error");

@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 19:51:58 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/04/01 01:40:29 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/04/02 20:43:17 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,8 +70,8 @@ char	*create_path(char *function, char **envp)
 	if (access(function, X_OK) == 0)
 		return (function);
 	path_env = find_path(envp);
-	i = arr_len(path_env);
-	while (path_env && i >= 0)
+	i = 0;
+	while (path_env && i <= arr_len(path_env))
 	{
 		path_join = get_path_join(path_env, path_env[i]);
 		path = ft_strjoin(path_join, function);
@@ -82,7 +82,7 @@ char	*create_path(char *function, char **envp)
 			return (path);
 		}
 		free(path);
-		i--;
+		i++;
 	}
 	free_arr(path_env);
 	return (NULL);
