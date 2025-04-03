@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 19:37:49 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/03/31 17:18:14 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/04/03 16:44:09 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,16 @@
 #include "executer.h"
 #include "minishell.h"
 
-//function that puts the value of a variable in envp under double quotes
-//(SHLVL=1 becomes SHLVL="1")
-
+/**
+ * @brief Adds double quotes around the value of an environment variable.
+ *
+ * Converts a string in the form `VAR=value` to `VAR="value"`.
+ * Useful for formatting export output.
+ *
+ * @param str the original environment variable string.
+ * 
+ * @return a newly allocated string with the value quoted, or NULL on failure.
+ */
 char	*put_double_quotes(char *str)
 {
 	char	*with_quotes;
@@ -45,8 +52,17 @@ char	*put_double_quotes(char *str)
 	return (with_quotes);
 }
 
-//function that checks if 2 strings are repeated (are the same)
-
+/**
+ * @brief Checks if a string is already present in an array of strings.
+ *
+ * Compares the given string to all entries in `env_order` using
+ * `ft_strncmp` up to the length of the longer string.
+ *
+ * @param str the string to check.
+ * @param env_order the array of strings to check against.
+ * 
+ * @return 1 if the string is already present, 0 otherwise.
+ */
 static int	is_repeated(char *str, char **env_order)
 {
 	int	i;
@@ -61,9 +77,17 @@ static int	is_repeated(char *str, char **env_order)
 	return (0);
 }
 
-//function that returns the smallest variable of envp, in alphabetical
-//order, that is not already in env_order
-
+/**
+ * @brief Finds the alphabetically smallest environment variable not yet added.
+ *
+ * Skips any variable already in `env_order` and ignores the one starting with `"_="`.
+ * Returns the smallest variable name from `envp` based on alphabetical order.
+ *
+ * @param env_order the array of already ordered variables.
+ * @param envp the full list of environment variables.
+ * 
+ * @return pointer to the smallest variable not yet added.
+ */
 static char	*get_smallest(char **env_order, char **envp)
 {
 	char	*temp;
@@ -86,9 +110,16 @@ static char	*get_smallest(char **env_order, char **envp)
 	return (temp);
 }
 
-//funtion that returns envp ordered alphabetically without
-//the variable that starts with "_"
-
+/**
+ * @brief Returns an array of environment variables in alphabetical order.
+ *
+ * Creates a new array with the contents of `envp` sorted lexicographically,
+ * excluding the variable that starts with `"_="`.
+ *
+ * @param envp the original environment variable array.
+ * 
+ * @return a newly allocated array with variables sorted alphabetically, or NULL on failure.
+ */
 static char	**alpha_order(char **envp)
 {
 	char	**env_order;
@@ -112,8 +143,16 @@ static char	**alpha_order(char **envp)
 	return (env_order);
 }
 
-//function that generates exp from env
-
+/**
+ * @brief Generates the export list (`exp`) from the environment (`envp`).
+ *
+ * Creates a lexicographically ordered export list where each variable
+ * is formatted as `declare -x VAR="value"`. Frees the input `envp` at the end.
+ *
+ * @param envp the array of environment variables.
+ * 
+ * @return a linked list representing the export list, or NULL on failure.
+ */
 t_list	*get_exp(char **envp)
 {
 	char	**env_order;

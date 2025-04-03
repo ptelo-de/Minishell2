@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 19:40:21 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/04/01 01:20:54 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/04/03 16:13:23 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,16 @@
 #include "executer.h"
 #include "minishell.h"
 
-//function that checks for the presence of flag -n in echo
-
+/**
+ * @brief Checks if a given argument is the `-n` flag.
+ *
+ * Verifies if the argument starts with '-' and is followed only by 'n' characters.
+ * Used to determine if echo should suppress the trailing newline.
+ *
+ * @param arg the argument string to check.
+ * 
+ * @return 1 if it is a valid -n flag, 0 otherwise.
+ */
 static int	flag_n(char *arg)
 {
 	int	i;
@@ -34,8 +42,16 @@ static int	flag_n(char *arg)
 	return (1);
 }
 
-//echo fucntion
-
+/**
+ * @brief Executes the `echo` command.
+ *
+ * Prints the given arguments to standard output. If one or more `-n` flags
+ * are present at the beginning, it suppresses the trailing newline.
+ *
+ * @param cmd the command containing the arguments to be echoed.
+ * 
+ * @return 0 (always successful).
+ */
 int	ms_echo(t_cmd *cmd)
 {
 	int	i;
@@ -55,9 +71,17 @@ int	ms_echo(t_cmd *cmd)
 	return (0);
 }
 
-//function that deletes a variable (node) from a list
-//será preciso error handling (if (!lst || !(*lst)))
-
+/**
+ * @brief Deletes a variable from a linked list.
+ *
+ * Searches for a node matching the given variable name and removes it from the list.
+ * Frees all associated memory. Handles deletion from the head or middle of the list.
+ *
+ * @param lst pointer to the environment or export list.
+ * @param var the variable name to delete.
+ * 
+ * @return void.
+ */
 static void	delete_var(t_list **lst, char *var)
 {
 	t_list	*temp;
@@ -86,8 +110,18 @@ static void	delete_var(t_list **lst, char *var)
 	}
 }
 
-//unset function
-
+/**
+ * @brief Executes the `unset` command.
+ *
+ * Removes specified environment and export variables. If `PATH` is unset,
+ * also clears the shell’s private path.
+ *
+ * @param env pointer to the environment list.
+ * @param exp pointer to the export list.
+ * @param cmd the command containing the arguments to unset.
+ * 
+ * @return 0 (always successful).
+ */
 int	ms_unset(t_list **env, t_list **exp, t_cmd *cmd)
 {
 	int		i;

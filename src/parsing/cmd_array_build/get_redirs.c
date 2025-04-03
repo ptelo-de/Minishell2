@@ -6,13 +6,30 @@
 /*   By: ptelo-de <ptelo-de@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 02:02:46 by ptelo-de          #+#    #+#             */
-/*   Updated: 2025/03/29 02:03:58 by ptelo-de         ###   ########.fr       */
+/*   Updated: 2025/04/03 23:41:23 by ptelo-de         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "parsing.h"
 
+/**
+ * @brief Assigns redirection types and values to a redirection array.
+ *
+ * Iterates through the token list up to a `PIPE` token, 
+ * identifying `REDIR` tokens and assigning their corresponding type 
+ * and string value to the `t_redir` array. 
+ * It determines the specific redirection type (`HERE_DOC`, 
+ * `APPEND`, `OUTFILE`, or `INFILE`) 
+ * based on the token string.
+ *
+ * @param token The token list to process.
+ * @param redir A pointer to an array of `t_redir` structures to be filled.
+ *
+ * @return void.
+ *
+ * Auxiliary functions: ft_strncmp.
+ */
 void	assign_redirs(t_token	*token, t_redir	***redir)
 {
 	int		i;
@@ -38,6 +55,22 @@ void	assign_redirs(t_token	*token, t_redir	***redir)
 	(*redir)[i] = NULL;
 }
 
+/**
+ * @brief Extracts and initializes redirection structures from a token list.
+ *
+ * Counts the number of redirections (`REDIR` tokens) in the given token list 
+ * and allocates memory for an array of `t_redir` structures. 
+ * Then, it initializes 
+ * each redirection structure and assigns them using `assign_redirs`.
+ *
+ * If memory allocation fails, the function returns `NULL`.
+ *
+ * @param token The token list to process.
+ *
+ * @return A pointer to an array of `t_redir` structures, or `NULL` on failure.
+ *
+ * Auxiliary functions: ft_calloc, assign_redirs.
+ */
 t_redir	**get_red(t_token	*token)
 {
 	int		redir_num;

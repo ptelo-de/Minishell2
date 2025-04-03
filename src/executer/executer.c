@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executer.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ptelo-de <ptelo-de@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 14:03:25 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/04/01 19:08:00 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/04/03 23:34:05 by ptelo-de         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,16 @@
 #include "parsing.h"
 #include "executer.h"
 
-//function that handles when there's only a build_in to be executed 
-
+/**
+ * @brief Executes a single built-in command without forking.
+ *
+ * Redirects stdout to `cmd->fd_out` if necessary, executes the built-in,
+ * and restores the original stdout afterward.
+ *
+ * @param cmd the command to execute.
+ * 
+ * @return void.
+ */
 static void	perform_single_build_in(t_cmd *cmd)
 {
 	int	orig_stdout;
@@ -34,8 +42,18 @@ static void	perform_single_build_in(t_cmd *cmd)
 	}
 }
 
-//fucntion that executes a command line with its redirections
-
+/**
+ * @brief Executes a command line with redirections and piping.
+ *
+ * Creates a pipe if there's a next command, forks a new process,
+ * and handles input/output redirection and execution in the child process.
+ *
+ * @param shell the shell structure containing command data.
+ * @param i the index of the current command in the list.
+ * @param prev_pipe0 the read end of the previous pipe, if any.
+ * 
+ * @return void.
+ */
 static void	execute_cmd_line(t_shell *shell, int i, int prev_pipe0)
 {
 	if (shell->cmd[i + 1])
@@ -50,8 +68,18 @@ static void	execute_cmd_line(t_shell *shell, int i, int prev_pipe0)
 	}
 }
 
-//fucntion that closes and updates variables in the parent process
-
+/**
+ * @brief Handles cleanup and pipe management in the parent process.
+ *
+ * Closes previous pipe if needed, updates the pipe for the next command,
+ * and closes input/output file descriptors of the current command.
+ *
+ * @param shell the shell structure.
+ * @param i the index of the current command.
+ * @param prev_pipe0 pointer to the read end of the previous pipe.
+ * 
+ * @return void.
+ */
 static void	handle_parent(t_shell *shell, int i, int *prev_pipe0)
 {
 	if (*prev_pipe0)
@@ -74,9 +102,16 @@ static void	handle_parent(t_shell *shell, int i, int *prev_pipe0)
 		close(shell->cmd[i]->fd_out);
 }
 
-//fucntion that does the waiting of the child processes
-//while storing the last exit_status
-
+/**
+ * @brief Waits for all child processes to finish.
+ *
+ * Iterates through all commands, waits for any active child process,
+ * and stores the final exit status in the shell structure.
+ *
+ * @param shell the shell structure.
+ * 
+ * @return void.
+ */
 static void	wait_loop(t_shell *shell)
 {
 	int	i;
@@ -91,13 +126,25 @@ static void	wait_loop(t_shell *shell)
 				shell->exit_status = WEXITSTATUS(shell->exit_status);
 			else if (WIFSIGNALED(shell->exit_status))
 				shell->exit_status = 128 + WTERMSIG(shell->exit_status);
+			if (shell->exit_status == 130)
+				write(1, "\n", 2);
 		}
 		i++;
 	}
 }
 
-//executer function
-
+/**
+ * @brief Executes all commands in the shell with proper redirection, piping, and signal handling.
+ *
+ * Manages here-documents and redirections, determines if execution should
+ * be handled via a single built-in or through forked processes with pipes.
+ * Activates execution-mode signal handling via `exec_mode`, handles each command,
+ * and waits for all child processes to terminate.
+ *
+ * @param shell the main shell structure.
+ * 
+ * @return void.
+ */
 void	executer(t_shell *shell)
 {
 	int		i;

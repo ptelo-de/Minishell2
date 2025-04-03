@@ -6,7 +6,7 @@
 /*   By: ptelo-de <ptelo-de@student.42lisboa.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 02:00:04 by ptelo-de          #+#    #+#             */
-/*   Updated: 2025/03/30 00:34:07 by ptelo-de         ###   ########.fr       */
+/*   Updated: 2025/04/03 23:42:23 by ptelo-de         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,20 @@ void	assign_args(t_token	*tokens, char	***args)
 	(*args)[i] = NULL;
 }
 
+/**
+ * @brief Extracts and assigns command arguments from the token list.
+ *
+ * Iterates through the given token list until a `PIPE` token is encountered, counting 
+ * the number of valid arguments. Allocates memory for the command's argument array 
+ * and assigns the extracted arguments to it.
+ *
+ * @param token The starting token in the list.
+ * @param cmd The command structure where arguments will be stored.
+ *
+ * @return void.
+ *
+ * Auxiliary functions: is_arg, ft_calloc, assign_args.
+ */
 void	get_args(t_token *token, t_cmd *cmd)
 {
 	t_token	*tmp;

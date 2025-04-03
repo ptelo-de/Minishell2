@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 19:41:44 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/04/01 00:24:17 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/04/03 15:55:39 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,17 @@
 #include "executer.h"
 #include "minishell.h"
 
-//function that updates OLD_PWD and PWD in env after executing cd
-
+/**
+ * @brief Updates the PWD and OLDPWD environment variables.
+ *
+ * Searches through the environment list for the "PWD=" variable,
+ * updates it with the new path, and sets "OLDPWD=" to the previous value of "PWD".
+ *
+ * @param new_pwd the new present working directory.
+ * @param env pointer to the environment list.
+ * 
+ * @return void.
+ */
 static void	update_pwd_env(char *new_pwd, t_list **env)
 {
 	t_list	*temp_env;
@@ -44,9 +53,16 @@ static void	update_pwd_env(char *new_pwd, t_list **env)
 	}
 }
 
-//function that joins all arguments
-//(for cd to execute when a directory has more than a word)
-
+/**
+ * @brief Joins all arguments after `cd` into a single string.
+ *
+ * Useful when the directory name contains spaces and is split
+ * across multiple arguments.
+ *
+ * @param cmd the command containing the arguments.
+ * 
+ * @return a newly allocated string with all arguments joined by spaces.
+ */
 static char	*join_all_args(t_cmd *cmd)
 {
 	int		i;
@@ -66,8 +82,17 @@ static char	*join_all_args(t_cmd *cmd)
 	return (str2);
 }
 
-//getenv for our env
-
+/**
+ * @brief Retrieves the value of an environment variable.
+ *
+ * Searches through the environment list for the specified variable
+ * and returns its value without the prefix.
+ *
+ * @param env the environment list.
+ * @param var the variable to look for (e.g. "HOME=").
+ * 
+ * @return pointer to the value part of the variable, or NULL if not found.
+ */
 static char	*ms_getenv(t_list *env, char *var)
 {
 	t_list	*temp;
@@ -82,8 +107,19 @@ static char	*ms_getenv(t_list *env, char *var)
 	return (NULL);
 }
 
-//cd function
-
+/**
+ * @brief Executes the `cd` command.
+ *
+ * Changes the current working directory to the one specified in the command.
+ * If no argument is provided, it attempts to change to the HOME directory.
+ * Updates the environment with the new PWD and OLDPWD values.
+ *
+ * @param shell the shell structure.
+ * @param env pointer to the environment list.
+ * @param cmd the command containing the arguments.
+ * 
+ * @return 0 if successful, 1 if an error occurred.
+ */
 int	ms_cd(t_shell *shell, t_list **env, t_cmd *cmd)
 {
 	char	*join_arg;
@@ -113,8 +149,13 @@ int	ms_cd(t_shell *shell, t_list **env, t_cmd *cmd)
 	return (free(new_pwd), 0);
 }
 
-//pwd function
-
+/**
+ * @brief Executes the `pwd` command.
+ *
+ * Prints the current working directory to standard output.
+ *
+ * @return 0 if successful, 1 if an error occurred.
+ */
 int	ms_pwd(void)
 {
 	char	*pwd;

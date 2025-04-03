@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 19:54:07 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/04/01 17:11:34 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/04/03 19:12:09 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,18 @@
 #include "executer.h"
 #include "minishell.h"
 
-//function that handles the input of the command to be executed
-
+/**
+ * @brief Handles the input redirection for a command before execution.
+ *
+ * Sets up standard input based on the command’s `fd_in`, previous pipe, or `/dev/null`
+ * if it's not the first command and no input is defined.
+ *
+ * @param shell the main shell structure.
+ * @param i the index of the current command.
+ * @param prev_pipe0 the read end of the previous pipe (if any).
+ * 
+ * @return void.
+ */
 void	handle_cmd_input(t_shell *shell, int i, int prev_pipe0)
 {
 	int		dev_null;
@@ -43,9 +53,18 @@ void	handle_cmd_input(t_shell *shell, int i, int prev_pipe0)
 	}
 }
 
-//function that frees and closes stuff to avoid leaks
-//when execve fails or build_ins are executed
-
+/**
+ * @brief Frees and closes resources in case of execution failure or exit.
+ *
+ * Handles memory cleanup and file descriptor closure when `execve` fails
+ * or when a built-in command is executed in a forked process.
+ *
+ * @param path the resolved path to the executable (can be NULL).
+ * @param envp the environment array (can be NULL).
+ * @param prev_pipe0 the read end of the previous pipe (if any).
+ * 
+ * @return void. This function calls `ms_exit` and does not return normally.
+ */
 static void	error_exec(char *path, char **envp, int prev_pipe0)
 {
 	t_shell	*shell;
@@ -59,8 +78,18 @@ static void	error_exec(char *path, char **envp, int prev_pipe0)
 	ms_exit(&shell, NULL);
 }
 
-//fucntion that tries to execute a command/program
-
+/**
+ * @brief Attempts to execute a command using `execve`.
+ *
+ * Resolves the command path using `create_path`, then executes it with `execve`.
+ * On failure, prints an error message and performs cleanup through `error_exec`.
+ *
+ * @param args the command and its arguments.
+ * @param envp the environment variables as an array.
+ * @param prev_pipe0 the read end of the previous pipe (if any).
+ * 
+ * @return void. This function does not return normally; it exits on failure.
+ */
 static void	exec_command(char **args, char **envp, int prev_pipe0)
 {
 	char	*path;
@@ -70,14 +99,21 @@ static void	exec_command(char **args, char **envp, int prev_pipe0)
 	{
 		write(2, args[0], ft_strlen(args[0]));
 		write(2, ": No such file or directory\n", 29);
+		get_shell()->exit_status = 127;
 	}
 	else if (execve(path, args, envp) == -1)
 		perror("execve error");
 	error_exec(path, envp, prev_pipe0);
 }
 
-//funtion that closes all fd red from all the commands to avoid leaks
-
+/**
+ * @brief Closes all input and output redirection file descriptors.
+ *
+ * Iterates through all commands and closes any open input or output file descriptors
+ * to prevent resource leaks.
+ *
+ * @return void.
+ */
 void	close_all_fd_red(void)
 {
 	t_shell	*shell;
@@ -95,9 +131,19 @@ void	close_all_fd_red(void)
 	}
 }
 
-//funcntion that handles the output of the command
-//to be executed and executes it
-
+/**
+ * @brief Handles the output redirection and executes the command.
+ *
+ * Redirects standard output if needed, executes built-in or external commands,
+ * and ensures proper pipe and file descriptor cleanup. If `execve` fails or the
+ * command is not found, handles the error and exits.
+ *
+ * @param shell the shell structure.
+ * @param i the index of the current command.
+ * @param prev_pipe0 the read end of the previous pipe (if any).
+ * 
+ * @return void. This function may exit the process if execution fails.
+ */
 void	handle_cmd_output_and_execute(t_shell *shell, int i, int prev_pipe0)
 {
 	if (shell->cmd[i]->fd_out > 1)
