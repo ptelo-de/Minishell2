@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 19:43:29 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/04/01 00:18:15 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/04/03 16:25:02 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,15 @@
 #include "executer.h"
 #include "minishell.h"
 
-//env function
-
+/**
+ * @brief Executes the `env` command.
+ *
+ * Prints the current environment variables, one per line.
+ *
+ * @param env the environment list.
+ * 
+ * @return 0 (always successful).
+ */
 static int	ms_env(t_list *env)
 {
 	while (env != NULL)
@@ -26,8 +33,16 @@ static int	ms_env(t_list *env)
 	return (0);
 }
 
-//function that checks if a string is only composed by digits
-
+/**
+ * @brief Checks if a string is composed only of digits.
+ *
+ * Allows an optional leading '+' or '-' sign. Returns false
+ * if any non-digit character is found after the sign.
+ *
+ * @param str the string to check.
+ * 
+ * @return 1 if the string is numeric, 0 otherwise.
+ */
 static int	str_isdigit(char *str)
 {
 	int	i;
@@ -44,8 +59,20 @@ static int	str_isdigit(char *str)
 	return (1);
 }
 
-//exit function
-
+/**
+ * @brief Executes the `exit` command with optional status handling.
+ *
+ * If no argument is given, exits with the current status. If one numeric argument
+ * is provided, exits with that status. If too many arguments are passed, the function
+ * prints an error and returns without exiting. If the argument is not numeric, an
+ * error is shown and the status is set to 2 before exiting.
+ *
+ * @param shell pointer to the shell structure.
+ * @param cmd the command containing optional arguments.
+ * 
+ * @return 1 if too many arguments are provided and the shell should continue running,
+ * otherwise does not return (calls exit).
+ */
 int	ms_exit(t_shell **shell, t_cmd *cmd)
 {
 	if (cmd)
@@ -64,6 +91,16 @@ int	ms_exit(t_shell **shell, t_cmd *cmd)
 	exit((*shell)->exit_status);
 }
 
+/**
+ * @brief Closes pipe file descriptors and prints "exit".
+ *
+ * Used before exiting the shell, ensures open pipe descriptors
+ * are closed properly to prevent leaks.
+ *
+ * @param cmd the command whose pipe descriptors are to be closed.
+ * 
+ * @return void.
+ */
 void	close_pipes_for_exit(t_cmd *cmd)
 {
 	printf("exit\n");
@@ -73,15 +110,24 @@ void	close_pipes_for_exit(t_cmd *cmd)
 		close(cmd->pipe[1]);
 }
 
-//function that calls for the execution of a build_in
-
-int	build_ins(t_cmd *cmd)
+/**
+ * @brief Executes a built-in command if it matches one of the supported ones.
+ *
+ * Identifies and runs built-in commands such as `echo`, `cd`, `pwd`, `export`,
+ * `unset`, `env`, and `exit`. Updates the shell’s exit status accordingly.
+ * If the command is not a built-in or is invalid, does nothing.
+ *
+ * @param cmd the command to check and execute.
+ * 
+ * @return void.
+ */
+void	build_ins(t_cmd *cmd)
 {
 	t_shell	*shell;
 
 	shell = get_shell();
 	if (!cmd || !cmd->arg || !cmd->arg[0])
-		return (0);
+		return ;
 	else if (ft_strncmp(cmd->arg[0], "echo", 5) == 0)
 		shell->exit_status = ms_echo(cmd);
 	else if (ft_strncmp(cmd->arg[0], "cd", 3) == 0)
@@ -99,7 +145,4 @@ int	build_ins(t_cmd *cmd)
 		close_pipes_for_exit(cmd);
 		shell->exit_status = ms_exit(&shell, cmd);
 	}
-	else
-		return (0);
-	return (1);
 }

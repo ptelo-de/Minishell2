@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 19:13:10 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/03/31 19:08:12 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/04/03 16:55:39 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,15 @@
 #include "executer.h"
 #include "minishell.h"
 
-//function that checks if there's an "=" in a string
-
+/**
+ * @brief Checks if a string contains the '=' character.
+ *
+ * Useful for detecting if a variable includes a value assignment.
+ *
+ * @param var the string to check.
+ * 
+ * @return 1 if '=' is found, 0 otherwise.
+ */
 int	has_equal(char *var)
 {
 	int	i;
@@ -30,9 +37,16 @@ int	has_equal(char *var)
 	return (0);
 }
 
-//function that gives the name of var
-//(declare -x SHLVL=1 or SHLVL=1 become SHLVL)
-
+/**
+ * @brief Extracts the name of a variable from a declaration string.
+ *
+ * Handles input in the form `declare -x VAR=value` or `VAR=value`
+ * and returns only the variable name (`VAR`).
+ *
+ * @param var the full variable declaration.
+ * 
+ * @return a newly allocated string containing the variable name, or NULL on failure.
+ */
 char	*get_var_name(char *var)
 {
 	int		i;
@@ -53,8 +67,16 @@ char	*get_var_name(char *var)
 	return (var_name);
 }
 
-//function that frees a list
-
+/**
+ * @brief Frees a linked list of environment or export variables.
+ *
+ * Iterates through the list and frees each node and its content.
+ * Safely handles NULL input.
+ *
+ * @param lst the list to free.
+ * 
+ * @return void.
+ */
 void	free_lst(t_list *lst)
 {
 	t_list	*temp;
@@ -70,8 +92,14 @@ void	free_lst(t_list *lst)
 	}
 }
 
-//function that frees everything that is needed before leaving the program
-
+/**
+ * @brief Frees all memory associated with the shell before exiting.
+ *
+ * Frees environment and export lists, readline buffer, and shell attributes.
+ * Should be called before program termination to avoid memory leaks.
+ *
+ * @return void.
+ */
 void	free_all(void)
 {
 	t_shell	*shell;
@@ -84,8 +112,16 @@ void	free_all(void)
 	free_lst(shell->exp);
 }
 
-//function that checks if a variable has a valid name
-
+/**
+ * @brief Checks if an export argument is a valid variable identifier.
+ *
+ * Valid identifiers must start with a letter or underscore and may be followed
+ * by letters, digits, or underscores. Stops checking at the '=' character.
+ *
+ * @param arg the argument to validate.
+ * 
+ * @return 1 if the identifier is valid, 0 otherwise. Prints an error if invalid.
+ */
 int	arg_valid(char *arg)
 {
 	int	i;

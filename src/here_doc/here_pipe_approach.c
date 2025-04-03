@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/29 00:51:40 by ptelo-de          #+#    #+#             */
-/*   Updated: 2025/03/31 18:47:28 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/04/03 15:40:35 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,13 +16,14 @@
 
 /**
  * @brief catches user input for here doc.
- *
- * generates readline loop, and writes input in command's
+ * 
+ * Generates readline loop, and writes input in command's
  * here_pipe[1].
- * Input is expanded according to bash rules for here doc
- *
+ * Input is expanded according to bash rules for here doc.
+ * 
  * @param del is delimiter for here doc.
  * @param rule if it is QUOTE it will expand input, otherwise it will not.
+ * 
  * @return void.
  */
 void	catch_here_input(char *del, t_type rule)
@@ -50,10 +51,13 @@ void	catch_here_input(char *del, t_type rule)
 }
 
 /**
- * @brief Preforms here doc according to bash rules.
- * If sigint is recieved during here doc, the function returns a closed fd.
+ * @brief Performs here doc according to bash rules.
+ * 
+ * If sigint is received during here doc, the function returns a closed fd.
+ * 
  * @param del here doc delimeter;
  * @param rule if it is QUOTE it will expand input, otherwise it will not.
+ * 
  * @return file descriptor, type pipe, where here is stored.
  */
 int	here_doc(char *del, t_type expansion_rule)
@@ -84,8 +88,19 @@ int	here_doc(char *del, t_type expansion_rule)
 	return (shell->here_pipe[0]);
 }
 
-//returns 0 in case of error or sigint and 1 othewise.
-
+/**
+ * @brief Manages the creation of here documents for a single command.
+ * 
+ * Iterates over the redirections of the command, and for each
+ * HERE_DOC type, it generates a here document using `here_doc`.
+ * If a previous here doc exists, its file descriptor is closed.
+ * Also handles input file errors and SIGINT interruptions.
+ * 
+ * @param cmd the command whose redirections are to be processed.
+ * @param fd_hd pointer to the file descriptor where the here doc will be stored.
+ * 
+ * @return 1 if successful, 0 if a SIGINT was received or an error occurred.
+ */
 static int	manage_command_hd(t_cmd *cmd, int *fd_hd)
 {
 	int		j;
@@ -107,8 +122,17 @@ static int	manage_command_hd(t_cmd *cmd, int *fd_hd)
 	return (1);
 }
 
-//function that stores the value of the last heredoc fd in fd_in in each command
-
+/**
+ * @brief Manages here documents for all commands in the shell.
+ * 
+ * Iterates through all commands in the shell, and processes their
+ * HERE_DOC redirections using `manage_command_hd`.
+ * If no input file error occurs, assigns the here doc fd to the command.
+ * 
+ * @param shell the main shell structure containing the list of commands.
+ * 
+ * @return void.
+ */
 void	manage_hd(t_shell *shell)
 {
 	int		i;

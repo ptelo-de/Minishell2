@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 19:51:58 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/04/02 20:43:17 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/04/03 17:01:02 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,17 @@
 #include "executer.h"
 #include "minishell.h"
 
-//fucntion that finds the path env variable
-
+/**
+ * @brief Finds and splits the PATH environment variable.
+ *
+ * Searches the `envp` array for the "PATH=" variable and splits its value
+ * by ':' into an array of directories. If not found, uses the shell’s
+ * private path as a fallback.
+ *
+ * @param envp the array of environment variables.
+ * 
+ * @return a newly allocated array of directory paths, or NULL if PATH is not found.
+ */
 static char	**find_path(char **envp)
 {
 	int		i;
@@ -39,9 +48,17 @@ static char	**find_path(char **envp)
 	return (NULL);
 }
 
-//fucntion that gets the joining of path and '/', the path depending if
-//it's a system command or a 'program' that we want to execute
-
+/**
+ * @brief Generates a path prefix by joining a directory with '/'.
+ *
+ * If a directory from the PATH is provided, it joins it with a slash.
+ * Otherwise, uses the current working directory as the base path.
+ *
+ * @param path_env array of PATH directories (can be NULL).
+ * @param path_env_i the current directory in PATH to join (can be NULL).
+ * 
+ * @return a newly allocated string representing the path prefix.
+ */
 static char	*get_path_join(char **path_env, char *path_env_i)
 {
 	char	*path_join;
@@ -58,8 +75,18 @@ static char	*get_path_join(char **path_env, char *path_env_i)
 	return (path_join);
 }
 
-//fucntion that checks and finds the path to execute a command/program
-
+/**
+ * @brief Attempts to resolve the full path to an executable command.
+ *
+ * If the command is directly executable, returns it as-is.
+ * Otherwise, searches for it in each directory of the PATH variable
+ * and returns the first match that is executable.
+ *
+ * @param function the command or program name to locate.
+ * @param envp the environment variables used to locate PATH.
+ * 
+ * @return a newly allocated string with the full executable path, or NULL if not found.
+ */
 char	*create_path(char *function, char **envp)
 {
 	int		i;

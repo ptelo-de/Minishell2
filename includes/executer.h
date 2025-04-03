@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 18:41:36 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/04/01 19:02:28 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/04/03 16:20:20 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ int		ms_pwd(void);
 int		ms_export(t_list **env, t_list **exp, t_cmd *cmd);
 
 int		ms_exit(t_shell **shell, t_cmd *cmd);
-int		build_ins(t_cmd *cmd);
+void	build_ins(t_cmd *cmd);
 
 int		infile_error(t_cmd *cmd);
 int		error_open_outfile(int fd_outfile, char *name_outfile, t_cmd *cmd);

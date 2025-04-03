@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 19:36:30 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/04/01 01:12:43 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/04/03 16:37:38 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,16 @@
 #include "executer.h"
 #include "minishell.h"
 
-//fucntion that sets shlvl whenever the minishell is called
-
+/**
+ * @brief Increments the SHLVL (shell level) variable.
+ *
+ * Converts the current SHLVL string value to an integer, increments it,
+ * and returns a new string in the format "SHLVL=n".
+ *
+ * @param shlvl_value the current value of SHLVL (as a string).
+ * 
+ * @return a newly allocated string with the updated SHLVL value.
+ */
 static char	*set_shlvl(char *shlvl_value)
 {
 	int		shlvl;
@@ -30,6 +38,16 @@ static char	*set_shlvl(char *shlvl_value)
 	return (updated_shlvl);
 }
 
+/**
+ * @brief Increments the SHLVL (shell level) variable.
+ *
+ * Converts the current SHLVL string value to an integer, increments it,
+ * and returns a new string in the format "SHLVL=n".
+ *
+ * @param shlvl_value the current value of SHLVL (as a string).
+ * 
+ * @return a newly allocated string with the updated SHLVL value.
+ */
 void	set_env_i(t_list **env)
 {
 	char	*pwd;
@@ -43,8 +61,18 @@ void	set_env_i(t_list **env)
 	get_shell()->private_path = PRIVATE_PATH;
 }
 
-//function that generates env from envp
-
+/**
+ * @brief Generates the shell environment list from `envp`.
+ *
+ * Duplicates each environment variable from `envp` into a linked list.
+ * If `SHLVL` exists, it is incremented using `set_shlvl`. If `SHLVL` is not set,
+ * it is initialized to "SHLVL=1". If no environment is passed at all, calls
+ * `set_env_i` to initialize a minimal environment with `PWD` and `SHLVL`.
+ *
+ * @param envp the environment variables from the system.
+ * 
+ * @return a linked list representing the shell's environment, or NULL on failure.
+ */
 t_list	*get_env(char **envp)
 {
 	t_list	*env;

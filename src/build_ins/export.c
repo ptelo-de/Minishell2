@@ -6,7 +6,7 @@
 /*   By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 19:42:35 by bde-luce          #+#    #+#             */
-/*   Updated: 2025/03/31 17:17:29 by bde-luce         ###   ########.fr       */
+/*   Updated: 2025/04/03 16:30:05 by bde-luce         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,17 @@
 #include "executer.h"
 #include "minishell.h"
 
-//function that adds the variable to exp and/or
-//env lists in case it doesnt exist there
-
+/**
+ * @brief Adds a variable to the export list in sorted order.
+ *
+ * Creates a new node with the prefix "declare -x " and inserts it
+ * into the export list maintaining alphabetical order.
+ *
+ * @param exp pointer to the export list.
+ * @param var the variable to add.
+ * 
+ * @return void.
+ */
 static void	put_export(t_list **exp, char *var)
 {
 	t_list	*new_node;
@@ -46,8 +54,22 @@ static void	put_export(t_list **exp, char *var)
 	}
 }
 
-//function  that updates the value of the variable to be updated in exp list
-
+/**
+ * @brief Updates the value of a variable in the export list.
+ *
+ * Searches for the variable by name and updates its content.
+ * Behavior depends on flag `b`:
+ * - 0: replace content with raw `var`
+ * - 1: replace content with "declare -x " + `var`
+ * - other: no update performed
+ *
+ * @param lst the list to update.
+ * @param var_name the name of the variable (e.g., "VAR").
+ * @param var the new full variable content (e.g., "VAR=value").
+ * @param b the mode/flag controlling the update behavior.
+ * 
+ * @return 1 if the variable was updated, 0 otherwise.
+ */
 static int	update_exp_value(t_list **lst, char *var_name, char *var, int b)
 {
 	t_list	*temp;
@@ -75,9 +97,18 @@ static int	update_exp_value(t_list **lst, char *var_name, char *var, int b)
 	return (0);
 }
 
-//function that updates a variable value in exp
-//and/or env lists if it already exists there
-
+/**
+ * @brief Updates the value of a variable in a list, if it exists.
+ *
+ * Wrapper around `update_exp_value` that extracts the variable name.
+ * Updates the environment or export list according to the flag `b`.
+ *
+ * @param lst the list to update.
+ * @param var the variable (e.g., "VAR=value") to update.
+ * @param b update mode flag (passed to `update_exp_value`).
+ * 
+ * @return 1 if the variable was updated, 0 otherwise.
+ */
 static int	update_lst(t_list **lst, char *var, int b)
 {
 	char	*var_name;
@@ -91,8 +122,15 @@ static int	update_lst(t_list **lst, char *var, int b)
 	return (0);
 }
 
-//funtion that prints exp list
-
+/**
+ * @brief Prints all variables in the export list.
+ *
+ * Iterates through the export list and prints each variable.
+ *
+ * @param exp the export list.
+ * 
+ * @return void.
+ */
 static void	print_exp(t_list *exp)
 {
 	while (exp != NULL)
@@ -102,8 +140,19 @@ static void	print_exp(t_list *exp)
 	}
 }
 
-//export function
-
+/**
+ * @brief Executes the `export` command.
+ *
+ * If no arguments are given, prints the export list. Otherwise, it adds or updates
+ * variables in both the environment and export lists. Handles quotes and variable
+ * formatting internally. Invalid arguments result in an error.
+ *
+ * @param env pointer to the environment list.
+ * @param exp pointer to the export list.
+ * @param cmd the command with export arguments.
+ * 
+ * @return 0 if all arguments were processed successfully, 1 if any were invalid.
+ */
 int	ms_export(t_list **env, t_list **exp, t_cmd *cmd)
 {
 	int		i;
